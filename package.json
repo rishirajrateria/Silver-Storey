@@ -14,7 +14,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "optimize:videos": "bash scripts/optimize-videos.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

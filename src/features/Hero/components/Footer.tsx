@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const VIDEO_MP4 = '/videos/OFFICE full_1.mp4';
 const VIDEO_WEBM: string | null = null;
+// Set to '/videos/office-poster.jpg' after running `npm run optimize:videos`.
 const VIDEO_POSTER: string | null = null;
 
 export default function Footer() {
