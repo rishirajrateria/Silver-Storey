@@ -4,6 +4,7 @@ import { logoutAction } from '@/app/admin/actions';
 
 const LINKS = [
   { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/leads', label: 'Enquiries' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/videos', label: 'Videos' },
   { href: '/admin/projects', label: 'Project Pages' },

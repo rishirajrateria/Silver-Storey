@@ -117,3 +117,45 @@ model Brochure {
 
   @@index([isActive])
 }
+
+/// A single page view. No cookies and no personal data are stored — visitors
+/// are counted with a salted hash that rotates daily, so the same person on two
+/// days is two rows and cannot be tracked across days.
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  /// Referring hostname only, never the full URL.
+  referrer    String?
+  /// direct | organic | social | referral | internal
+  source      String   @default("direct")
+  /// desktop | mobile | tablet
+  device      String   @default("desktop")
+  country     String?
+  /// sha256(dailySalt + ip + userAgent), truncated. Not reversible.
+  visitorHash String
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+  @@index([visitorHash, createdAt])
+}
+
+/// A contact-form enquiry. Stored so a lead is never lost to a failed email.
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  address     String?
+  projectType String?
+  budget      String?
+  /// The page the enquiry was submitted from.
+  sourcePath  String?
+  /// new | contacted | qualified | won | lost
+  status      String   @default("new")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+}

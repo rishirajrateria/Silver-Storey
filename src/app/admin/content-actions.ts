@@ -409,3 +409,34 @@ export async function deleteBrochure(form: FormData): Promise<void> {
   revalidatePath('/admin/brochure');
   redirect('/admin/brochure');
 }
+
+/* ────────────────────────────── Leads ────────────────────────────── */
+
+const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'won', 'lost'] as const;
+
+export async function updateLeadStatus(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  const status = str(form, 'status');
+  if (!id || !(LEAD_STATUSES as readonly string[]).includes(status)) return;
+  try {
+    await prisma.lead.update({ where: { id }, data: { status } });
+  } catch (error) {
+    console.error('[admin] updateLeadStatus failed:', error);
+  }
+  revalidatePath('/admin/leads');
+  revalidatePath('/admin');
+}
+
+export async function deleteLead(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  if (!id) return;
+  try {
+    await prisma.lead.delete({ where: { id } });
+  } catch (error) {
+    console.error('[admin] deleteLead failed:', error);
+  }
+  revalidatePath('/admin/leads');
+  revalidatePath('/admin');
+}

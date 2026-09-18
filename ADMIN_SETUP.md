@@ -99,6 +99,46 @@ Visit `/admin`. You will be redirected to the login page.
 
 ---
 
+## The dashboard
+
+`/admin` opens on an analytics overview covering the last 7, 30 or 90 days:
+
+| Panel                        | What it tells you                                                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **KPI row**                  | Visitors, page views, enquiries and enquiry rate, each against the previous period                                |
+| **Visitors and page views**  | Daily trend, with a hover readout and a table view                                                                |
+| **Top pages**                | Which pages people actually land on — the clearest read on whether the city and service pages are earning traffic |
+| **Where visitors come from** | Search engines, direct, other websites, social. Search climbing here is the SEO signal                            |
+| **Devices / Countries**      | Mobile share, and NRI demand from the Gulf, UK and US                                                             |
+| **Latest enquiries**         | The most recent contact-form submissions                                                                          |
+| **Content**                  | The CMS sections, with current counts                                                                             |
+
+### How the analytics work
+
+Tracking is first-party: a small script posts the path and referring hostname
+to `/api/track` on your own domain. Specifically:
+
+- **No cookies and no local storage**, so no consent banner is required for it.
+- **No personal data is stored.** Unique visitors are counted with
+  `sha256(daily salt + IP + user agent)`, truncated. The IP and user agent are
+  never written down, and because the salt rotates at midnight UTC the same
+  person tomorrow is a different, unlinkable hash.
+- **Only the referring hostname** is kept (`google.com`), never the full URL —
+  so search queries never land in your database.
+- **Bots are filtered** before insert, including Googlebot, GPTBot, ClaudeBot,
+  PerplexityBot and monitoring tools, so numbers reflect people.
+- **Admin pages are never tracked.**
+
+Set `ANALYTICS_SALT` to a random string if you want the visitor hash salt
+independent of `ADMIN_SESSION_SECRET` (it falls back to that otherwise).
+
+### Enquiries
+
+Every contact-form submission is written to the database _before_ the
+notification email is sent, so a failed email can no longer lose a lead. Each
+enquiry records the page it came from and carries a status you can move through
+new → contacted → qualified → won / lost on `/admin/leads`.
+
 ## What you can edit
 
 | Section           | Controls                                                                   |
