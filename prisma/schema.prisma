@@ -1,0 +1,119 @@
+// Silver Storey CMS — data model.
+//
+// Mirrors (and replaces) the five Sanity document types that previously
+// powered the site: category, video, projectPage, blogPost and brochure.
+//
+// Local/dev:  npx prisma migrate dev --name init
+// Production: npx prisma migrate deploy
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Room category cards on the home page (Bedroom, Kitchen, …).
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  /// Free text so it can read "2.1 L", "₹1.4 L", "On request", …
+  price     String
+  imageUrl  String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// YouTube videos shown in the home page carousel.
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  /// Just the ID (e.g. dQw4w9WgXcQ), not the full URL.
+  youtubeId   String
+  description String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// A gallery-driven project page: /projects/[slug], plus the
+/// residential-projects and commercial-projects pages which look
+/// themselves up by the reserved slugs below.
+model ProjectPage {
+  id           String           @id @default(cuid())
+  title        String
+  slug         String           @unique
+  heroTitle    String
+  heroSubtitle String?
+  heroImageUrl String?
+  order        Int              @default(0)
+  published    Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  sections     GallerySection[]
+
+  @@index([published, order])
+}
+
+model GallerySection {
+  id            String         @id @default(cuid())
+  title         String
+  order         Int            @default(0)
+  projectPageId String
+  projectPage   ProjectPage    @relation(fields: [projectPageId], references: [id], onDelete: Cascade)
+  images        GalleryImage[]
+
+  @@index([projectPageId, order])
+}
+
+model GalleryImage {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  order       Int            @default(0)
+  sectionId   String
+  section     GallerySection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, order])
+}
+
+/// Blog posts. Body is Markdown — rendered by src/lib/markdown.ts.
+model BlogPost {
+  id           String    @id @default(cuid())
+  title        String
+  slug         String    @unique
+  description  String?
+  author       String?
+  /// Blog category slug, matching src/lib/blog/categories.ts.
+  category     String?
+  mainImageUrl String?
+  body         String    @default("")
+  published    Boolean   @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+/// Downloadable brochure. Only the active one is served.
+model Brochure {
+  id        String   @id @default(cuid())
+  fileUrl   String
+  filename  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}

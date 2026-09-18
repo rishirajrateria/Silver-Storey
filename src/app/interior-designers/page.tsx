@@ -18,7 +18,7 @@ import {
   type FAQ,
 } from '@/lib/seo/schema';
 import { SITE } from '@/lib/seo/site';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   CITIES,
   TIER1_CITIES,
@@ -81,7 +81,7 @@ const FAQS: FAQ[] = [
 ];
 
 export default async function InteriorDesignersIndiaPage() {
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const regions = statesByRegion();
   const crumbs = [
     { name: 'Home', path: '/' },

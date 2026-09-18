@@ -1,43 +1,39 @@
 import { notFound } from 'next/navigation';
-import { sanityClient } from '@/lib/sanity/client';
-import { urlFor } from '@/lib/sanity/image';
-import {
-  projectPageBySlugQuery,
-  allProjectSlugsQuery,
-  allProjectPagesQuery,
-} from '@/lib/sanity/queries';
-import type { SanityProjectPage } from '@/lib/sanity/types';
-import ProjectPageTemplate from '@/features/ProjectPage/ProjectPageTemplate';
 import type { Metadata } from 'next';
-import { cache } from 'react';
+import ProjectPageTemplate from '@/features/ProjectPage/ProjectPageTemplate';
+import {
+  getAllProjectSlugs,
+  getProjectPage,
+  getProjectPageLinks,
+  RESIDENTIAL_SLUG,
+  COMMERCIAL_SLUG,
+} from '@/lib/db/content';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { breadcrumbSchema, graph, webPageSchema } from '@/lib/seo/schema';
 
-const getPage = cache(async (slug: string) =>
-  sanityClient
-    .fetch<SanityProjectPage | null>(projectPageBySlugQuery, { slug })
-    .catch(() => null),
-);
+export const revalidate = 60;
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateStaticParams() {
+  const slugs = await getAllProjectSlugs();
+  return slugs
+    .filter(({ slug }) => slug !== RESIDENTIAL_SLUG && slug !== COMMERCIAL_SLUG)
+    .map(({ slug }) => ({ slug }));
+}
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const page = await getPage(slug);
+  const page = await getProjectPage(slug);
   if (!page) return {};
-  const image = page.heroImage
-    ? urlFor(page.heroImage).width(1200).height(630).url()
-    : undefined;
   return buildMetadata({
     title: `${page.heroTitle || page.title} | Silver Storey Projects`,
     description:
       page.heroSubtitle ||
       `${page.title} — an interior design project by Silver Storey. Explore the gallery, materials and spaces we designed and delivered.`,
     path: `/projects/${slug}`,
-    image,
+    image: page.heroImageUrl,
     keywords: [
       page.title,
       `${page.title} interior design`,
@@ -46,37 +42,23 @@ export async function generateMetadata({
   });
 }
 
-export async function generateStaticParams() {
-  const slugs = await sanityClient
-    .fetch<{ slug: string }[]>(allProjectSlugsQuery)
-    .catch(() => [] as { slug: string }[]);
-  return slugs.map(({ slug }) => ({ slug }));
-}
-
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
-
   const [page, projectPages] = await Promise.all([
-    getPage(slug),
-    sanityClient
-      .fetch<{ title: string; slug: string }[]>(allProjectPagesQuery)
-      .catch(() => []),
+    getProjectPage(slug),
+    getProjectPageLinks(),
   ]);
 
   if (!page) notFound();
 
-  const gallerySections = (page.gallerySections ?? []).map((section) => ({
-    key: section._key,
-    title: section.sectionTitle,
-    items: (section.images ?? []).map((img, i) => ({
+  const gallerySections = page.sections.map((section) => ({
+    key: section.id,
+    title: section.title,
+    items: section.images.map((img, i) => ({
       id: i + 1,
       title: img.title,
-      description: img.description ?? '',
-      image: urlFor(img.image).width(640).height(800).url(),
+      description: img.description,
+      image: img.imageUrl,
     })),
   }));
 
@@ -88,9 +70,7 @@ export default async function ProjectPage({
         `${page.title} — interior design project by Silver Storey.`,
       path: `/projects/${slug}`,
       type: 'CollectionPage',
-      primaryImage: page.heroImage
-        ? urlFor(page.heroImage).width(1200).height(630).url()
-        : undefined,
+      primaryImage: page.heroImageUrl,
     }),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
@@ -103,11 +83,7 @@ export default async function ProjectPage({
     <>
       <JsonLd data={jsonLd} />
       <ProjectPageTemplate
-        heroImageUrl={
-          page.heroImage
-            ? urlFor(page.heroImage).width(1920).height(1080).url()
-            : undefined
-        }
+        heroImageUrl={page.heroImageUrl}
         heroTitle={page.heroTitle}
         heroSubtitle={page.heroSubtitle}
         gallerySections={gallerySections}

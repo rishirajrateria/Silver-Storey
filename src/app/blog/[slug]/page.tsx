@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
-import { sanityClient } from '@/lib/sanity/client';
-import { blogPostBySlugQuery, allBlogSlugsQuery } from '@/lib/sanity/queries';
-import { getProjectPages } from '@/lib/sanity/projectPages';
 import BlogPostPage from '@/features/Blog/BlogPostPage';
 import ArticlePage from '@/features/Blog/ArticlePage';
-import type { BlogPostFull } from '@/features/Blog/types';
+import { getBlogPost, getBlogPosts } from '@/lib/db/content';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   ARTICLES,
   getArticle,
@@ -15,6 +12,7 @@ import {
   CATEGORY_BY_SLUG,
   categoryPath,
 } from '@/lib/blog';
+import { markdownToPlainText, markdownWordCount } from '@/lib/markdown';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
@@ -26,56 +24,43 @@ import {
 
 export const revalidate = 60;
 
-const getSanityPost = cache(async (slug: string) =>
-  sanityClient
-    .fetch<BlogPostFull | null>(blogPostBySlugQuery, { slug })
-    .catch(() => null),
-);
-
 export async function generateStaticParams() {
-  const slugs: { slug: string }[] = await sanityClient
-    .fetch(allBlogSlugsQuery)
-    .catch(() => []);
-  const sanity = (slugs ?? [])
-    .filter((s) => Boolean(s.slug))
-    .map((s) => ({ slug: s.slug }));
-  const local = ARTICLES.map((a) => ({ slug: a.slug }));
+  const cms = await getBlogPosts();
+  const slugs = [
+    ...cms.map((p) => ({ slug: p.slug })),
+    ...ARTICLES.map((a) => ({ slug: a.slug })),
+  ];
   const seen = new Set<string>();
-  return [...sanity, ...local].filter((p) =>
+  return slugs.filter((p) =>
     seen.has(p.slug) ? false : (seen.add(p.slug), true),
   );
 }
 
 type Props = { params: Promise<{ slug: string }> };
 
-function plainText(body?: unknown[]): string {
-  if (!Array.isArray(body)) return '';
-  return body
-    .filter(
-      (b): b is { _type: string; children?: { text?: string }[] } =>
-        typeof b === 'object' &&
-        b !== null &&
-        (b as { _type?: string })._type === 'block',
-    )
-    .flatMap((b) => (b.children ?? []).map((c) => c.text ?? ''))
-    .join(' ');
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getSanityPost(slug);
+
+  const post = await getBlogPost(slug);
   if (post) {
     return buildMetadata({
       title: post.title,
       description:
-        post.description ?? plainText(post.body).slice(0, 155) ?? post.title,
+        post.description ||
+        markdownToPlainText(post.body).slice(0, 155) ||
+        post.title,
       path: articlePath(slug),
       image: post.mainImageUrl,
       type: 'article',
       publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
       authors: [post.author ?? 'Silver Storey'],
+      section: post.category
+        ? CATEGORY_BY_SLUG[post.category]?.name
+        : undefined,
     });
   }
+
   const article = getArticle(slug);
   if (!article) return {};
   return buildMetadata({
@@ -95,32 +80,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostRoute({ params }: Props) {
   const { slug } = await params;
   const [post, projectPages] = await Promise.all([
-    getSanityPost(slug),
-    getProjectPages(),
+    getBlogPost(slug),
+    getProjectPageLinks(),
   ]);
 
   if (post) {
+    const category = post.category
+      ? CATEGORY_BY_SLUG[post.category]
+      : undefined;
     const jsonLd = graph(
       articleSchema({
         title: post.title,
-        description: post.description ?? plainText(post.body).slice(0, 155),
+        description:
+          post.description || markdownToPlainText(post.body).slice(0, 155),
         path: articlePath(slug),
         image: post.mainImageUrl,
         datePublished: post.publishedAt,
+        dateModified: post.updatedAt,
         authorName: post.author,
-        wordCount:
-          plainText(post.body).split(/\s+/).filter(Boolean).length || undefined,
+        wordCount: markdownWordCount(post.body) || undefined,
+        section: category?.name,
       }),
       breadcrumbSchema([
         { name: 'Home', path: '/' },
         { name: 'Blog', path: '/blog' },
+        ...(category
+          ? [{ name: category.name, path: categoryPath(category.slug) }]
+          : []),
         { name: post.title, path: articlePath(slug) },
       ]),
     );
     return (
       <>
         <JsonLd data={jsonLd} />
-        <BlogPostPage post={post} projectPages={projectPages} />
+        <BlogPostPage
+          post={{
+            _id: post.id,
+            title: post.title,
+            slug: post.slug,
+            description: post.description,
+            author: post.author,
+            publishedAt: post.publishedAt,
+            mainImageUrl: post.mainImageUrl,
+            body: post.body,
+          }}
+          projectPages={projectPages}
+        />
       </>
     );
   }

@@ -17,7 +17,7 @@ import {
   webPageSchema,
 } from '@/lib/seo/schema';
 import { PROCESS_STEPS } from '@/lib/seo/process';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   SERVICES,
   getService,
@@ -60,7 +60,7 @@ export default async function ServicePage({ params }: Props) {
   const s = getService(slug);
   if (!s) notFound();
 
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const path = servicePath(s);
   const crumbs = [
     { name: 'Home', path: '/' },

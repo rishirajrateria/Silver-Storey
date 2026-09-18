@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import ContactPage from '@/features/Contact/ContactPage';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
@@ -27,7 +27,7 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function Page() {
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const jsonLd = graph(
     webPageSchema({
       name: TITLE,

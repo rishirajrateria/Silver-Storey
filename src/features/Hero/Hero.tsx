@@ -18,16 +18,16 @@ import FoundersSection from './components/FoundersSection';
 import Footer from './components/Footer';
 import { useSlider } from '../../hooks/useSlider';
 import type { Category } from './types';
-import type { SanityVideo } from '../../lib/sanity/types';
+import type { VideoItem } from '../../lib/db/content';
 
 interface HeroProps {
-  /** Category cards — fetched from Sanity; falls back to hardcoded constants */
+  /** Category cards — from the CMS; falls back to hardcoded constants */
   categories?: Category[];
-  /** YouTube videos — fetched from Sanity; empty array shows static placeholders */
-  videos?: SanityVideo[];
-  /** Dynamic project pages from Sanity — added to the nav menu automatically */
+  /** YouTube videos — from the CMS; an empty array shows static placeholders */
+  videos?: VideoItem[];
+  /** Project pages from the CMS — added to the nav menu automatically */
   projectPages?: { title: string; slug: string }[];
-  /** Brochure PDF download URL from Sanity */
+  /** Brochure PDF download URL from the CMS */
   brochureUrl?: string;
 }
 

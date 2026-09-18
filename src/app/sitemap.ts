@@ -19,8 +19,11 @@ import {
   categoryPath,
   articlePath,
 } from '@/lib/blog';
-import { sanityClient } from '@/lib/sanity/client';
-import { allProjectSlugsQuery } from '@/lib/sanity/queries';
+import {
+  getAllProjectSlugs,
+  RESIDENTIAL_SLUG,
+  COMMERCIAL_SLUG,
+} from '@/lib/db/content';
 
 /**
  * Split sitemaps:
@@ -116,19 +119,16 @@ export default async function sitemap(props: {
       changeFrequency: 'monthly' as const,
       priority: 0.85,
     }));
-    const projects = await sanityClient
-      .fetch<{ slug: string }[]>(allProjectSlugsQuery)
-      .then((rows) =>
-        (rows ?? [])
-          .filter((r) => r.slug)
-          .map((r) => ({
-            url: absoluteUrl(`/projects/${r.slug}`),
-            lastModified: BUILD_DATE,
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-          })),
+    const projects = (await getAllProjectSlugs())
+      .filter(
+        ({ slug }) => slug !== RESIDENTIAL_SLUG && slug !== COMMERCIAL_SLUG,
       )
-      .catch(() => []);
+      .map(({ slug, updatedAt }) => ({
+        url: absoluteUrl(`/projects/${slug}`),
+        lastModified: updatedAt,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      }));
     return [...core, ...services, ...projects];
   }
 

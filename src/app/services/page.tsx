@@ -16,7 +16,7 @@ import {
   webPageSchema,
   type FAQ,
 } from '@/lib/seo/schema';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import { SERVICES, SERVICE_CATEGORIES, servicePath } from '@/lib/services';
 import { formatINR } from '@/lib/locations/content';
 import { TIER1_CITIES, cityPath } from '@/lib/locations';
@@ -58,7 +58,7 @@ const FAQS: FAQ[] = [
 ];
 
 export default async function ServicesPage() {
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const crumbs = [
     { name: 'Home', path: '/' },
     { name: 'Services', path: PATH },

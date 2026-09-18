@@ -3,9 +3,7 @@ import type { Article, BlogListItem } from './types';
 import { COST_GUIDE_ARTICLES } from './articles/cost-guides';
 import { MATERIALS_DESIGN_ARTICLES } from './articles/materials-design';
 import { PLANNING_CITY_ARTICLES } from './articles/planning-city';
-import { sanityClient } from '@/lib/sanity/client';
-import { allBlogPostsQuery } from '@/lib/sanity/queries';
-import type { BlogPost } from '@/features/Blog/types';
+import { getBlogPosts, type BlogPostSummary } from '@/lib/db/content';
 import { CATEGORY_BY_SLUG } from './categories';
 
 export type { Article, ArticleSection, BlogListItem } from './types';
@@ -80,22 +78,18 @@ export function articleToListItem(a: Article): BlogListItem {
   };
 }
 
-export const getSanityPosts = cache(async (): Promise<BlogPost[]> => {
-  try {
-    const posts = await sanityClient.fetch<BlogPost[]>(allBlogPostsQuery);
-    return (posts ?? []).filter((p) => Boolean(p?.slug));
-  } catch {
-    return [];
-  }
-});
+/** Posts created in the CMS. */
+export const getCmsPosts = cache(
+  async (): Promise<BlogPostSummary[]> => getBlogPosts(),
+);
 
-/** CMS posts + local articles, de-duplicated by slug (CMS wins), newest first. */
+/** CMS posts + built-in articles, de-duplicated by slug (CMS wins), newest first. */
 export const getAllBlogItems = cache(async (): Promise<BlogListItem[]> => {
-  const sanity = await getSanityPosts();
-  const sanitySlugs = new Set(sanity.map((p) => p.slug));
+  const cms = await getCmsPosts();
+  const cmsSlugs = new Set(cms.map((p) => p.slug));
   const items: BlogListItem[] = [
-    ...sanity.map((p) => ({ ...p, source: 'sanity' as const })),
-    ...ARTICLES.filter((a) => !sanitySlugs.has(a.slug)).map(articleToListItem),
+    ...cms.map((p) => ({ ...p, _id: p.id, source: 'cms' as const })),
+    ...ARTICLES.filter((a) => !cmsSlugs.has(a.slug)).map(articleToListItem),
   ];
   return items.sort((a, b) => {
     const da = a.publishedAt ?? '';

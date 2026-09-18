@@ -36,5 +36,5 @@ export interface BlogListItem {
   publishedAt?: string;
   mainImageUrl?: string;
   category?: string;
-  source: 'sanity' | 'local';
+  source: 'cms' | 'local';
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import BlogListPage from '@/features/Blog/BlogListPage';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   BLOG_CATEGORIES,
   CATEGORY_BY_SLUG,
@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: Props) {
   if (!c) notFound();
   const [posts, projectPages] = await Promise.all([
     getBlogItemsByCategory(c.slug),
-    getProjectPages(),
+    getProjectPageLinks(),
   ]);
   const jsonLd = graph(
     webPageSchema({

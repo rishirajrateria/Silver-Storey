@@ -18,7 +18,7 @@ import {
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   STATES,
   getState,
@@ -66,7 +66,7 @@ export default async function StatePage({ params }: Props) {
   const state = getState(slug);
   if (!state) notFound();
 
-  const [projectPages] = await Promise.all([getProjectPages()]);
+  const [projectPages] = await Promise.all([getProjectPageLinks()]);
   const cities = citiesInState(state.slug);
   const faqs = stateFaqs(state);
   const path = statePath(state);

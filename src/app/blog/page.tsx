@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import BlogListPage from '@/features/Blog/BlogListPage';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   getAllBlogItems,
   BLOG_CATEGORIES,
@@ -38,7 +38,7 @@ export const metadata: Metadata = buildMetadata({
 export default async function BlogPage() {
   const [posts, projectPages] = await Promise.all([
     getAllBlogItems(),
-    getProjectPages(),
+    getProjectPageLinks(),
   ]);
   const jsonLd = graph(
     webPageSchema({

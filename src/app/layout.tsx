@@ -95,9 +95,8 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} h-full antialiased`}>
       <head>
         {/* Warm up connections to the CDNs used above the fold. */}
-        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
         <link rel="dns-prefetch" href="https://img.youtube.com" />
+        <link rel="dns-prefetch" href="https://blob.vercel-storage.com" />
       </head>
       <body className="flex min-h-full flex-col">
         <JsonLd

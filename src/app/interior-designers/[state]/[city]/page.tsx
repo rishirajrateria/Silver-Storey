@@ -20,7 +20,7 @@ import {
   webPageSchema,
 } from '@/lib/seo/schema';
 import { PROCESS_STEPS } from '@/lib/seo/process';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   CITIES,
   getCityInState,
@@ -76,7 +76,7 @@ export default async function CityPage({ params }: Props) {
   if (!match) notFound();
   const { state, city } = match;
 
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const path = cityPath(city);
   const intro = cityIntro(city, state);
   const faqs = cityFaqs(city, state);

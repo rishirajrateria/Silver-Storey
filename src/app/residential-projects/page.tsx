@@ -1,16 +1,16 @@
 import ResidentialProjects from '@/features/ResidentialProjects/ResidentialProjects';
-import { sanityClient } from '@/lib/sanity/client';
-import { urlFor } from '@/lib/sanity/image';
 import {
-  projectPageBySlugQuery,
-  allProjectPagesQuery,
-} from '@/lib/sanity/queries';
-import type { SanityProjectPage } from '@/lib/sanity/types';
+  getProjectPage,
+  getProjectPageLinks,
+  RESIDENTIAL_SLUG,
+} from '@/lib/db/content';
+import { galleryProjects as defaultGallery } from '@/features/ResidentialProjects/constants';
 import type { Metadata } from 'next';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { breadcrumbSchema, graph, webPageSchema } from '@/lib/seo/schema';
-import { galleryProjects as defaultGallery } from '@/features/ResidentialProjects/constants';
+
+export const revalidate = 60;
 
 const TITLE = 'Residential Interior Design Projects | Silver Storey Portfolio';
 const DESCRIPTION =
@@ -30,25 +30,19 @@ export const metadata: Metadata = buildMetadata({
 
 export default async function ResidentialProjectsPage() {
   const [page, projectPages] = await Promise.all([
-    sanityClient
-      .fetch<SanityProjectPage | null>(projectPageBySlugQuery, {
-        slug: 'residential-projects',
-      })
-      .catch(() => null),
-    sanityClient
-      .fetch<{ title: string; slug: string }[]>(allProjectPagesQuery)
-      .catch(() => []),
+    getProjectPage(RESIDENTIAL_SLUG),
+    getProjectPageLinks(),
   ]);
 
   const gallery =
-    page && page.gallerySections?.length > 0
-      ? page.gallerySections
-          .flatMap((section) => section.images ?? [])
+    page && page.sections.length > 0
+      ? page.sections
+          .flatMap((section) => section.images)
           .map((item, i) => ({
             id: i + 1,
             title: item.title,
-            description: item.description ?? '',
-            image: urlFor(item.image).width(640).height(800).url(),
+            description: item.description,
+            image: item.imageUrl,
           }))
       : defaultGallery;
 
@@ -58,13 +52,11 @@ export default async function ResidentialProjectsPage() {
       description: DESCRIPTION,
       path: '/residential-projects',
       type: 'CollectionPage',
-      primaryImage: page?.heroImage
-        ? urlFor(page.heroImage).width(1200).height(630).url()
-        : undefined,
+      primaryImage: page?.heroImageUrl,
     }),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
-      { name: TITLE.split(' | ')[0], path: '/residential-projects' },
+      { name: 'Residential Projects', path: '/residential-projects' },
     ]),
   );
 
@@ -73,11 +65,7 @@ export default async function ResidentialProjectsPage() {
       <JsonLd data={jsonLd} />
       <ResidentialProjects
         gallery={gallery}
-        heroImageUrl={
-          page?.heroImage
-            ? urlFor(page.heroImage).width(1920).height(1080).url()
-            : undefined
-        }
+        heroImageUrl={page?.heroImageUrl}
         heroTitle={page?.heroTitle}
         heroSubtitle={page?.heroSubtitle}
         projectPages={projectPages}

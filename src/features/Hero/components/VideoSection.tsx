@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { SanityVideo } from '../../../lib/sanity/types';
+import type { VideoItem as CmsVideo } from '../../../lib/db/content';
 
 interface VideoItem {
   id: string;
@@ -133,7 +133,7 @@ const STATIC_VIDEOS: VideoItem[] = [1, 2, 3, 4].map((i) => ({
 }));
 
 interface VideoSectionProps {
-  videos?: SanityVideo[];
+  videos?: CmsVideo[];
 }
 
 export default function VideoSection({ videos = [] }: VideoSectionProps) {
@@ -142,7 +142,7 @@ export default function VideoSection({ videos = [] }: VideoSectionProps) {
   const items: VideoItem[] =
     videos.length > 0
       ? videos.map((v) => ({
-          id: v._id,
+          id: v.id,
           title: v.title,
           youtubeId: v.youtubeId,
         }))

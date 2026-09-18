@@ -27,7 +27,7 @@ function GalleryCard({ project }: { project: GalleryProject }) {
 }
 
 interface GallerySectionProps {
-  /** Gallery items from Sanity — falls back to hardcoded constants when empty */
+  /** Gallery items from the CMS — falls back to hardcoded constants when empty */
   projects?: GalleryProject[];
 }
 

@@ -17,7 +17,7 @@ import {
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
-import { getProjectPages } from '@/lib/sanity/projectPages';
+import { getProjectPageLinks } from '@/lib/db/content';
 import {
   SERVICES_WITH_CITY_PAGES,
   getService,
@@ -91,7 +91,7 @@ export default async function ServiceCityPage({ params }: Props) {
   if (!r) notFound();
   const { service, city, state } = r;
 
-  const projectPages = await getProjectPages();
+  const projectPages = await getProjectPageLinks();
   const path = serviceCityPath(service, city.slug);
   const intro = serviceCityIntro({
     serviceName: service.name,
