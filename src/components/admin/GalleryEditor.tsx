@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
+import { ROOM_TYPES } from '@/lib/rooms';
 
 export interface EditorImage {
   key: string;
   title: string;
   description: string;
   imageUrl: string;
+  roomType?: string;
 }
 export interface EditorSection {
   key: string;
@@ -102,6 +104,7 @@ export default function GalleryEditor({
                     title: file.name.replace(/\.[^.]+$/, ''),
                     description: '',
                     imageUrl: '',
+                    roomType: '',
                   },
                 ],
               }
@@ -141,6 +144,7 @@ export default function GalleryEditor({
             title: i.title,
             description: i.description,
             imageUrl: i.imageUrl,
+            roomType: i.roomType || null,
           })),
       })),
   );
@@ -236,6 +240,25 @@ export default function GalleryEditor({
                         placeholder="Card description (optional)"
                         className="w-full rounded-lg border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/60"
                       />
+                      <select
+                        value={image.roomType ?? ''}
+                        onChange={(e) =>
+                          updateImage(section.key, image.key, {
+                            roomType: e.target.value,
+                          })
+                        }
+                        aria-label="Room type"
+                        className="w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-sm outline-none focus:border-black/60"
+                      >
+                        <option value="">
+                          Room type (for the filter) — optional
+                        </option>
+                        {ROOM_TYPES.map((r) => (
+                          <option key={r.key} value={r.key}>
+                            {r.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <button

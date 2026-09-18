@@ -5,19 +5,24 @@ import {
   getAllProjectSlugs,
   getProjectPage,
   getProjectPageLinks,
-  RESIDENTIAL_SLUG,
-  COMMERCIAL_SLUG,
+  RESERVED_PROJECT_SLUGS,
 } from '@/lib/db/content';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
-import { breadcrumbSchema, graph, webPageSchema } from '@/lib/seo/schema';
+import {
+  breadcrumbSchema,
+  graph,
+  imageGallerySchema,
+  webPageSchema,
+} from '@/lib/seo/schema';
+import { markdownToPlainText } from '@/lib/markdown';
 
 export const revalidate = 60;
 
 export async function generateStaticParams() {
   const slugs = await getAllProjectSlugs();
   return slugs
-    .filter(({ slug }) => slug !== RESIDENTIAL_SLUG && slug !== COMMERCIAL_SLUG)
+    .filter(({ slug }) => !RESERVED_PROJECT_SLUGS.includes(slug))
     .map(({ slug }) => ({ slug }));
 }
 
@@ -31,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${page.heroTitle || page.title} | Silver Storey Projects`,
     description:
       page.heroSubtitle ||
+      (page.summary ? markdownToPlainText(page.summary).slice(0, 160) : '') ||
       `${page.title} — an interior design project by Silver Storey. Explore the gallery, materials and spaces we designed and delivered.`,
     path: `/projects/${slug}`,
     image: page.heroImageUrl,
@@ -59,18 +65,44 @@ export default async function ProjectPage({ params }: Props) {
       title: img.title,
       description: img.description,
       image: img.imageUrl,
+      roomType: img.roomType,
     })),
   }));
+
+  const caseStudy = {
+    summary: page.summary,
+    location: page.location,
+    areaSqft: page.areaSqft,
+    budget: page.budget,
+    durationDays: page.durationDays,
+    propertyType: page.propertyType,
+    style: page.style,
+    materials: page.materials,
+    clientName: page.clientName,
+    clientQuote: page.clientQuote,
+    beforeImageUrl: page.beforeImageUrl,
+    afterImageUrl: page.afterImageUrl,
+  };
+  const description =
+    page.heroSubtitle ||
+    (page.summary ? markdownToPlainText(page.summary).slice(0, 160) : '') ||
+    `${page.title} — interior design project by Silver Storey.`;
 
   const jsonLd = graph(
     webPageSchema({
       name: page.heroTitle || page.title,
-      description:
-        page.heroSubtitle ||
-        `${page.title} — interior design project by Silver Storey.`,
+      description,
       path: `/projects/${slug}`,
       type: 'CollectionPage',
       primaryImage: page.heroImageUrl,
+      dateModified: page.updatedAt.toISOString(),
+    }),
+    imageGallerySchema({
+      name: `${page.heroTitle || page.title} — project gallery`,
+      path: `/projects/${slug}`,
+      images: page.sections.flatMap((s) =>
+        s.images.map((i) => ({ url: i.imageUrl, caption: i.title })),
+      ),
     }),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
@@ -88,6 +120,7 @@ export default async function ProjectPage({ params }: Props) {
         heroSubtitle={page.heroSubtitle}
         gallerySections={gallerySections}
         projectPages={projectPages}
+        caseStudy={caseStudy}
       />
     </>
   );

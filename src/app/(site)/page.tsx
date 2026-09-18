@@ -5,8 +5,13 @@ import {
   getBrochureUrl,
   getCategories,
   getProjectPageLinks,
+  getTestimonials,
   getVideos,
 } from '@/lib/db/content';
+import {
+  testimonialsToReviews,
+  testimonialsToSchema,
+} from '@/lib/testimonials';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
@@ -14,6 +19,7 @@ import {
   graph,
   howToSchema,
   localBusinessSchema,
+  reviewsSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
 import { PROCESS_STEPS } from '@/lib/seo/process';
@@ -63,12 +69,14 @@ const HOME_FAQS = [
 ];
 
 export default async function Home() {
-  const [categories, videos, projectPages, brochureUrl] = await Promise.all([
-    getCategories(),
-    getVideos(),
-    getProjectPageLinks(),
-    getBrochureUrl(),
-  ]);
+  const [categories, videos, projectPages, brochureUrl, testimonials] =
+    await Promise.all([
+      getCategories(),
+      getVideos(),
+      getProjectPageLinks(),
+      getBrochureUrl(),
+      getTestimonials(),
+    ]);
 
   const jsonLd = graph(
     webPageSchema({
@@ -85,6 +93,8 @@ export default async function Home() {
       totalTime: 'P45D',
     }),
     faqSchema(HOME_FAQS),
+    // Ratings only from real, published testimonials — never invented.
+    reviewsSchema(testimonialsToSchema(testimonials)),
   );
 
   return (
@@ -95,6 +105,7 @@ export default async function Home() {
         videos={videos}
         projectPages={projectPages}
         brochureUrl={brochureUrl}
+        reviews={testimonialsToReviews(testimonials)}
       />
     </>
   );

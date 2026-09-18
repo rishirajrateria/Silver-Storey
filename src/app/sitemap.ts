@@ -21,8 +21,8 @@ import {
 } from '@/lib/blog';
 import {
   getAllProjectSlugs,
-  RESIDENTIAL_SLUG,
-  COMMERCIAL_SLUG,
+  getLookbooks,
+  RESERVED_PROJECT_SLUGS,
 } from '@/lib/db/content';
 
 /**
@@ -63,6 +63,36 @@ export default async function sitemap(props: {
         lastModified: BUILD_DATE,
         changeFrequency: 'weekly',
         priority: 0.9,
+      },
+      {
+        url: absoluteUrl('/estimate'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'monthly',
+        priority: 0.9,
+      },
+      {
+        url: absoluteUrl('/3d-visualisation'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'monthly',
+        priority: 0.8,
+      },
+      {
+        url: absoluteUrl('/lookbooks'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      },
+      {
+        url: absoluteUrl('/warranty'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'yearly',
+        priority: 0.6,
+      },
+      {
+        url: absoluteUrl('/track'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'yearly',
+        priority: 0.3,
       },
       {
         url: absoluteUrl('/about-us'),
@@ -120,16 +150,20 @@ export default async function sitemap(props: {
       priority: 0.85,
     }));
     const projects = (await getAllProjectSlugs())
-      .filter(
-        ({ slug }) => slug !== RESIDENTIAL_SLUG && slug !== COMMERCIAL_SLUG,
-      )
+      .filter(({ slug }) => !RESERVED_PROJECT_SLUGS.includes(slug))
       .map(({ slug, updatedAt }) => ({
         url: absoluteUrl(`/projects/${slug}`),
         lastModified: updatedAt,
         changeFrequency: 'monthly' as const,
         priority: 0.6,
       }));
-    return [...core, ...services, ...projects];
+    const lookbooks = (await getLookbooks()).map((l) => ({
+      url: absoluteUrl(`/lookbooks/${l.slug}`),
+      lastModified: l.updatedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+    return [...core, ...services, ...projects, ...lookbooks];
   }
 
   if (id === 1) {

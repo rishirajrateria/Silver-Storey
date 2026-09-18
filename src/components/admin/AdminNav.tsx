@@ -9,6 +9,9 @@ const LINKS = [
   { href: '/admin/videos', label: 'Videos' },
   { href: '/admin/projects', label: 'Project Pages' },
   { href: '/admin/blog', label: 'Blog' },
+  { href: '/admin/testimonials', label: 'Testimonials' },
+  { href: '/admin/lookbooks', label: 'Lookbooks' },
+  { href: '/admin/client-projects', label: 'Client Projects' },
   { href: '/admin/brochure', label: 'Brochure' },
 ];
 

@@ -12,6 +12,11 @@ import { deleteLead } from '../content-actions';
 export const dynamic = 'force-dynamic';
 
 const STATUS_ORDER = ['new', 'contacted', 'qualified', 'won', 'lost'] as const;
+const KIND_LABELS: Record<string, string> = {
+  contact: 'Contact',
+  estimate: 'Estimate',
+  lookbook: 'Lookbook',
+};
 const STATUS_LABELS: Record<string, string> = {
   new: 'New',
   contacted: 'Contacted',
@@ -37,7 +42,7 @@ export default async function LeadsPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <AdminPageHeader
           title="Enquiries"
-          description="Every contact-form submission, saved as it arrives. Emails still send as before."
+          description="Every enquiry — contact form, cost-calculator estimates and lookbook downloads — saved as it arrives."
           backHref="/admin"
         />
 
@@ -66,7 +71,7 @@ export default async function LeadsPage() {
                       Name
                     </th>
                     <th scope="col" className="px-5 py-3 font-semibold">
-                      Phone
+                      Contact
                     </th>
                     <th scope="col" className="px-5 py-3 font-semibold">
                       Project
@@ -91,9 +96,12 @@ export default async function LeadsPage() {
                     <tr key={lead.id}>
                       <td className="px-5 py-3 font-medium text-black">
                         {lead.name}
-                        {lead.address && (
+                        <span className="ml-2 inline-block rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-black/60 uppercase">
+                          {KIND_LABELS[lead.kind] ?? lead.kind}
+                        </span>
+                        {(lead.address || lead.city) && (
                           <span className="block text-xs text-black/45">
-                            {lead.address}
+                            {lead.address ?? lead.city}
                           </span>
                         )}
                       </td>
@@ -104,6 +112,14 @@ export default async function LeadsPage() {
                         >
                           {lead.phone}
                         </a>
+                        {lead.email && (
+                          <a
+                            href={`mailto:${lead.email}`}
+                            className="block text-xs text-black/50 underline-offset-2 hover:underline"
+                          >
+                            {lead.email}
+                          </a>
+                        )}
                       </td>
                       <td className="px-5 py-3 text-black/70">
                         {lead.projectType ?? '—'}

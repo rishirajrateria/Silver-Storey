@@ -19,6 +19,13 @@ export function revalidateForContent(kind: string, slug?: string): void {
       paths.add('/blog/rss.xml');
       if (slug) paths.add(`/blog/${slug}`);
       break;
+    case 'testimonial':
+      paths.add('/about-us');
+      break;
+    case 'lookbook':
+      paths.add('/lookbooks');
+      if (slug) paths.add(`/lookbooks/${slug}`);
+      break;
     default:
       break;
   }

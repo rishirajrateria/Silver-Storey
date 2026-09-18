@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
 import AboutUsPage from '@/features/AboutUs/AboutUsPage';
-import { getProjectPageLinks } from '@/lib/db/content';
+import { getProjectPageLinks, getTestimonials } from '@/lib/db/content';
+import {
+  testimonialsToReviews,
+  testimonialsToSchema,
+} from '@/lib/testimonials';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
   breadcrumbSchema,
   graph,
+  reviewsSchema,
   webPageSchema,
   ORG_ID,
 } from '@/lib/seo/schema';
@@ -27,7 +32,10 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function Page() {
-  const projectPages = await getProjectPageLinks();
+  const [projectPages, testimonials] = await Promise.all([
+    getProjectPageLinks(),
+    getTestimonials(),
+  ]);
   const jsonLd = graph(
     webPageSchema({
       name: TITLE,
@@ -35,6 +43,7 @@ export default async function Page() {
       path: '/about-us',
       type: 'AboutPage',
     }),
+    reviewsSchema(testimonialsToSchema(testimonials)),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
       { name: 'About Us', path: '/about-us' },
@@ -51,7 +60,10 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <AboutUsPage projectPages={projectPages} />
+      <AboutUsPage
+        projectPages={projectPages}
+        reviews={testimonialsToReviews(testimonials)}
+      />
     </>
   );
 }

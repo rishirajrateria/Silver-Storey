@@ -15,7 +15,11 @@ import { deleteProjectPage } from '../content-actions';
 
 export const dynamic = 'force-dynamic';
 
-const RESERVED = ['residential-projects', 'commercial-projects'];
+const RESERVED = [
+  'residential-projects',
+  'commercial-projects',
+  '3d-visualisation',
+];
 
 export default async function ProjectsPage() {
   const session = await requireSession();
@@ -35,7 +39,7 @@ export default async function ProjectsPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <AdminPageHeader
           title="Project Pages"
-          description="Gallery pages. The reserved slugs residential-projects and commercial-projects power those two top-level pages."
+          description="Gallery pages. The reserved slugs residential-projects, commercial-projects and 3d-visualisation power those top-level pages."
           backHref="/admin"
           action={<LinkButton href="/admin/projects/new">Add page</LinkButton>}
         />

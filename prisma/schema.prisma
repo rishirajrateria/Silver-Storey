@@ -61,6 +61,25 @@ model ProjectPage {
   updatedAt    DateTime         @updatedAt
   sections     GallerySection[]
 
+  /// ── Case-study fields (all optional; the page renders as a plain gallery
+  ///    when they are empty) ──
+  /// Markdown: the brief, the challenge, what we did.
+  summary        String?
+  location       String?
+  areaSqft       Int?
+  /// Free text so it can read "₹12 L", "₹8–10 L" or "On request".
+  budget         String?
+  durationDays   Int?
+  /// 1BHK, 2BHK, 3BHK, 4BHK+, Villa, Office, Retail, …
+  propertyType   String?
+  style          String?
+  /// Comma-separated materials and brands used.
+  materials      String?
+  clientName     String?
+  clientQuote    String?
+  beforeImageUrl String?
+  afterImageUrl  String?
+
   @@index([published, order])
 }
 
@@ -80,6 +99,8 @@ model GalleryImage {
   title       String
   description String?
   imageUrl    String
+  /// living-room | kitchen | bedroom | bathroom | dining | office | other
+  roomType    String?
   order       Int            @default(0)
   sectionId   String
   section     GallerySection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -143,11 +164,17 @@ model PageView {
 /// A contact-form enquiry. Stored so a lead is never lost to a failed email.
 model Lead {
   id          String   @id @default(cuid())
+  /// contact | estimate | lookbook
+  kind        String   @default("contact")
   name        String
   phone       String
+  email       String?
   address     String?
+  city        String?
   projectType String?
   budget      String?
+  /// Structured payload — e.g. the calculator inputs and result.
+  details     Json?
   /// The page the enquiry was submitted from.
   sourcePath  String?
   /// new | contacted | qualified | won | lost
@@ -157,5 +184,85 @@ model Lead {
   updatedAt   DateTime @updatedAt
 
   @@index([status, createdAt])
+  @@index([kind, createdAt])
   @@index([createdAt])
+}
+
+/// Client testimonials. Only entries marked published feed the home page
+/// carousel and the Review structured data.
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  location    String?
+  projectType String?
+  /// 1–5
+  rating      Int      @default(5)
+  quote       String
+  imageUrl    String?
+  /// google | direct | other
+  source      String   @default("direct")
+  sourceUrl   String?
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// Downloadable room-wise lookbooks (PDF), offered in exchange for an email.
+model Lookbook {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String?
+  roomType      String?
+  fileUrl       String
+  coverImageUrl String?
+  pages         Int?
+  downloads     Int      @default(0)
+  published     Boolean  @default(true)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+/// A live client engagement, tracked on /track with an access code.
+model ClientProject {
+  id               String          @id @default(cuid())
+  /// Short human-friendly code the client types in, e.g. SS-4K7Q2M.
+  accessCode       String          @unique
+  /// Last 4 digits of the client's phone, used as the second factor.
+  phoneLast4       String
+  clientName       String
+  title            String
+  city             String?
+  /// 1..6, matching the six-step process.
+  currentStep      Int             @default(1)
+  /// active | on-hold | completed
+  status           String          @default("active")
+  startDate        DateTime?
+  expectedHandover DateTime?
+  projectManager   String?
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  updates          ProjectUpdate[]
+
+  @@index([status, updatedAt])
+}
+
+model ProjectUpdate {
+  id              String        @id @default(cuid())
+  clientProjectId String
+  clientProject   ClientProject @relation(fields: [clientProjectId], references: [id], onDelete: Cascade)
+  title           String
+  body            String?
+  imageUrl        String?
+  step            Int?
+  createdAt       DateTime      @default(now())
+
+  @@index([clientProjectId, createdAt])
 }

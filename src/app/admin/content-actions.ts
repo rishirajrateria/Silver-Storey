@@ -6,7 +6,9 @@ import { prisma } from '@/lib/db/client';
 import { getSession } from '@/lib/auth';
 import { revalidateForContent } from '@/lib/admin/revalidate';
 import { slugify } from '@/lib/admin/slug';
+import { randomBytes } from 'node:crypto';
 import { deleteUpload } from '@/lib/storage';
+import { isRoomType } from '@/lib/rooms';
 
 export interface ActionState {
   error?: string;
@@ -157,7 +159,12 @@ export async function deleteVideo(form: FormData): Promise<void> {
 
 interface SectionInput {
   title: string;
-  images: { title: string; description: string; imageUrl: string }[];
+  images: {
+    title: string;
+    description: string;
+    imageUrl: string;
+    roomType: string | null;
+  }[];
 }
 
 /** Gallery sections arrive as a JSON string from the client editor. */
@@ -184,6 +191,7 @@ function parseSections(raw: string): SectionInput[] {
                 description:
                   typeof i.description === 'string' ? i.description.trim() : '',
                 imageUrl,
+                roomType: isRoomType(i.roomType) ? i.roomType : null,
               },
             ];
           })
@@ -219,6 +227,23 @@ export async function saveProjectPage(
     heroImageUrl: optional(form, 'heroImageUrl'),
     order: num(form, 'order'),
     published: bool(form, 'published'),
+    // Case-study fields
+    summary: optional(form, 'summary'),
+    location: optional(form, 'location'),
+    areaSqft: optional(form, 'areaSqft')
+      ? Math.round(num(form, 'areaSqft'))
+      : null,
+    budget: optional(form, 'budget'),
+    durationDays: optional(form, 'durationDays')
+      ? Math.round(num(form, 'durationDays'))
+      : null,
+    propertyType: optional(form, 'propertyType'),
+    style: optional(form, 'style'),
+    materials: optional(form, 'materials'),
+    clientName: optional(form, 'clientName'),
+    clientQuote: optional(form, 'clientQuote'),
+    beforeImageUrl: optional(form, 'beforeImageUrl'),
+    afterImageUrl: optional(form, 'afterImageUrl'),
   };
 
   try {
@@ -237,6 +262,7 @@ export async function saveProjectPage(
             title: image.title || 'Untitled',
             description: image.description || null,
             imageUrl: image.imageUrl,
+            roomType: image.roomType,
             order: iIndex,
           })),
         },
@@ -439,4 +465,279 @@ export async function deleteLead(form: FormData): Promise<void> {
   }
   revalidatePath('/admin/leads');
   revalidatePath('/admin');
+}
+
+/* ──────────────────────────── Testimonials ──────────────────────────── */
+
+export async function saveTestimonial(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await guard();
+  const id = str(form, 'id');
+  const name = str(form, 'name');
+  const quote = str(form, 'quote');
+  const rating = Math.round(num(form, 'rating', 5));
+
+  if (!name) return fail('Client name is required.');
+  if (!quote) return fail('The quote is required.');
+  if (rating < 1 || rating > 5) return fail('Rating must be between 1 and 5.');
+
+  const data = {
+    name,
+    quote,
+    rating,
+    location: optional(form, 'location'),
+    projectType: optional(form, 'projectType'),
+    imageUrl: optional(form, 'imageUrl'),
+    source: str(form, 'source') || 'direct',
+    sourceUrl: optional(form, 'sourceUrl'),
+    order: num(form, 'order'),
+    published: bool(form, 'published'),
+  };
+
+  try {
+    if (id) await prisma.testimonial.update({ where: { id }, data });
+    else await prisma.testimonial.create({ data });
+  } catch (error) {
+    console.error('[admin] saveTestimonial failed:', error);
+    return fail('Could not save. Check the database connection.');
+  }
+
+  revalidateForContent('testimonial');
+  revalidatePath('/admin/testimonials');
+  redirect('/admin/testimonials');
+}
+
+export async function deleteTestimonial(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  if (!id) return;
+  try {
+    const existing = await prisma.testimonial.findUnique({ where: { id } });
+    await prisma.testimonial.delete({ where: { id } });
+    if (existing?.imageUrl) await deleteUpload(existing.imageUrl);
+  } catch (error) {
+    console.error('[admin] deleteTestimonial failed:', error);
+  }
+  revalidateForContent('testimonial');
+  revalidatePath('/admin/testimonials');
+  redirect('/admin/testimonials');
+}
+
+/* ───────────────────────────── Lookbooks ───────────────────────────── */
+
+export async function saveLookbook(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await guard();
+  const id = str(form, 'id');
+  const title = str(form, 'title');
+  const slug = slugify(str(form, 'slug') || title);
+  const fileUrl = str(form, 'fileUrl');
+
+  if (!title) return fail('Title is required.');
+  if (!slug) return fail('Slug is required.');
+  if (!fileUrl) return fail('Upload the PDF first.');
+
+  const data = {
+    title,
+    slug,
+    fileUrl,
+    description: optional(form, 'description'),
+    roomType: isRoomType(str(form, 'roomType')) ? str(form, 'roomType') : null,
+    coverImageUrl: optional(form, 'coverImageUrl'),
+    pages: optional(form, 'pages') ? Math.round(num(form, 'pages')) : null,
+    order: num(form, 'order'),
+    published: bool(form, 'published'),
+  };
+
+  try {
+    const clash = await prisma.lookbook.findFirst({
+      where: { slug, ...(id ? { NOT: { id } } : {}) },
+      select: { id: true },
+    });
+    if (clash) return fail(`Another lookbook already uses the slug "${slug}".`);
+    if (id) await prisma.lookbook.update({ where: { id }, data });
+    else await prisma.lookbook.create({ data });
+  } catch (error) {
+    console.error('[admin] saveLookbook failed:', error);
+    return fail('Could not save. Check the database connection.');
+  }
+
+  revalidateForContent('lookbook', slug);
+  revalidatePath('/admin/lookbooks');
+  redirect('/admin/lookbooks');
+}
+
+export async function deleteLookbook(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  if (!id) return;
+  try {
+    const existing = await prisma.lookbook.findUnique({ where: { id } });
+    await prisma.lookbook.delete({ where: { id } });
+    if (existing?.fileUrl) await deleteUpload(existing.fileUrl);
+    if (existing?.coverImageUrl) await deleteUpload(existing.coverImageUrl);
+    if (existing) revalidateForContent('lookbook', existing.slug);
+  } catch (error) {
+    console.error('[admin] deleteLookbook failed:', error);
+  }
+  revalidatePath('/admin/lookbooks');
+  redirect('/admin/lookbooks');
+}
+
+/* ────────────────────────── Client projects ────────────────────────── */
+
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+
+function generateAccessCode(): string {
+  const bytes = randomBytes(6);
+  let out = 'SS-';
+  for (const b of bytes) out += CODE_ALPHABET[b % CODE_ALPHABET.length];
+  return out;
+}
+
+function dateOrNull(form: FormData, key: string): Date | null {
+  const value = str(form, key);
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export async function saveClientProject(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await guard();
+  const id = str(form, 'id');
+  const clientName = str(form, 'clientName');
+  const title = str(form, 'title');
+  const phoneLast4 = str(form, 'phoneLast4').replace(/\D/g, '');
+  const currentStep = Math.round(num(form, 'currentStep', 1));
+  const status = str(form, 'status') || 'active';
+
+  if (!clientName) return fail('Client name is required.');
+  if (!title) return fail('Project title is required.');
+  if (phoneLast4.length !== 4)
+    return fail('Enter the last four digits of the client’s phone.');
+  if (currentStep < 1 || currentStep > 6)
+    return fail('Step must be between 1 and 6.');
+  if (!['active', 'on-hold', 'completed'].includes(status))
+    return fail('Invalid status.');
+
+  const data = {
+    clientName,
+    title,
+    phoneLast4,
+    currentStep,
+    status,
+    city: optional(form, 'city'),
+    startDate: dateOrNull(form, 'startDate'),
+    expectedHandover: dateOrNull(form, 'expectedHandover'),
+    projectManager: optional(form, 'projectManager'),
+    notes: optional(form, 'notes'),
+  };
+
+  let targetId = id;
+  try {
+    if (id) {
+      await prisma.clientProject.update({ where: { id }, data });
+    } else {
+      // Retry on the (very unlikely) code collision.
+      for (let attempt = 0; attempt < 5; attempt++) {
+        try {
+          const created = await prisma.clientProject.create({
+            data: { ...data, accessCode: generateAccessCode() },
+          });
+          targetId = created.id;
+          break;
+        } catch (error) {
+          if (attempt === 4) throw error;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[admin] saveClientProject failed:', error);
+    return fail('Could not save. Check the database connection.');
+  }
+
+  revalidatePath('/admin/client-projects');
+  redirect(`/admin/client-projects/${targetId}`);
+}
+
+export async function deleteClientProject(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  if (!id) return;
+  try {
+    const updates = await prisma.projectUpdate.findMany({
+      where: { clientProjectId: id },
+      select: { imageUrl: true },
+    });
+    await prisma.clientProject.delete({ where: { id } });
+    for (const u of updates) if (u.imageUrl) await deleteUpload(u.imageUrl);
+  } catch (error) {
+    console.error('[admin] deleteClientProject failed:', error);
+  }
+  revalidatePath('/admin/client-projects');
+  redirect('/admin/client-projects');
+}
+
+export async function addProjectUpdate(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await guard();
+  const clientProjectId = str(form, 'clientProjectId');
+  const title = str(form, 'title');
+  if (!clientProjectId) return fail('Missing project.');
+  if (!title) return fail('Give the update a title.');
+  const stepRaw = optional(form, 'step');
+  const step = stepRaw ? Math.round(num(form, 'step')) : null;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.projectUpdate.create({
+        data: {
+          clientProjectId,
+          title,
+          body: optional(form, 'body'),
+          imageUrl: optional(form, 'imageUrl'),
+          step: step && step >= 1 && step <= 6 ? step : null,
+        },
+      });
+      // Posting an update for a later step moves the project forward.
+      if (step && step >= 1 && step <= 6 && bool(form, 'advance')) {
+        await tx.clientProject.update({
+          where: { id: clientProjectId },
+          data: { currentStep: step },
+        });
+      }
+    });
+  } catch (error) {
+    console.error('[admin] addProjectUpdate failed:', error);
+    return fail('Could not save the update.');
+  }
+
+  revalidatePath(`/admin/client-projects/${clientProjectId}`);
+  return { ok: true };
+}
+
+export async function deleteProjectUpdate(form: FormData): Promise<void> {
+  await guard();
+  const id = str(form, 'id');
+  if (!id) return;
+  let projectId = '';
+  try {
+    const existing = await prisma.projectUpdate.findUnique({ where: { id } });
+    if (!existing) return;
+    projectId = existing.clientProjectId;
+    await prisma.projectUpdate.delete({ where: { id } });
+    if (existing.imageUrl) await deleteUpload(existing.imageUrl);
+  } catch (error) {
+    console.error('[admin] deleteProjectUpdate failed:', error);
+  }
+  if (projectId) revalidatePath(`/admin/client-projects/${projectId}`);
 }

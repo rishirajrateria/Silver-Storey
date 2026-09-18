@@ -44,6 +44,21 @@ const CMS_SECTIONS = [
     label: 'Blog',
     blurb: 'Articles, written in Markdown',
   },
+  {
+    href: '/admin/testimonials',
+    label: 'Testimonials',
+    blurb: 'Real client reviews shown on the home and about pages',
+  },
+  {
+    href: '/admin/lookbooks',
+    label: 'Lookbooks',
+    blurb: 'Downloadable PDF catalogues that capture leads',
+  },
+  {
+    href: '/admin/client-projects',
+    label: 'Client Projects',
+    blurb: 'Progress tracker your clients log into',
+  },
   { href: '/admin/brochure', label: 'Brochure', blurb: 'The downloadable PDF' },
 ] as const;
 

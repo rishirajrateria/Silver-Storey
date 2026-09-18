@@ -81,10 +81,38 @@ export const SITE = {
     'Kohler',
   ],
   /**
-   * Social profiles. Add real URLs here and they will automatically appear in
-   * Organization `sameAs`, the footer and llms.txt.
+   * Social profiles. Fill these in (or set the NEXT_PUBLIC_SOCIAL_* env vars)
+   * and they appear in Organization `sameAs`, the menu, the social bar and
+   * llms.txt. Icons for networks without a URL are not rendered, so the site
+   * never links to a dead "#".
    */
-  socials: [] as { label: string; href: string }[],
+  socials: [
+    {
+      label: 'Instagram',
+      key: 'instagram',
+      href: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM ?? '',
+    },
+    {
+      label: 'Facebook',
+      key: 'facebook',
+      href: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK ?? '',
+    },
+    {
+      label: 'LinkedIn',
+      key: 'linkedin',
+      href: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN ?? '',
+    },
+    {
+      label: 'YouTube',
+      key: 'youtube',
+      href: process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE ?? '',
+    },
+    {
+      label: 'Pinterest',
+      key: 'pinterest',
+      href: process.env.NEXT_PUBLIC_SOCIAL_PINTEREST ?? '',
+    },
+  ].filter((s) => s.href) as { label: string; key: string; href: string }[],
   logo: '/images/logo3.avif',
   ogImage: '/opengraph-image',
   locale: 'en_IN',

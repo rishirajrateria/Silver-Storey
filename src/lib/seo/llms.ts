@@ -78,6 +78,23 @@ export function buildLlmsTxt(): string {
       `- [${c.name}](${absoluteUrl(categoryPath(c.slug))}): ${c.description}`,
     );
   lines.push('');
+  lines.push('## Tools & resources');
+  lines.push(
+    `- [Interior cost calculator with EMI](${absoluteUrl('/estimate')}): instant ₹ range by city, home size and finish level`,
+  );
+  lines.push(
+    `- [3D visualisation](${absoluteUrl('/3d-visualisation')}): complimentary photorealistic renders on every project`,
+  );
+  lines.push(
+    `- [Lookbooks](${absoluteUrl('/lookbooks')}): downloadable PDF design catalogues`,
+  );
+  lines.push(
+    `- [10-year warranty](${absoluteUrl('/warranty')}): coverage, registration and claims`,
+  );
+  lines.push(
+    `- [Client project tracker](${absoluteUrl('/track')}): progress login for existing clients`,
+  );
+  lines.push('');
   lines.push('## Company pages');
   lines.push(`- [About Us](${absoluteUrl('/about-us')})`);
   lines.push(`- [How it Works](${absoluteUrl('/how-it-works')})`);

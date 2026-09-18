@@ -141,13 +141,20 @@ new → contacted → qualified → won / lost on `/admin/leads`.
 
 ## What you can edit
 
-| Section           | Controls                                                                   |
-| ----------------- | -------------------------------------------------------------------------- |
-| **Categories**    | The room cards on the home page — name, starting price, image, order       |
-| **Videos**        | The home page YouTube carousel — paste any YouTube URL                     |
-| **Project Pages** | Gallery pages, with drag-free ordering of sections and images              |
-| **Blog**          | Articles in Markdown, with live preview, excerpt, cover image and category |
-| **Brochure**      | The downloadable PDF on the home page                                      |
+| Section             | Controls                                                                                                                                                                    |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Categories**      | The room cards on the home page — name, starting price, image, order                                                                                                        |
+| **Videos**          | The home page YouTube carousel — paste any YouTube URL                                                                                                                      |
+| **Project Pages**   | Gallery pages, with drag-free ordering of sections and images                                                                                                               |
+| **Blog**            | Articles in Markdown, with live preview, excerpt, cover image and category                                                                                                  |
+| **Brochure**        | The downloadable PDF on the home page                                                                                                                                       |
+| **Testimonials**    | Real client reviews; published ones replace the built-in quotes on the home and about pages and feed Review/AggregateRating markup — only add reviews clients actually gave |
+| **Lookbooks**       | PDF catalogues at `/lookbooks`; visitors leave name, phone and email to unlock the download (saved as a "lookbook" enquiry)                                                 |
+| **Client Projects** | Progress tracker at `/track`. Create a project, share the generated `SS-XXXXXX` code, post updates with site photos; the client logs in with the code + last 4 phone digits |
+
+Project Pages can also be full **case studies**: open "Case study details" on any page to add location, area, budget, duration, the story (Markdown), materials, a before/after photo pair (drag slider on the site) and a client quote. Tag gallery images with a room type to get room filter chips on the page. The reserved slug `3d-visualisation` feeds the `/3d-visualisation` showcase.
+
+Enquiries now come from three places: the contact form, the cost calculator at `/estimate` (which saves the visitor's inputs and ₹ range) and lookbook downloads.
 
 ### Reserved project slugs
 
@@ -170,17 +177,19 @@ that is how you override a built-in article.
 
 ## Environment variables reference
 
-| Variable                  | Required    | Purpose                                              |
-| ------------------------- | ----------- | ---------------------------------------------------- |
-| `DATABASE_URL`            | yes         | Postgres connection string                           |
-| `DIRECT_DATABASE_URL`     | no          | Non-pooled connection, used by migrations            |
-| `ADMIN_EMAIL`             | yes         | The login email                                      |
-| `ADMIN_PASSWORD_HASH`     | yes         | bcrypt hash from `scripts/hash-password.mjs`         |
-| `ADMIN_SESSION_SECRET`    | yes         | Random string, 32+ characters, signs session cookies |
-| `BLOB_READ_WRITE_TOKEN`   | on Vercel   | Vercel Blob storage for uploads                      |
-| `NEXT_PUBLIC_SITE_URL`    | recommended | Canonical URLs, sitemaps, OG tags                    |
-| `REVALIDATE_SECRET`       | no          | Lets scripts call `/api/revalidate?secret=…`         |
-| `SMTP_USER` / `SMTP_PASS` | existing    | Contact form email (unchanged)                       |
+| Variable                            | Required    | Purpose                                                                                                             |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                      | yes         | Postgres connection string                                                                                          |
+| `DIRECT_DATABASE_URL`               | no          | Non-pooled connection, used by migrations                                                                           |
+| `ADMIN_EMAIL`                       | yes         | The login email                                                                                                     |
+| `ADMIN_PASSWORD_HASH`               | yes         | bcrypt hash from `scripts/hash-password.mjs`                                                                        |
+| `ADMIN_SESSION_SECRET`              | yes         | Random string, 32+ characters, signs session cookies                                                                |
+| `BLOB_READ_WRITE_TOKEN`             | on Vercel   | Vercel Blob storage for uploads                                                                                     |
+| `NEXT_PUBLIC_SITE_URL`              | recommended | Canonical URLs, sitemaps, OG tags                                                                                   |
+| `REVALIDATE_SECRET`                 | no          | Lets scripts call `/api/revalidate?secret=…`                                                                        |
+| `SMTP_USER` / `SMTP_PASS`           | existing    | Contact form and estimate emails                                                                                    |
+| `CONTACT_TO_EMAIL`                  | recommended | Where enquiry emails go (defaults to care@silverstorey.com)                                                         |
+| `NEXT_PUBLIC_SOCIAL_INSTAGRAM` etc. | recommended | Social profile URLs (`_FACEBOOK`, `_LINKEDIN`, `_YOUTUBE`, `_PINTEREST`). Icons only render for networks with a URL |
 
 ## Security notes
 

@@ -24,7 +24,7 @@ export default function RoomGallery() {
             offerings, creating a sense of connection and trust.
           </p>
           <a
-            href="#"
+            href="/residential-projects"
             className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-black uppercase transition-transform hover:translate-x-1"
           >
             <svg
