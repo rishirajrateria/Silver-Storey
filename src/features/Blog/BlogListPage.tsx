@@ -10,6 +10,10 @@ import MenuOverlay from '../Hero/components/MenuOverlay';
 interface Props {
   posts: BlogPost[];
   projectPages?: { title: string; slug: string }[];
+  /** Optional category chips rendered under the header. */
+  categories?: { name: string; slug: string; href: string; active?: boolean }[];
+  title?: React.ReactNode;
+  subtitle?: string;
 }
 
 function CalendarIcon() {
@@ -33,7 +37,13 @@ function CalendarIcon() {
   );
 }
 
-export default function BlogListPage({ posts, projectPages = [] }: Props) {
+export default function BlogListPage({
+  posts,
+  projectPages = [],
+  categories = [],
+  title,
+  subtitle = 'Expert insights on interior design, craftsmanship, and home transformation strategies.',
+}: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -42,12 +52,35 @@ export default function BlogListPage({ posts, projectPages = [] }: Props) {
         {/* Header */}
         <div className="mb-16 text-center">
           <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Insights &amp; <span className="text-[#6b1a1a]">Resources</span>
+            {title ?? (
+              <>
+                Insights &amp; <span className="text-[#6b1a1a]">Resources</span>
+              </>
+            )}
           </h1>
           <p className="mx-auto max-w-2xl text-sm text-black/50 sm:text-base">
-            Expert insights on interior design, craftsmanship, and home
-            transformation strategies.
+            {subtitle}
           </p>
+          {categories.length > 0 && (
+            <nav
+              aria-label="Blog categories"
+              className="mt-8 flex flex-wrap justify-center gap-2"
+            >
+              {categories.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={c.href}
+                  className={
+                    c.active
+                      ? 'rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white sm:text-sm'
+                      : 'rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black/70 shadow-sm transition-colors hover:text-black sm:text-sm'
+                  }
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
 
         {/* Grid */}
