@@ -62,6 +62,13 @@ Without this token, uploads are written to `public/uploads` instead — fine for
 local development, but **not** on Vercel, where the filesystem is ephemeral and
 uploads would disappear on the next deploy.
 
+### About uploaded images
+
+Uploads are resized to a maximum of 2000px on the longest side and converted to
+WebP before being stored — the equivalent of the on-the-fly resizing Sanity's
+CDN used to do. A 9 MB phone photo lands at roughly 1.4 MB. Images already
+smaller than the re-encoded version are stored untouched.
+
 ## 4. (Optional) Import your existing Sanity content
 
 Run once, from a machine that can reach the Sanity API:

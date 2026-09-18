@@ -18,6 +18,51 @@ export const ALLOWED_FILE_TYPES = ['application/pdf'] as const;
 
 export type UploadKind = 'image' | 'file';
 
+/**
+ * Largest dimension kept for uploaded images. Sanity's CDN used to resize on
+ * the fly (e.g. `.width(640).height(800)`); since we serve files directly, we
+ * do the equivalent once, at upload time, so a 6 MB phone photo does not end
+ * up on the home page.
+ */
+const MAX_IMAGE_DIMENSION = 2000;
+const WEBP_QUALITY = 82;
+
+/**
+ * Re-encodes an image to WebP, bounded to MAX_IMAGE_DIMENSION, without
+ * enlarging smaller images. Returns the original bytes unchanged if the image
+ * cannot be processed (e.g. an unusual encoding), so an upload never fails
+ * purely because optimisation did.
+ */
+async function optimiseImage(file: File): Promise<{
+  body: Buffer | File;
+  contentType: string;
+  extension: string | null;
+}> {
+  try {
+    const sharp = (await import('sharp')).default;
+    const input = Buffer.from(await file.arrayBuffer());
+    const output = await sharp(input, { animated: file.type === 'image/gif' })
+      .rotate() // honour EXIF orientation before stripping metadata
+      .resize({
+        width: MAX_IMAGE_DIMENSION,
+        height: MAX_IMAGE_DIMENSION,
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .webp({ quality: WEBP_QUALITY })
+      .toBuffer();
+
+    // Keep the original if re-encoding made it bigger (already-optimised files).
+    if (output.byteLength >= input.byteLength) {
+      return { body: file, contentType: file.type, extension: null };
+    }
+    return { body: output, contentType: 'image/webp', extension: '.webp' };
+  } catch (error) {
+    console.error('[storage] image optimisation skipped:', error);
+    return { body: file, contentType: file.type, extension: null };
+  }
+}
+
 export interface UploadResult {
   url: string;
   filename: string;
@@ -67,14 +112,25 @@ export async function storeUpload(
   file: File,
   kind: UploadKind,
 ): Promise<UploadResult> {
-  const filename = safeName(file.name || (kind === 'image' ? 'image' : 'file'));
+  let filename = safeName(file.name || (kind === 'image' ? 'image' : 'file'));
+  let body: Buffer | File = file;
+  let contentType = file.type;
+
+  if (kind === 'image') {
+    const optimised = await optimiseImage(file);
+    body = optimised.body;
+    contentType = optimised.contentType;
+    if (optimised.extension) {
+      filename = filename.replace(/\.[^.]*$/, '') + optimised.extension;
+    }
+  }
 
   if (isBlobConfigured()) {
     const { put } = await import('@vercel/blob');
-    const blob = await put(`silver-storey/${filename}`, file, {
+    const blob = await put(`silver-storey/${filename}`, body, {
       access: 'public',
       addRandomSuffix: false,
-      contentType: file.type,
+      contentType,
       cacheControlMaxAge: 31536000,
     });
     return { url: blob.url, filename };
@@ -82,7 +138,8 @@ export async function storeUpload(
 
   const dir = path.join(process.cwd(), 'public', 'uploads');
   await mkdir(dir, { recursive: true });
-  const bytes = Buffer.from(await file.arrayBuffer());
+  const bytes =
+    body instanceof File ? Buffer.from(await body.arrayBuffer()) : body;
   await writeFile(path.join(dir, filename), bytes);
   return { url: `/uploads/${filename}`, filename };
 }
