@@ -24,19 +24,19 @@
         "num": "01",
         "title": "Astrologer Gemstone Programme",
         "line": "India's top astrologers, buying their gemstones from Osha.",
-        "meta": "B2B · Pan-India · Google & Meta · 3 months"
+        "meta": "B2B · India-wide · Google & Meta · 3 months"
       },
       {
         "num": "02",
         "title": "Wholesale Partner Programme",
         "line": "Jewellery stores across India, sourcing from Osha at wholesale prices.",
-        "meta": "B2B · Pan-India · Google & Meta · 3 months"
+        "meta": "B2B · India-wide · Google & Meta · 3 months"
       },
       {
         "num": "03",
         "title": "Store Footfall Reels",
         "line": "Nineteen reels that bring Kolkata into the store.",
-        "meta": "B2C · Kolkata only · Instagram & Facebook only · 6 months"
+        "meta": "B2C · Kolkata only · Instagram & Facebook · 6 months"
       }
     ]
   },
@@ -101,7 +101,7 @@
       "facts": [
         {
           "k": "Audience",
-          "v": "Jewellery store owners, India-wide"
+          "v": "Jewellery stores, India-wide"
         },
         {
           "k": "Channels",
@@ -167,22 +167,22 @@
       {
         "m": "Dec",
         "n": 3,
-        "note": ""
+        "note": "Weddings"
       },
       {
         "m": "Jan",
         "n": 3,
-        "note": ""
+        "note": "Weddings"
       },
       {
         "m": "Feb",
         "n": 3,
-        "note": ""
+        "note": "Valentine's"
       },
       {
         "m": "Mar",
         "n": 2,
-        "note": ""
+        "note": "Season close"
       }
     ],
     "direct": {
@@ -208,7 +208,7 @@
         },
         {
           "n": "05",
-          "t": "Lab-grown under one carat, one price"
+          "t": "Lab-grown diamonds, one price under a carat"
         },
         {
           "n": "06",
@@ -239,7 +239,7 @@
         },
         {
           "label": "Models, hair & makeup",
-          "sub": "Five shoot days · ₹15,000 per model per day + hair & makeup",
+          "sub": "Five models · ₹15,000 each · plus hair & makeup",
           "amount": 100000,
           "third": true
         },
@@ -251,7 +251,7 @@
         },
         {
           "label": "Paid partnerships",
-          "sub": "Featured creators co-post 6 of the 14 reels · ₹10,000 each",
+          "sub": "Creators in reels 01, 02, 07, 12, 13, 14 co-post · ₹10,000 each",
           "amount": 60000,
           "third": true
         },
@@ -263,7 +263,7 @@
         },
         {
           "label": "Creative direction & management",
-          "sub": "Six months",
+          "sub": "₹60,000 per month · six months",
           "amount": 360000
         }
       ]
@@ -306,14 +306,8 @@
           "amount": 75000
         },
         {
-          "label": "Paid partnerships",
-          "sub": "Five partner pages · ₹15,000 each",
-          "amount": 75000,
-          "third": true
-        },
-        {
           "label": "Models, hair & makeup",
-          "sub": "Three shoot days · ₹15,000 per model per day + hair & makeup",
+          "sub": "Three models · ₹15,000 each · plus hair & makeup",
           "amount": 60000,
           "third": true
         },
@@ -324,20 +318,26 @@
           "third": true
         },
         {
+          "label": "Paid partnerships",
+          "sub": "Five partner pages · ₹15,000 each",
+          "amount": 75000,
+          "third": true
+        },
+        {
           "label": "Meta boosts",
-          "sub": "Boosted from the partner pages · Kolkata only · paid directly to Meta",
+          "sub": "Partnership ads under each partner's handle · Kolkata only · paid directly to Meta",
           "amount": 125000,
           "media": true
         },
         {
-          "label": "Partner management & scripting",
-          "sub": "Six months",
+          "label": "Partner management",
+          "sub": "Sourcing, briefs, approvals · ₹40,000 per month · six months",
           "amount": 240000
         }
       ]
     },
-    "shoot_note": "Shot in two blocks: early October and early December.",
-    "scope_note": "Shot on iPhone. Boosted on Instagram & Facebook only, within Kolkata only."
+    "shoot_note": "Shot in two blocks: at launch and in December.",
+    "scope_note": "Shot on iPhone. Boosted on Instagram & Facebook within Kolkata. Not on Google."
   },
   "summary": {
     "title": "Investment.",
@@ -351,11 +351,11 @@
       },
       {
         "k": "Partners, models & locations",
-        "d": "Third-party costs, invoiced through us",
+        "d": "Third-party costs, via us",
         "key": "third"
       },
       {
-        "k": "Strategy, production & management",
+        "k": "Our fees & production",
         "d": "Invoiced by us",
         "key": "consultant"
       }
@@ -366,7 +366,7 @@
     "lines": [
       "Prices exclude 18% GST.",
       "Media spend is paid directly to Google and Meta, in advance.",
-      "One-time fees (films, build, production, models, locations, partners): 50% on signing, 50% on delivery.",
+      "One-time fees (films, campaign build, production, models, locations, paid partnerships): 50% on signing, 50% on delivery.",
       "Monthly fees: in advance, each month.",
       "Programmes 01 and 02 continue month to month after the minimum term. 30 days' notice to end.",
       "Footage and reels belong to Osha Jewels.",
@@ -374,6 +374,6 @@
       "Valid for 30 days from 18 September 2026."
     ],
     "next_title": "Next.",
-    "next_line": "Confirm by email or WhatsApp. We begin within a week."
+    "next_line": "Confirm by email. We begin within a week."
   }
 }

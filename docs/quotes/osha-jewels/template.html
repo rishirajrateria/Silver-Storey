@@ -4,9 +4,16 @@
 <meta charset="utf-8">
 <title>{{ m.client }} — {{ m.doc_label }}</title>
 <style>
-@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/CormorantGaramond-VF.ttf'); font-weight: 300 700; font-style: normal; }
-@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/CormorantGaramond-Italic-VF.ttf'); font-weight: 300 700; font-style: italic; }
-@font-face { font-family: 'InterV'; src: url('{{ fonts }}/Inter-VF.ttf'); font-weight: 100 900; font-style: normal; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/static/Cormorant-300.ttf'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/static/Cormorant-400.ttf'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/static/Cormorant-500.ttf'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/static/Cormorant-Italic-300.ttf'); font-weight: 300; font-style: italic; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/static/Cormorant-Italic-400.ttf'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/static/Inter-300.ttf'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/static/Inter-400.ttf'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/static/Inter-450.ttf'); font-weight: 450; font-style: normal; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/static/Inter-500.ttf'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/static/Inter-600.ttf'); font-weight: 600; font-style: normal; }
 
 :root {
   --paper: #FCFBF8;
@@ -65,7 +72,7 @@ body { font-family: 'InterV', 'DejaVu Sans', sans-serif; font-optical-sizing: au
 .glance-row .l { font-family: 'Cormorant', serif; font-style: italic; font-weight: 300; font-size: 14pt; line-height: 1.25; margin: 0 0 2.8mm 0; }
 
 /* facts strip */
-.facts { display: grid; grid-template-columns: 1fr 1.35fr 1fr; column-gap: 8mm; padding: 6mm 0; border-top: .35pt solid var(--hair); border-bottom: .35pt solid var(--hair); }
+.facts { display: grid; grid-template-columns: 1fr 1.35fr 1fr; column-gap: 8mm; padding: 6mm 0; border-top: .35pt solid var(--hair); }
 .facts .k { margin-bottom: 2.2mm; }
 .facts .v { font-size: 9.2pt; line-height: 1.5; }
 
@@ -107,6 +114,9 @@ table.tbl.tight .amt { font-size: 17pt; }
 .list1 .n { font-family: 'Cormorant', serif; font-size: 12pt; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; }
 .list1 .t { font-size: 9.6pt; font-weight: 450; }
 .list1 .d { font-size: 7.8pt; color: var(--muted); margin-top: 1mm; line-height: 1.45; }
+
+.list2 > div:nth-last-child(-n+2) { border-bottom: 0; }
+.list1 > div:last-child { border-bottom: 0; }
 
 /* summary */
 .sum-row { display: grid; grid-template-columns: 16mm 1fr auto; column-gap: 6mm; align-items: baseline; padding: 6.5mm 0; border-bottom: .35pt solid var(--hair); }
@@ -217,7 +227,7 @@ table.tbl.tight .amt { font-size: 17pt; }
   </div>
 
   <div class="spacer"></div>
-  <div class="small">{{ p.footnote }}</div>
+  <div class="small" style="margin-bottom:4mm">{{ p.footnote }}</div>
   {{ footer(loop.index + 2) }}
 </section>
 {% endfor %}
@@ -338,7 +348,7 @@ table.tbl.tight .amt { font-size: 17pt; }
   </div>
   <div class="spacer"></div>
   <h2 class="h2">{{ t.next_title }}</h2>
-  <p class="lead mt-3">{{ t.next_line }}</p>
+  <p class="lead mt-3">{% if m.sender_phone %}Confirm by email or WhatsApp. We begin within a week.{% else %}{{ t.next_line }}{% endif %}</p>
   <div class="mt-10" style="margin-bottom:10mm">
     <div class="body" style="font-weight:500">{{ m.sender_name }}</div>
     <div class="small">{{ m.sender_role }} · {{ m.sender_city }}</div>
