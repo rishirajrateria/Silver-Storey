@@ -59,6 +59,8 @@ export default function RoomGallery() {
                 </h3>
                 <div className="aspect-4/5 overflow-hidden rounded-xl shadow-sm">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={room.src}
                     alt={room.label}
                     className="h-full w-full object-cover"
@@ -78,6 +80,8 @@ export default function RoomGallery() {
                 </h3>
                 <div className="aspect-4/5 overflow-hidden rounded-xl shadow-sm">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={room.src}
                     alt={room.label}
                     className="h-full w-full object-cover"
@@ -98,6 +102,8 @@ export default function RoomGallery() {
           </h3>
           <div className="aspect-4/5 w-full overflow-hidden bg-black/5 text-center shadow-sm">
             <img
+              loading="lazy"
+              decoding="async"
               src="/images/2bhk.avif"
               alt="2 BHK"
               className="h-full w-full object-cover"
@@ -112,6 +118,8 @@ export default function RoomGallery() {
           </h3>
           <div className="aspect-2/3 w-full overflow-hidden bg-black/5 text-center shadow-sm">
             <img
+              loading="lazy"
+              decoding="async"
               src="/images/3bhk.avif"
               alt="3 BHK"
               className="h-full w-full object-cover"
@@ -128,6 +136,8 @@ export default function RoomGallery() {
           </div>
           <div className="aspect-square w-full overflow-hidden bg-black/5 text-center shadow-sm">
             <img
+              loading="lazy"
+              decoding="async"
               src="/images/4bhk.avif"
               alt="4 BHK"
               className="h-full w-full object-cover"
@@ -142,6 +152,8 @@ export default function RoomGallery() {
           </h3>
           <div className="aspect-square w-full overflow-hidden bg-black/5 text-center shadow-sm sm:aspect-4/5">
             <img
+              loading="lazy"
+              decoding="async"
               src="/images/5bhk.avif"
               alt="5 BHK"
               className="h-full w-full object-cover"

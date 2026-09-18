@@ -22,7 +22,8 @@ import {
 import { PROCESS_STEPS } from '@/lib/seo/process';
 import { SITE } from '@/lib/seo/site';
 
-export const revalidate = 0; // always fetch fresh from Sanity
+// ISR: cached for 60s and refreshed on-demand by the Sanity webhook (/api/revalidate).
+export const revalidate = 60;
 
 const HOME_TITLE =
   'Silver Storey | Premium Interior Designers in Kolkata & Across India';

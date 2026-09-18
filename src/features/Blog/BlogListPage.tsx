@@ -98,6 +98,8 @@ export default function BlogListPage({
                 <div className="aspect-[16/10] overflow-hidden bg-zinc-100">
                   {post.mainImageUrl ? (
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={post.mainImageUrl}
                       alt={post.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -77,7 +77,13 @@ export default function MenuOverlay({
             aria-label={label}
             className="transition-opacity duration-200 hover:opacity-75"
           >
-            <img src={src} alt={label} className="h-16 w-16 object-contain" />
+            <img
+              loading="lazy"
+              decoding="async"
+              src={src}
+              alt={label}
+              className="h-16 w-16 object-contain"
+            />
           </a>
         ))}
       </div>

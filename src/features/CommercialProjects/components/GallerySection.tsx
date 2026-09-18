@@ -7,6 +7,8 @@ function GalleryCard({ project }: { project: GalleryProject }) {
   return (
     <div className="relative h-[55vh] w-65 shrink-0 overflow-hidden rounded-2xl shadow-lg sm:h-[60vh] sm:w-75 md:w-80">
       <img
+        loading="lazy"
+        decoding="async"
         src={project.image}
         alt={project.title}
         className="h-full w-full object-cover"

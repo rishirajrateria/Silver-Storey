@@ -60,6 +60,8 @@ export default function ProcessStepCard({
         </div>
       ) : image ? (
         <img
+          loading="lazy"
+          decoding="async"
           src={image}
           alt={name}
           style={{ width: '2.5rem', height: '2.5rem', objectFit: 'contain' }}

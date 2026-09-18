@@ -55,6 +55,8 @@ function VideoCard({
         >
           {/* Thumbnail */}
           <img
+            loading="lazy"
+            decoding="async"
             src={thumbnailUrl}
             alt={title}
             className="h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-95"
@@ -74,6 +76,8 @@ function VideoCard({
             <div className="flex items-center gap-2">
               <div className="h-7 w-7 overflow-hidden rounded-full">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src="/images/home_logo.avif"
                   alt="Silver Storey"
                   className="h-full w-full object-cover"

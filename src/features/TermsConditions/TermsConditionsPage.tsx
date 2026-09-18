@@ -23,6 +23,8 @@ export default function TermsConditionsPage({
       >
         <div className="mb-4 w-16 sm:w-20">
           <img
+            loading="lazy"
+            decoding="async"
             src="/images/home_logo.avif"
             alt="Silver Storey logo"
             className="h-auto w-full object-contain"
