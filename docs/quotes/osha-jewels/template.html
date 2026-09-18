@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ m.client }} — {{ m.doc_label }}</title>
+<style>
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/CormorantGaramond-VF.ttf'); font-weight: 300 700; font-style: normal; }
+@font-face { font-family: 'Cormorant'; src: url('{{ fonts }}/CormorantGaramond-Italic-VF.ttf'); font-weight: 300 700; font-style: italic; }
+@font-face { font-family: 'InterV'; src: url('{{ fonts }}/Inter-VF.ttf'); font-weight: 100 900; font-style: normal; }
+
+:root {
+  --paper: #FCFBF8;
+  --ink: #1B1A18;
+  --muted: #7C776E;
+  --hair: #DAD5CB;
+  --hair-strong: #1B1A18;
+  --gold: #A6883F;
+}
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+body { font-family: 'InterV', 'DejaVu Sans', sans-serif; font-optical-sizing: auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-feature-settings: "tnum" 1, "lnum" 1; }
+
+.page {
+  width: 210mm; height: 297mm; padding: 20mm 20mm 18mm 20mm;
+  position: relative; page-break-after: always; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.page:last-child { page-break-after: auto; }
+
+/* running header / footer */
+.hd { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.ft { position: absolute; left: 20mm; right: 20mm; bottom: 12mm;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+/* type */
+.serif { font-family: 'Cormorant', 'Liberation Serif', serif; font-variant-numeric: lining-nums tabular-nums; }
+.ital { font-style: italic; font-weight: 300; }
+.label { font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.gold { color: var(--gold); }
+.muted { color: var(--muted); }
+.rule { height: 0; border-top: .35pt solid var(--hair); }
+.rule-ink { height: 0; border-top: .6pt solid var(--hair-strong); }
+.rule-gold { width: 14mm; height: 0; border-top: .6pt solid var(--gold); }
+
+.num { font-family: 'Cormorant', serif; font-weight: 300; font-size: 30pt; line-height: 1; color: var(--gold); font-variant-numeric: lining-nums; letter-spacing: .02em; }
+.h1 { font-family: 'Cormorant', serif; font-weight: 300; font-size: 40pt; line-height: 1.05; letter-spacing: -.005em; margin: 0; }
+.h2 { font-family: 'Cormorant', serif; font-weight: 300; font-size: 30pt; line-height: 1.1; margin: 0; }
+.lead { font-family: 'Cormorant', serif; font-style: italic; font-weight: 300; font-size: 16.5pt; line-height: 1.3; color: var(--ink); margin: 0; }
+.body { font-size: 9.5pt; line-height: 1.5; }
+.small { font-size: 8pt; line-height: 1.5; color: var(--muted); }
+
+/* cover */
+.cover { justify-content: space-between; }
+.cover .title { font-family: 'Cormorant', serif; font-weight: 300; font-size: 76pt; line-height: .95; letter-spacing: -.01em; margin: 0 0 9mm 0; }
+.cover .sub { font-family: 'Cormorant', serif; font-style: italic; font-weight: 300; font-size: 26pt; margin: 8mm 0 0 0; line-height: 1.15; }
+.cover-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+
+/* glance */
+.glance-row { display: grid; grid-template-columns: 22mm 1fr; column-gap: 6mm; padding: 8.5mm 0; border-top: .35pt solid var(--hair); align-items: baseline; }
+.glance-row:last-child { border-bottom: .35pt solid var(--hair); }
+.glance-row .t { font-family: 'Cormorant', serif; font-weight: 400; font-size: 22pt; line-height: 1.1; margin: 0 0 2.2mm 0; }
+.glance-row .l { font-family: 'Cormorant', serif; font-style: italic; font-weight: 300; font-size: 14pt; line-height: 1.25; margin: 0 0 2.8mm 0; }
+
+/* facts strip */
+.facts { display: grid; grid-template-columns: 1fr 1.35fr 1fr; column-gap: 8mm; padding: 6mm 0; border-top: .35pt solid var(--hair); border-bottom: .35pt solid var(--hair); }
+.facts .k { margin-bottom: 2.2mm; }
+.facts .v { font-size: 9.2pt; line-height: 1.5; }
+
+/* price table */
+table.tbl { width: 100%; border-collapse: collapse; }
+table.tbl td { padding: 4.6mm 0; border-bottom: .35pt solid var(--hair); vertical-align: baseline; }
+table.tbl tr:first-child td { border-top: .6pt solid var(--hair-strong); }
+table.tbl .lab { font-size: 10pt; font-weight: 450; line-height: 1.3; }
+table.tbl .sub { font-size: 7.6pt; color: var(--muted); line-height: 1.45; margin-top: 1mm; letter-spacing: .01em; }
+table.tbl .unit { width: 26mm; text-align: right; font-size: 6.8pt; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); padding-right: 6mm; white-space: nowrap; }
+table.tbl .amt { width: 36mm; text-align: right; font-family: 'Cormorant', serif; font-weight: 400; font-size: 18pt; line-height: 1; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+table.tbl .amt .rs { font-size: .62em; color: var(--muted); margin-right: 1.2mm; font-weight: 400; }
+
+table.tbl.tight td { padding: 3mm 0; }
+table.tbl.tight .amt { font-size: 17pt; }
+.total.tight { padding-top: 4mm; }
+
+/* totals block */
+.total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 6mm; }
+.total .tl { font-family: 'Cormorant', serif; font-weight: 400; font-size: 17pt; }
+.total .ta { font-family: 'Cormorant', serif; font-weight: 400; font-size: 34pt; line-height: 1; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+.total .ta .rs { font-size: .6em; color: var(--muted); margin-right: 1.5mm; font-weight: 400; }
+
+/* reels */
+.big2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12mm; }
+.bignum { font-family: 'Cormorant', serif; font-weight: 300; font-size: 108pt; line-height: .9; letter-spacing: -.02em; margin: 0 0 4mm -1mm; font-variant-numeric: lining-nums; }
+.months { display: grid; grid-template-columns: repeat(6, 1fr); border-top: .35pt solid var(--hair); }
+.months > div { padding: 5mm 0 0 0; border-left: .35pt solid var(--hair); padding-left: 3.5mm; }
+.months > div:first-child { border-left: 0; padding-left: 0; }
+.months .mn { font-family: 'Cormorant', serif; font-weight: 300; font-size: 26pt; line-height: 1; font-variant-numeric: lining-nums; }
+.months .mm { margin-bottom: 2.5mm; }
+.months .note { font-size: 7pt; color: var(--gold); line-height: 1.4; margin-top: 2mm; letter-spacing: .02em; min-height: 6mm; }
+
+.list2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10mm; border-top: .35pt solid var(--hair); }
+.list2 > div { display: grid; grid-template-columns: 14mm 1fr; column-gap: 3mm; padding: 2.7mm 0; border-bottom: .35pt solid var(--hair); align-items: baseline; font-size: 9.2pt; }
+.list2 .n { font-family: 'Cormorant', serif; font-size: 12pt; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; }
+.list1 { border-top: .35pt solid var(--hair); }
+.list1 > div { display: grid; grid-template-columns: 14mm 1fr; column-gap: 3mm; padding: 2.6mm 0; border-bottom: .35pt solid var(--hair); align-items: baseline; }
+.list1 .n { font-family: 'Cormorant', serif; font-size: 12pt; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; }
+.list1 .t { font-size: 9.6pt; font-weight: 450; }
+.list1 .d { font-size: 7.8pt; color: var(--muted); margin-top: 1mm; line-height: 1.45; }
+
+/* summary */
+.sum-row { display: grid; grid-template-columns: 16mm 1fr auto; column-gap: 6mm; align-items: baseline; padding: 6.5mm 0; border-bottom: .35pt solid var(--hair); }
+.sum-row:first-child { border-top: .6pt solid var(--hair-strong); }
+.sum-row .t { font-family: 'Cormorant', serif; font-weight: 400; font-size: 19pt; line-height: 1.1; }
+.sum-row .s { font-size: 8pt; color: var(--muted); margin-top: 1.6mm; }
+.sum-row .a { font-family: 'Cormorant', serif; font-weight: 400; font-size: 24pt; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+.sum-row .a .rs, .grand .a .rs { color: var(--muted); font-weight: 400; margin-right: 1.5mm; }
+.sum-row .a .rs { font-size: .62em; }
+.grand { display: flex; justify-content: space-between; align-items: baseline; padding: 10mm 0 8mm 0; border-bottom: .6pt solid var(--hair-strong); }
+.grand .t { font-family: 'Cormorant', serif; font-weight: 300; font-size: 24pt; }
+.grand .a { font-family: 'Cormorant', serif; font-weight: 400; font-size: 48pt; line-height: 1; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+.grand .a .rs { font-size: .6em; }
+
+/* who-you-pay split */
+.split { display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 8mm; border-top: .35pt solid var(--hair); }
+.split > div { padding-top: 5mm; }
+.split .sa { font-family: 'Cormorant', serif; font-weight: 400; font-size: 21pt; line-height: 1; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; margin-bottom: 2.5mm; }
+.split .sa .rs { font-size: .62em; color: var(--muted); font-weight: 400; margin-right: 1mm; }
+.split .sk { font-size: 9pt; font-weight: 500; margin-bottom: 1mm; }
+
+/* terms */
+.terms > div { padding: 4.6mm 0; border-bottom: .35pt solid var(--hair); font-size: 9.6pt; }
+.terms > div:first-child { border-top: .6pt solid var(--hair-strong); }
+
+.spacer { flex: 1; }
+.mt-6 { margin-top: 6mm; } .mt-8 { margin-top: 8mm; } .mt-10 { margin-top: 10mm; } .mt-12 { margin-top: 12mm; } .mt-14 { margin-top: 14mm; } .mt-18 { margin-top: 18mm; } .mt-4 { margin-top: 4mm; } .mt-3 { margin-top: 3mm; } .mt-2 { margin-top: 2mm; }
+</style>
+</head>
+<body>
+
+{% macro rs(n) -%}<span class="rs">₹</span>{{ n | inr }}{%- endmacro %}
+
+{% macro header(pg) -%}
+<div class="hd"><span>{{ m.client }} · {{ m.doc_label }}</span><span>{{ m.date }}</span></div>
+{%- endmacro %}
+{% macro footer(pg) -%}
+<div class="ft"><span>{{ m.sender_name }} · {{ m.sender_city }}</span><span>{{ '%02d' % pg }} / {{ '%02d' % total_pages }}</span></div>
+{%- endmacro %}
+
+<!-- 1 · COVER -->
+<section class="page cover">
+  <div>
+    <div class="label">{{ m.doc_label }}</div>
+    <div class="label mt-2" style="color:var(--gold)">{{ m.date_long }}</div>
+  </div>
+  <div>
+    <h1 class="title">{{ c.title }}</h1>
+    <div class="rule-gold"></div>
+    <p class="sub">{{ c.subtitle }}</p>
+  </div>
+  <div class="cover-bottom">
+    <div>
+      <div class="label">Prepared by</div>
+      <div class="body mt-2" style="font-weight:500">{{ m.sender_name }}</div>
+      <div class="small">{{ m.sender_role }} · {{ m.sender_city }}</div>
+    </div>
+    <div class="label" style="padding-bottom:1mm">Valid {{ m.valid_days }} days</div>
+  </div>
+</section>
+
+<!-- 2 · AT A GLANCE -->
+<section class="page">
+  {{ header(2) }}
+  <h1 class="h1 mt-18">{{ g.title }}</h1>
+  <div class="mt-14">
+    {% for r in g.rows %}
+    <div class="glance-row">
+      <div class="num">{{ r.num }}</div>
+      <div>
+        <p class="t">{{ r.title }}</p>
+        <p class="l">{{ r.line }}</p>
+        <div class="label">{{ r.meta }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {{ footer(2) }}
+</section>
+
+<!-- 3, 4 · B2B PROGRAMMES -->
+{% for p in b2b %}
+<section class="page">
+  {{ header(loop.index + 2) }}
+  <div class="num mt-14">{{ p.num }}</div>
+  <h1 class="h1 mt-3">{{ p.title_lines | join("<br>") }}</h1>
+  <p class="lead mt-4">{{ p.line }}</p>
+
+  <div class="facts mt-10">
+    {% for f in p.facts %}
+    <div><div class="label k">{{ f.k }}</div><div class="v">{{ f.v | safe }}</div></div>
+    {% endfor %}
+  </div>
+
+  <table class="tbl mt-8">
+    {% for it in p.lines %}
+    <tr>
+      <td><div class="lab">{{ it.label }}</div>{% if it.sub %}<div class="sub">{{ it.sub }}</div>{% endif %}</td>
+      <td class="unit">{{ it.unit }}</td>
+      <td class="amt">{{ rs(it.amount) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="total">
+    <div><div class="tl">{{ p.total_label }}</div><div class="small mt-2">{{ p.term_label }} · includes {{ p.media_total | inr_plain }} media spend</div></div>
+    <div class="ta">{{ rs(p.total) }}</div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="small">{{ p.footnote }}</div>
+  {{ footer(loop.index + 2) }}
+</section>
+{% endfor %}
+
+<!-- 5 · REELS OVERVIEW -->
+<section class="page">
+  {{ header(5) }}
+  <div class="num mt-14">{{ r.num }}</div>
+  <h1 class="h1 mt-3">{{ r.title }}</h1>
+  <p class="lead mt-4">{{ r.line }}</p>
+
+  <div class="big2 mt-14">
+    <div>
+      <div class="bignum">{{ r.direct.count }}</div>
+      <div class="label">{{ r.direct.title }}</div>
+      <div class="body mt-2">{{ r.direct.line }}</div>
+    </div>
+    <div>
+      <div class="bignum">{{ r.indirect.count }}</div>
+      <div class="label">{{ r.indirect.title }}</div>
+      <div class="body mt-2">{{ r.indirect.line }}</div>
+    </div>
+  </div>
+
+  <div class="body mt-12">{{ r.scope_note }}</div>
+  <div class="label mt-12" style="margin-bottom:4mm">{{ r.term_label }}</div>
+  <div class="months">
+    {% for mo in r.months %}
+    <div><div class="label mm">{{ mo.m }}</div><div class="mn">{{ mo.n }}</div><div class="label" style="letter-spacing:.12em;margin-top:1.5mm">reels</div><div class="note">{{ mo.note }}</div></div>
+    {% endfor %}
+  </div>
+  <div class="small mt-6">{{ r.shoot_note }}</div>
+  {{ footer(5) }}
+</section>
+
+<!-- 6 · DIRECT REELS -->
+<section class="page">
+  {{ header(6) }}
+  <div class="label mt-12">{{ r.num }} · {{ r.title }}</div>
+  <h1 class="h2 mt-3">{{ r.direct.title }} <span class="ital muted">· {{ r.direct.count }}</span></h1>
+  <p class="lead mt-3">{{ r.direct.line }}</p>
+
+  <div class="list2 mt-6">
+    {% for x in r.direct.list %}<div><span class="n">{{ x.n }}</span><span>{{ x.t }}</span></div>{% endfor %}
+  </div>
+
+  <table class="tbl tight mt-6">
+    {% for it in r.direct.lines %}
+    <tr>
+      <td><div class="lab">{{ it.label }}</div>{% if it.sub %}<div class="sub">{{ it.sub }}</div>{% endif %}</td>
+      <td class="amt">{{ rs(it.amount) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="total tight">
+    <div><div class="tl">Direct reels total</div><div class="small mt-2">Six months · includes {{ r.direct.media_total | inr_plain }} Meta boosts</div></div>
+    <div class="ta">{{ rs(r.direct.total) }}</div>
+  </div>
+  {{ footer(6) }}
+</section>
+
+<!-- 7 · INDIRECT REELS -->
+<section class="page">
+  {{ header(7) }}
+  <div class="label mt-12">{{ r.num }} · {{ r.title }}</div>
+  <h1 class="h2 mt-3">{{ r.indirect.title }} <span class="ital muted">· {{ r.indirect.count }}</span></h1>
+  <p class="lead mt-3">{{ r.indirect.line }}</p>
+
+  <div class="list1 mt-6">
+    {% for x in r.indirect.list %}<div><span class="n">{{ x.n }}</span><div><div class="t">{{ x.t }}</div><div class="d">{{ x.d }}</div></div></div>{% endfor %}
+  </div>
+
+  <table class="tbl tight mt-6">
+    {% for it in r.indirect.lines %}
+    <tr>
+      <td><div class="lab">{{ it.label }}</div>{% if it.sub %}<div class="sub">{{ it.sub }}</div>{% endif %}</td>
+      <td class="amt">{{ rs(it.amount) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="total tight">
+    <div><div class="tl">Indirect reels total</div><div class="small mt-2">Six months · includes {{ r.indirect.media_total | inr_plain }} Meta boosts</div></div>
+    <div class="ta">{{ rs(r.indirect.total) }}</div>
+  </div>
+  {{ footer(7) }}
+</section>
+
+<!-- 8 · SUMMARY -->
+<section class="page">
+  {{ header(8) }}
+  <h1 class="h1 mt-18">{{ s.title }}</h1>
+  <div class="mt-14">
+    {% for row in s.rows %}
+    <div class="sum-row">
+      <div class="num" style="font-size:20pt">{{ row.num }}</div>
+      <div><div class="t">{{ row.title }}</div><div class="s">{{ row.sub }}</div></div>
+      <div class="a">{{ rs(row.total) }}</div>
+    </div>
+    {% endfor %}
+    <div class="grand"><div class="t">Total</div><div class="a">{{ rs(s.grand) }}</div></div>
+  </div>
+  <div class="label mt-14">Who you pay</div>
+  <div class="split mt-4">
+    {% for x in s.split %}
+    <div><div class="sa">{{ rs(x.amount) }}</div><div class="sk">{{ x.k }}</div><div class="small">{{ x.d }}</div></div>
+    {% endfor %}
+  </div>
+  <div class="small mt-8">{{ s.note_gst }}</div>
+  {{ footer(8) }}
+</section>
+
+<!-- 9 · TERMS & NEXT -->
+<section class="page">
+  {{ header(9) }}
+  <h1 class="h1 mt-18">{{ t.title }}</h1>
+  <div class="terms mt-12">
+    {% for l in t.lines %}<div>{{ l }}</div>{% endfor %}
+  </div>
+  <div class="spacer"></div>
+  <h2 class="h2">{{ t.next_title }}</h2>
+  <p class="lead mt-3">{{ t.next_line }}</p>
+  <div class="mt-10" style="margin-bottom:10mm">
+    <div class="body" style="font-weight:500">{{ m.sender_name }}</div>
+    <div class="small">{{ m.sender_role }} · {{ m.sender_city }}</div>
+    <div class="small">{{ m.sender_email }}{% if m.sender_phone %} · {{ m.sender_phone }}{% endif %}</div>
+  </div>
+  {{ footer(9) }}
+</section>
+
+</body>
+</html>
