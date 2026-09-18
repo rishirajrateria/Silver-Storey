@@ -7,6 +7,8 @@ import {
   testimonialsToSchema,
 } from '@/lib/testimonials';
 import { reviewsSchema } from '@/lib/seo/schema';
+import { MENU_CITIES } from '@/features/Hero/components/MenuOverlay';
+import { CITIES, cityPath } from '@/lib/locations';
 
 describe('estimate calculator', () => {
   it('matches the published starting price at essential finish in Kolkata', () => {
@@ -170,5 +172,12 @@ describe('testimonials → schema', () => {
 
   it('builds the slider attribution line', () => {
     expect(testimonialsToReviews(rows)[0].author).toBe('A · Kolkata');
+  });
+});
+
+describe('menu city shortcuts', () => {
+  it('every hardcoded city chip points at a real city page', () => {
+    const real = new Set(CITIES.map((c) => cityPath(c)));
+    for (const city of MENU_CITIES) expect(real.has(city.href)).toBe(true);
   });
 });
