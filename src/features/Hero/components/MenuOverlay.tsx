@@ -128,7 +128,7 @@ function NavColumn({
                 />
               </span>
               {item.note && (
-                <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-black/45 uppercase">
+                <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-black/60 uppercase">
                   {item.note}
                 </span>
               )}
@@ -188,17 +188,6 @@ export default function MenuOverlay({
       aria-label="Site menu"
       className="menu-veil fixed inset-0 z-100 overflow-y-auto bg-[#e9e4df] text-black"
     >
-      {/* A whisper of the brand sand tone for depth — the same warmth the old
-          translucent panel had, without washing the type out */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0"
-        style={{
-          background:
-            'radial-gradient(900px 520px at 12% -8%, rgba(180,158,132,0.30), transparent 62%), radial-gradient(760px 460px at 100% 108%, rgba(180,158,132,0.22), transparent 60%)',
-        }}
-      />
-
       <div className="relative mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 py-6 sm:px-10 sm:py-8">
         {/* Top bar */}
         <div className="menu-in flex items-center justify-between gap-4">
@@ -220,7 +209,7 @@ export default function MenuOverlay({
               <span className="block text-sm font-semibold tracking-[0.2em] uppercase">
                 {SITE.name}
               </span>
-              <span className="block text-[11px] text-[#615147]">
+              <span className="block text-[11px] text-black/60">
                 {SITE.tagline}
               </span>
             </span>
@@ -229,7 +218,7 @@ export default function MenuOverlay({
           <button
             ref={closeRef}
             onClick={onClose}
-            className="flex h-11 shrink-0 items-center gap-2 rounded-full border border-black/20 px-4 text-sm font-medium text-black transition-colors hover:border-black/40 hover:bg-black/5"
+            className="flex h-11 shrink-0 items-center gap-2 rounded-full border border-black/20 px-4 text-sm font-medium text-black transition-colors hover:bg-black/5"
           >
             Close
             <svg
@@ -270,7 +259,7 @@ export default function MenuOverlay({
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-black/40"
+            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-black/55"
           >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
@@ -281,7 +270,7 @@ export default function MenuOverlay({
             name="q"
             placeholder="Search cities, services, ideas…"
             autoComplete="off"
-            className="h-12 w-full rounded-full border border-black/15 bg-white pr-24 pl-11 text-[15px] text-black transition-colors placeholder:text-black/40 focus:border-black/60 focus:outline-none"
+            className="h-12 w-full rounded-full border border-black/15 bg-white pr-24 pl-11 text-[15px] text-black transition-colors placeholder:text-black/55 focus:border-black/60 focus:outline-none"
           />
           <button
             type="submit"
@@ -323,7 +312,7 @@ export default function MenuOverlay({
               className="menu-in mt-10 border-t border-black/10 pt-6"
               style={{ animationDelay: '260ms' }}
             >
-              <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-black/50 uppercase">
+              <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
                 Popular cities
               </h2>
               <ul className="flex list-none flex-wrap gap-2">
@@ -332,7 +321,7 @@ export default function MenuOverlay({
                     <Link
                       href={city.href}
                       onClick={onClose}
-                      className="inline-flex rounded-full border border-black/15 bg-white px-3.5 py-1.5 text-sm text-black/70 transition-colors hover:border-black/40 hover:text-black"
+                      className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black/40"
                     >
                       {city.label}
                     </Link>
@@ -342,7 +331,7 @@ export default function MenuOverlay({
                   <Link
                     href="/interior-designers"
                     onClick={onClose}
-                    className="inline-flex rounded-full px-3.5 py-1.5 text-sm font-medium text-[#6b1a1a] underline-offset-2 hover:underline"
+                    className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
                   >
                     All 150+ cities →
                   </Link>
@@ -359,7 +348,7 @@ export default function MenuOverlay({
             <Link
               href="/estimate"
               onClick={onClose}
-              className="group rounded-2xl bg-black p-6 text-white transition-transform duration-200 hover:-translate-y-0.5"
+              className="group rounded-2xl bg-black p-6 text-white transition-opacity duration-200 hover:opacity-85"
             >
               <span className="block text-xs font-semibold tracking-[0.25em] text-white/70 uppercase">
                 Free · 60 seconds
@@ -382,14 +371,14 @@ export default function MenuOverlay({
             </Link>
 
             <div className="rounded-2xl bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-xs font-semibold tracking-[0.25em] text-black/50 uppercase">
+              <h2 className="mb-4 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
                 Talk to a designer
               </h2>
               <ul className="list-none space-y-3 text-sm">
                 <li>
                   <a
                     href={`tel:${SITE.phoneE164}`}
-                    className="font-semibold text-black underline-offset-2 hover:underline"
+                    className="font-semibold text-black underline underline-offset-2"
                   >
                     {SITE.phoneDisplay}
                   </a>
@@ -399,7 +388,7 @@ export default function MenuOverlay({
                     href={SITE.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-black/70 transition-colors hover:text-black"
+                    className="text-black/70 underline underline-offset-2 transition-colors hover:text-black"
                   >
                     WhatsApp us
                   </a>
@@ -407,7 +396,7 @@ export default function MenuOverlay({
                 <li>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="text-black/70 transition-colors hover:text-black"
+                    className="text-black/70 underline underline-offset-2 transition-colors hover:text-black"
                   >
                     {SITE.email}
                   </a>
@@ -426,7 +415,7 @@ export default function MenuOverlay({
           className="menu-in mt-auto flex flex-col gap-4 border-t border-black/10 pt-6 sm:flex-row sm:items-center sm:justify-between"
           style={{ animationDelay: '300ms' }}
         >
-          <p className="text-xs text-black/45">
+          <p className="text-xs text-black/60">
             © {new Date().getFullYear()} {SITE.name}. Interior designers in{' '}
             {SITE.address.city}, serving all of India.
           </p>
