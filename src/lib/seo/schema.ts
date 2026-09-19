@@ -411,6 +411,64 @@ export function howToSchema(opts: {
   };
 }
 
+export function imageGallerySchema(opts: {
+  name: string;
+  path: string;
+  images: { url: string; caption?: string }[];
+}): Schema | null {
+  if (!opts.images.length) return null;
+  return {
+    '@type': 'ImageGallery',
+    '@id': `${absoluteUrl(opts.path)}#gallery`,
+    name: opts.name,
+    url: absoluteUrl(opts.path),
+    image: opts.images.slice(0, 50).map((i) => ({
+      '@type': 'ImageObject',
+      contentUrl: absoluteUrl(i.url),
+      ...(i.caption ? { caption: i.caption } : {}),
+    })),
+  };
+}
+
+/**
+ * Review + AggregateRating for the Organization. Only ever fed from real,
+ * published testimonials entered in the admin panel — never fabricated.
+ */
+export function reviewsSchema(
+  reviews: {
+    name: string;
+    rating: number;
+    quote: string;
+    date?: string;
+  }[],
+): Schema | null {
+  if (!reviews.length) return null;
+  const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+  return {
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: Math.round(avg * 10) / 10,
+      bestRating: 5,
+      worstRating: 1,
+      reviewCount: reviews.length,
+    },
+    review: reviews.slice(0, 10).map((r) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: r.name },
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: r.rating,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      reviewBody: r.quote,
+      ...(r.date ? { datePublished: r.date } : {}),
+    })),
+  };
+}
+
 /** Wraps multiple schema nodes into a single JSON-LD graph. */
 export function graph(...nodes: (Schema | null | undefined | false)[]): Schema {
   return {

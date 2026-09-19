@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { reviews, stats } from './constants';
+import { reviews as defaultReviews, stats } from './constants';
 import HeroHeader from './components/HeroHeader';
 import HeroControls from './components/HeroControls';
 import CategoryCard from './components/CategoryCard';
@@ -17,18 +17,20 @@ import Testimonials from './components/Testimonials';
 import FoundersSection from './components/FoundersSection';
 import Footer from './components/Footer';
 import { useSlider } from '../../hooks/useSlider';
-import type { Category } from './types';
-import type { SanityVideo } from '../../lib/sanity/types';
+import type { Category, Review } from './types';
+import type { VideoItem } from '../../lib/db/content';
 
 interface HeroProps {
-  /** Category cards — fetched from Sanity; falls back to hardcoded constants */
+  /** Category cards — from the CMS; falls back to hardcoded constants */
   categories?: Category[];
-  /** YouTube videos — fetched from Sanity; empty array shows static placeholders */
-  videos?: SanityVideo[];
-  /** Dynamic project pages from Sanity — added to the nav menu automatically */
+  /** YouTube videos — from the CMS; an empty array shows static placeholders */
+  videos?: VideoItem[];
+  /** Project pages from the CMS — added to the nav menu automatically */
   projectPages?: { title: string; slug: string }[];
-  /** Brochure PDF download URL from Sanity */
+  /** Brochure PDF download URL from the CMS */
   brochureUrl?: string;
+  /** Published testimonials from the CMS; falls back to the built-in three */
+  reviews?: Review[];
 }
 
 export default function Hero({
@@ -36,7 +38,9 @@ export default function Hero({
   videos = [],
   projectPages = [],
   brochureUrl,
+  reviews: cmsReviews,
 }: HeroProps) {
+  const reviews = cmsReviews?.length ? cmsReviews : defaultReviews;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentSlide, nextSlide, prevSlide, setCurrentSlide } = useSlider(
     reviews.length,

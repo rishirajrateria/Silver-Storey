@@ -197,6 +197,7 @@ export default function ContactForm() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [budget, setBudget] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
 
   const numbersOnly = (e: React.FormEvent<HTMLInputElement>) => {
@@ -220,6 +221,7 @@ export default function ContactForm() {
           address: address.trim(),
           projectType,
           budget: budget.trim(),
+          company_website: honeypot,
         }),
       });
       if (!res.ok) {
@@ -272,6 +274,30 @@ export default function ContactForm() {
         {/* Form */}
         <div className="mx-auto max-w-4xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Honeypot — hidden from people, filled in by bots */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '-10000px',
+                top: 'auto',
+                width: 1,
+                height: 1,
+                overflow: 'hidden',
+              }}
+            >
+              <label>
+                Company website
+                <input
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </label>
+            </div>
             {/* Name + Phone */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>

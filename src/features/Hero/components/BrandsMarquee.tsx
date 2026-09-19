@@ -32,6 +32,8 @@ export default function BrandsMarquee() {
           <div className="flex shrink-0 items-center gap-12 pr-12">
             {brands.map((brand) => (
               <img
+                loading="lazy"
+                decoding="async"
                 key={brand.name}
                 src={brand.image}
                 alt={brand.name}
@@ -43,6 +45,8 @@ export default function BrandsMarquee() {
           <div className="flex shrink-0 items-center gap-12 pr-12">
             {brands.map((brand) => (
               <img
+                loading="lazy"
+                decoding="async"
                 key={`clone-${brand.name}`}
                 src={brand.image}
                 alt={brand.name}

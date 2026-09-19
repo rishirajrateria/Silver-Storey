@@ -3,86 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import dayjs from 'dayjs';
-import { PortableText } from 'next-sanity';
-import type { PortableTextComponents } from 'next-sanity';
 import type { BlogPostFull } from './types';
+import Markdown from '@/components/Markdown';
+import { markdownReadMinutes } from '@/lib/markdown';
 import HeroControls from '../Hero/components/HeroControls';
 import MenuOverlay from '../Hero/components/MenuOverlay';
-
-// ── Read-time estimate ────────────────────────────────────────────────────────
-
-function estimateReadTime(body: any[]): number {
-  const text = body
-
-    .filter((b: any) => b._type === 'block')
-
-    .flatMap((b: any) => (b.children ?? []).map((c: any) => c.text ?? ''))
-    .join(' ');
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
-}
-
-// ── Portable Text Components ──────────────────────────────────────────────────
-const ptComponents: PortableTextComponents = {
-  block: {
-    normal: ({ children }) => (
-      <p className="mb-5 text-base leading-relaxed text-black/75">{children}</p>
-    ),
-    h2: ({ children }) => (
-      <h2 className="mt-10 mb-4 text-2xl font-bold text-black">{children}</h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="mt-8 mb-3 text-xl font-bold text-black">{children}</h3>
-    ),
-    blockquote: ({ children }) => (
-      <blockquote className="my-6 border-l-4 border-[#6b1a1a] pl-5 text-black/60 italic">
-        {children}
-      </blockquote>
-    ),
-  },
-  marks: {
-    strong: ({ children }) => (
-      <strong className="font-bold text-black">{children}</strong>
-    ),
-    em: ({ children }) => <em className="italic">{children}</em>,
-    underline: ({ children }) => <span className="underline">{children}</span>,
-  },
-  list: {
-    bullet: ({ children }) => (
-      <ul className="mb-5 list-disc pl-6 text-base leading-relaxed text-black/75">
-        {children}
-      </ul>
-    ),
-    number: ({ children }) => (
-      <ol className="mb-5 list-decimal pl-6 text-base leading-relaxed text-black/75">
-        {children}
-      </ol>
-    ),
-  },
-  listItem: {
-    bullet: ({ children }) => <li className="mb-1.5">{children}</li>,
-    number: ({ children }) => <li className="mb-1.5">{children}</li>,
-  },
-  types: {
-    image: ({ value }: { value: any }) => {
-      if (!value?.asset?.url) return null;
-      return (
-        <figure className="my-8">
-          <img
-            src={value.asset.url}
-            alt={value.alt ?? ''}
-            className="w-full rounded-xl object-cover"
-          />
-          {value.caption && (
-            <figcaption className="mt-2 text-center text-xs text-black/40">
-              {value.caption}
-            </figcaption>
-          )}
-        </figure>
-      );
-    },
-  },
-};
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 function CalendarIcon() {
@@ -155,7 +80,7 @@ interface Props {
 
 export default function BlogPostPage({ post, projectPages = [] }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const readTime = post.body ? estimateReadTime(post.body) : 1;
+  const readTime = markdownReadMinutes(post.body ?? '');
   const authorInitial = post.author ? post.author[0]?.toUpperCase() : 'A';
 
   return (
@@ -254,9 +179,9 @@ export default function BlogPostPage({ post, projectPages = [] }: Props) {
         )}
 
         {/* Body */}
-        {post.body && post.body.length > 0 && (
+        {post.body && post.body.trim().length > 0 && (
           <article>
-            <PortableText value={post.body} components={ptComponents} />
+            <Markdown source={post.body} />
           </article>
         )}
       </div>

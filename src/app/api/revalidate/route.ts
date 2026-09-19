@@ -1,42 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { getSession } from '@/lib/auth';
 
 /**
- * POST /api/revalidate?secret=<SANITY_REVALIDATE_SECRET>
+ * POST /api/revalidate?path=/blog
  *
- * Called by a Sanity webhook on every publish so Next.js ISR pages
- * are re-generated immediately. Set the webhook URL in:
- *   Sanity Dashboard → API → Webhooks → Add webhook
- *     URL: https://<your-domain>/api/revalidate?secret=<SANITY_REVALIDATE_SECRET>
- *     Trigger on: publish
+ * Manual cache refresh. Authorised either by an admin session (a signed-in
+ * editor) or by the REVALIDATE_SECRET, so it can also be called from scripts
+ * and deploy hooks.
  */
 export async function POST(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret');
+  const expected = process.env.REVALIDATE_SECRET;
+  const session = await getSession();
 
-  if (secret !== process.env.SANITY_REVALIDATE_SECRET) {
-    return NextResponse.json({ message: 'Invalid secret' }, { status: 401 });
+  const authorised = Boolean(session) || (expected && secret === expected);
+  if (!authorised) {
+    return NextResponse.json({ message: 'Not authorised.' }, { status: 401 });
   }
 
-  try {
-    const body = await req.json().catch(() => ({}));
-    const type = (body?._type as string | undefined) ?? '';
+  const path = req.nextUrl.searchParams.get('path');
 
-    if (type === 'category' || type === 'video') {
-      // Home page shows categories and videos
-      revalidatePath('/');
-    } else if (type === 'projectPage') {
-      const slug = body?.slug?.current as string | undefined;
-      // Revalidate the dynamic route
-      if (slug) {
-        revalidatePath(`/projects/${slug}`);
-      }
-      // Also revalidate dedicated project pages
-      revalidatePath('/commercial-projects');
-      revalidatePath('/residential-projects');
+  try {
+    if (path && path.startsWith('/')) {
+      revalidatePath(path);
+      return NextResponse.json({ revalidated: [path], now: Date.now() });
     }
 
-    return NextResponse.json({ revalidated: true, now: Date.now() });
-  } catch {
+    const paths = [
+      '/',
+      '/blog',
+      '/residential-projects',
+      '/commercial-projects',
+    ];
+    for (const p of paths) revalidatePath(p);
+    return NextResponse.json({ revalidated: paths, now: Date.now() });
+  } catch (error) {
+    console.error('[revalidate] failed:', error);
     return NextResponse.json(
       { message: 'Error revalidating' },
       { status: 500 },

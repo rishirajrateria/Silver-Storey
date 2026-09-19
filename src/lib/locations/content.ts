@@ -198,7 +198,7 @@ export const HOUSING_GUIDANCE: Record<
 /* Pricing (Kolkata baseline × city index)                                   */
 /* ────────────────────────────────────────────────────────────────────────── */
 
-const BASE_PRICING: {
+export const BASE_PRICING: {
   key: string;
   label: string;
   from: number;

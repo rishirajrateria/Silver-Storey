@@ -1,62 +1,49 @@
 import React from 'react';
+import { SITE } from '@/lib/seo/site';
+
+const ICONS: Record<string, { src: string; size: string }> = {
+  facebook: { src: '/images/facebook.avif', size: 'h-20 w-20' },
+  linkedin: { src: '/images/linkedin.avif', size: 'h-12 w-12' },
+  youtube: { src: '/images/youtube.avif', size: 'h-12 w-12' },
+  instagram: { src: '/images/instagram (2).avif', size: 'h-12 w-12' },
+};
+
+function SocialIcon({ network }: { network: string }) {
+  const social = SITE.socials.find((s) => s.key === network);
+  const icon = ICONS[network];
+  if (!social || !icon) return null;
+  return (
+    <a
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={social.label}
+      className="hidden transition-transform hover:scale-105 sm:flex"
+    >
+      <img
+        src={icon.src}
+        alt={social.label}
+        className={`${icon.size} object-contain`}
+      />
+    </a>
+  );
+}
 
 export default function SocialBar({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center gap-8 sm:gap-12 ${className}`}>
-      <a
-        href="#"
-        aria-label="facebook"
-        className="hidden transition-transform hover:scale-105 sm:flex"
-      >
-        <img
-          src="/images/facebook.avif"
-          alt="facebook"
-          className="h-20 w-20 object-contain"
-        />
-      </a>
+      <SocialIcon network="facebook" />
+      <SocialIcon network="linkedin" />
 
       <a
-        href="#"
-        aria-label="linkedin"
-        className="hidden transition-transform hover:scale-105 sm:flex"
-      >
-        <img
-          src="/images/linkedin.avif"
-          alt="linkedin"
-          className="h-12 w-12 object-contain"
-        />
-      </a>
-
-      <a
-        href="/contact#contact-form"
+        href="/estimate"
         className="flex h-9 items-center justify-center rounded-sm bg-white px-5 text-[10px] font-semibold tracking-wider text-black shadow-lg transition-transform hover:scale-105 sm:text-[11px]"
       >
         GET FREE ESTIMATE
       </a>
 
-      <a
-        href="#"
-        aria-label="youtube"
-        className="hidden transition-transform hover:scale-105 sm:flex"
-      >
-        <img
-          src="/images/youtube.avif"
-          alt="youtube"
-          className="h-12 w-12 object-contain"
-        />
-      </a>
-
-      <a
-        href="#"
-        aria-label="instagram"
-        className="hidden transition-transform hover:scale-105 sm:flex"
-      >
-        <img
-          src="/images/instagram (2).avif"
-          alt="instagram"
-          className="h-12 w-12 object-contain"
-        />
-      </a>
+      <SocialIcon network="youtube" />
+      <SocialIcon network="instagram" />
     </div>
   );
 }

@@ -28,6 +28,8 @@ export default function FoundersSection({
                 >
                   <div className="aspect-4/5 w-full overflow-hidden rounded-3xl bg-black/5 shadow-md">
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={founder.image}
                       alt={founder.alt}
                       className="h-full w-full object-cover"
@@ -52,6 +54,8 @@ export default function FoundersSection({
                 >
                   <div className="aspect-4/5 w-full overflow-hidden rounded-3xl bg-black/5 shadow-md">
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={founder.image}
                       alt={founder.alt}
                       className="h-full w-full object-cover"
@@ -76,6 +80,8 @@ export default function FoundersSection({
             <div key={founder.alt} className="flex flex-col items-center">
               <div className="aspect-4/5 w-full max-w-md overflow-hidden rounded-3xl bg-black/5 shadow-md transition-transform hover:scale-[1.01]">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={founder.image}
                   alt={founder.alt}
                   className="h-full w-full object-cover"
