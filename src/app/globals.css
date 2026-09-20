@@ -179,7 +179,65 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .menu-veil,
-  .menu-in {
+  .menu-in,
+  .menu-sheen-a,
+  .menu-sheen-b {
     animation: none;
   }
+}
+
+/* ── Menu sheen ──
+   Two very soft pools of white drifting across the cream, like daylight
+   moving over a plaster wall. Only transform and opacity animate, so the
+   effect composites on the GPU and never repaints the panel beneath it.
+   The white peaks low on purpose: push it much past this and the white
+   cards sitting on the cream stop reading as separate surfaces. */
+@keyframes menu-sheen-a {
+  0%,
+  100% {
+    transform: translate3d(-9%, -6%, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(11%, 7%, 0) scale(1.18);
+    opacity: 1;
+  }
+}
+@keyframes menu-sheen-b {
+  0%,
+  100% {
+    transform: translate3d(8%, 9%, 0) scale(1.14);
+    opacity: 0.42;
+  }
+  50% {
+    transform: translate3d(-10%, -7%, 0) scale(1);
+    opacity: 0.88;
+  }
+}
+.menu-sheen {
+  position: absolute;
+  width: 85vw;
+  height: 85vw;
+  max-width: 1200px;
+  max-height: 1200px;
+  border-radius: 9999px;
+  /* A body of light rather than a hard core: holds its value through the
+     middle, then falls away to nothing well before the edge. */
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.5) 48%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  will-change: transform, opacity;
+}
+.menu-sheen-a {
+  top: -20%;
+  left: -8%;
+  animation: menu-sheen-a 26s ease-in-out infinite;
+}
+.menu-sheen-b {
+  right: -10%;
+  bottom: -18%;
+  animation: menu-sheen-b 34s ease-in-out infinite;
 }

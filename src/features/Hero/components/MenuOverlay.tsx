@@ -188,6 +188,17 @@ export default function MenuOverlay({
       aria-label="Site menu"
       className="menu-veil fixed inset-0 z-100 overflow-y-auto bg-[#e9e4df] text-black"
     >
+      {/* Daylight drifting across the cream. Viewport-anchored rather than
+          scrolling with the panel, so it reads as light in the room instead
+          of as content. See .menu-sheen in globals.css. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 overflow-hidden"
+      >
+        <span className="menu-sheen menu-sheen-a" />
+        <span className="menu-sheen menu-sheen-b" />
+      </div>
+
       <div className="relative mx-auto flex min-h-full w-full max-w-7xl flex-col px-6 py-6 sm:px-10 sm:py-8">
         {/* Top bar */}
         <div className="menu-in flex items-center justify-between gap-4">
