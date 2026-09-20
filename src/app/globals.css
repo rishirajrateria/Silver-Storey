@@ -1,16 +1,21 @@
 @import 'tailwindcss';
 
 :root {
-  /* The site's ground: one soft cream-to-white wash, defined once. */
-  --site-canvas: linear-gradient(168deg, #f8f5f2 0%, #efebe6 45%, #e6e0d9 100%);
+  /* The site's ground: one soft cream-to-white wash, defined once.
+
+     The light end is pinned just short of white — cards on this site are
+     white with only a shadow-sm to separate them, so anything brighter
+     swallows them. All of the range therefore comes from the beige end,
+     which is why it runs this deep. */
+  --site-canvas: linear-gradient(168deg, #f8f5f2 0%, #ece5db 45%, #dcd3c6 100%);
   /* The same three tones lit from the opposite corner. The backdrop
      cross-fades between the two, which moves the light without ever going
      brighter than either one on its own. */
   --site-canvas-alt: linear-gradient(
     20deg,
     #f8f5f2 0%,
-    #efebe6 52%,
-    #e6e0d9 100%
+    #ece5db 52%,
+    #dcd3c6 100%
   );
   --font-space-grotesk:
     'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
@@ -32,7 +37,7 @@ body {
     Roboto,
     sans-serif;
   /* Shows through during overscroll, behind the fixed canvas. */
-  background-color: #eeeae5;
+  background-color: #ece5db;
 }
 
 /* ── Site canvas ──
@@ -56,7 +61,7 @@ body {
   overflow: hidden;
   pointer-events: none;
   /* Visible for the instant before the layers paint, and during overscroll. */
-  background-color: #eeeae5;
+  background-color: #ece5db;
 }
 
 /* Two full-bleed arrangements of the same wash, cross-fading. A cross-fade
