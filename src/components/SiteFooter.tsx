@@ -47,7 +47,10 @@ function Column({
   );
 }
 
-const linkCls = 'text-sm text-white/75 transition-colors hover:text-white';
+// inline-block + padding so each link clears the 24px minimum tap size;
+// the list gaps shrink to match so the footer keeps its rhythm.
+const linkCls =
+  'inline-block py-1 text-sm text-white/75 transition-colors hover:text-white';
 
 /**
  * Site-wide footer with the full internal-link mesh: services, cities,
@@ -144,7 +147,7 @@ export default function SiteFooter() {
         {/* Middle: link columns */}
         <div className="grid gap-10 border-b border-white/10 py-12 sm:grid-cols-2 lg:grid-cols-4">
           <Column title="Services">
-            <ul className="space-y-1.5">
+            <ul>
               {SERVICES.map((s) => (
                 <li key={s.slug}>
                   <Link href={servicePath(s)} className={linkCls}>
@@ -155,7 +158,7 @@ export default function SiteFooter() {
             </ul>
           </Column>
           <Column title="Interior designers by city">
-            <ul className="space-y-1.5">
+            <ul>
               {popularCities.map((c) => (
                 <li key={c.slug}>
                   <Link href={cityPath(c)} className={linkCls}>
@@ -174,7 +177,7 @@ export default function SiteFooter() {
             </ul>
           </Column>
           <Column title="Company">
-            <ul className="space-y-1.5">
+            <ul>
               {COMPANY_LINKS.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className={linkCls}>
@@ -185,7 +188,7 @@ export default function SiteFooter() {
             </ul>
           </Column>
           <Column title="Guides & resources">
-            <ul className="space-y-1.5">
+            <ul>
               {BLOG_CATEGORIES.map((c) => (
                 <li key={c.slug}>
                   <Link href={categoryPath(c.slug)} className={linkCls}>

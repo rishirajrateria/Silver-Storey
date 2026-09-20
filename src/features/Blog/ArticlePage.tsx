@@ -79,7 +79,7 @@ export default function ArticlePage({
       <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
         <Link
           href="/blog"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm text-black/50 transition-colors hover:text-black"
+          className="mb-8 flex w-fit items-center gap-1.5 text-sm text-black/50 transition-colors hover:text-black"
         >
           <svg
             width="16"
