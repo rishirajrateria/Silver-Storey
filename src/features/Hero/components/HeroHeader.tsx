@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { HOME_VIDEO, HOME_VIDEO_POSTER } from '../media';
 
 export default function HeroHeader() {
   return (
     <>
       <video
-        src="/videos/home_video1.mp4"
-        poster="/videos/home_video1.jpg"
+        src={HOME_VIDEO}
+        poster={HOME_VIDEO_POSTER ?? undefined}
         autoPlay
         muted
         loop

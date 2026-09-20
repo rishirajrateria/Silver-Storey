@@ -31,14 +31,17 @@ poster() {
   ffmpeg -y -loglevel error -ss "$at" -i "$src" -frames:v 1 -q:v 4 -vf "scale=-2:1080" "$out"
 }
 
-# Hero video: it's the LCP element, so keep quality reasonable but small.
+# The office clip now runs BOTH the hero and the footer, so it is the LCP
+# element and gets hero-grade settings. At 32 MB unoptimised it is the single
+# biggest thing on the home page — this step is not optional before deploying.
+optimize "$VID/OFFICE full_1.mp4" 1080 28
+poster   "$VID/OFFICE full_1.mp4" "$VID/office-poster.jpg" 2
+
+# No longer referenced by the site; kept so the clip is still available.
 optimize "$VID/home_video1.mp4" 1080 28
 poster   "$VID/home_video1.mp4" "$VID/home_video1.jpg" 1
 
-# Footer background: plays at 60% opacity behind text — 720p / CRF 30 is plenty.
-optimize "$VID/OFFICE full_1.mp4" 720 30
-poster   "$VID/OFFICE full_1.mp4" "$VID/office-poster.jpg" 2
-
 echo
-echo "Done. Expected sizes: hero ≈ 1.5–2.5 MB, footer ≈ 2–4 MB (from 6.3 MB / 32 MB)."
+echo "Done. Expect the office clip at roughly 3-5 MB, down from 32 MB."
+echo "Then set HOME_VIDEO_POSTER in src/features/Hero/media.ts to '/videos/office-poster.jpg'."
 echo "Commit the updated files in public/videos (not the originals/ folder)."
