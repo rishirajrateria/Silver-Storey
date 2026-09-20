@@ -31,10 +31,12 @@ poster() {
   ffmpeg -y -loglevel error -ss "$at" -i "$src" -frames:v 1 -q:v 4 -vf "scale=-2:1080" "$out"
 }
 
-# The office clip now runs BOTH the hero and the footer, so it is the LCP
-# element and gets hero-grade settings. At 32 MB unoptimised it is the single
-# biggest thing on the home page — this step is not optional before deploying.
-optimize "$VID/OFFICE full_1.mp4" 1080 28
+# Hero. Already compressed and remuxed for faststart, so this only needs the
+# poster frame — re-encoding it again would just lose quality.
+poster   "$VID/hero.mp4" "$VID/hero-poster.jpg" 2
+
+# Footer background: still 32 MB unoptimised, lazy-loaded below the fold.
+optimize "$VID/OFFICE full_1.mp4" 720 30
 poster   "$VID/OFFICE full_1.mp4" "$VID/office-poster.jpg" 2
 
 # No longer referenced by the site; kept so the clip is still available.
@@ -42,6 +44,6 @@ optimize "$VID/home_video1.mp4" 1080 28
 poster   "$VID/home_video1.mp4" "$VID/home_video1.jpg" 1
 
 echo
-echo "Done. Expect the office clip at roughly 3-5 MB, down from 32 MB."
-echo "Then set HOME_VIDEO_POSTER in src/features/Hero/media.ts to '/videos/office-poster.jpg'."
+echo "Done. Expect the footer clip at roughly 2-4 MB, down from 32 MB."
+echo "Then set HERO_VIDEO_POSTER and FOOTER_VIDEO_POSTER in src/features/Hero/media.ts."
 echo "Commit the updated files in public/videos (not the originals/ folder)."

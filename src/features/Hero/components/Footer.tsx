@@ -2,11 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-import { HOME_VIDEO, HOME_VIDEO_POSTER } from '../media';
+import { FOOTER_VIDEO, FOOTER_VIDEO_POSTER } from '../media';
 
-const VIDEO_MP4 = HOME_VIDEO;
+const VIDEO_MP4 = FOOTER_VIDEO;
 const VIDEO_WEBM: string | null = null;
-const VIDEO_POSTER = HOME_VIDEO_POSTER;
+const VIDEO_POSTER = FOOTER_VIDEO_POSTER;
 
 export default function Footer() {
   const wrapperRef = useRef<HTMLDivElement>(null);

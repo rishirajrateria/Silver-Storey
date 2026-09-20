@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { HOME_VIDEO, HOME_VIDEO_POSTER } from '../media';
+import { HERO_VIDEO, HERO_VIDEO_POSTER } from '../media';
 
 export default function HeroHeader() {
   return (
     <>
       <video
-        src={HOME_VIDEO}
-        poster={HOME_VIDEO_POSTER ?? undefined}
+        src={HERO_VIDEO}
+        poster={HERO_VIDEO_POSTER ?? undefined}
         autoPlay
         muted
         loop
