@@ -14,7 +14,7 @@ export default function HowItWorksPage({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f2f1ef]">
+    <div className="min-h-screen">
       <HowItWorksHero />
       <HowItWorksSteps />
       <HeroControls onMenuClick={() => setIsMenuOpen(true)} />

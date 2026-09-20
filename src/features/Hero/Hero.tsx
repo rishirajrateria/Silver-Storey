@@ -47,8 +47,11 @@ export default function Hero({
   );
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="relative h-screen w-full overflow-hidden">
+    <div className="min-h-screen text-white">
+      {/* Black belongs to the video header itself, not the whole page — the
+          middle of the page sits on the site canvas, and the footer paints
+          its own black behind its video. */}
+      <header className="relative h-screen w-full overflow-hidden bg-black">
         <HeroHeader />
         <HeroControls onMenuClick={() => setIsMenuOpen(true)} />
         <MenuOverlay
@@ -59,7 +62,7 @@ export default function Hero({
       </header>
 
       {/* Main Content Section added below the Hero header */}
-      <div className="bg-[#e9e4df] pt-16 text-black">
+      <div className="pt-16 text-black">
         {/* 1. Category Price Cards — full-width marquee on all screens */}
         <div className="overflow-hidden">
           <div

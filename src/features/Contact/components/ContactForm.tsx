@@ -249,10 +249,7 @@ export default function ContactForm() {
     <>
       {/* Calendly modal removed in favor of direct Calendly links */}
 
-      <div
-        id="contact-form"
-        className="cursor-default bg-[#f0efec] px-6 py-20 sm:py-28"
-      >
+      <div id="contact-form" className="cursor-default px-6 py-20 sm:py-28">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-4 text-4xl font-semibold tracking-wide sm:text-5xl lg:text-6xl">

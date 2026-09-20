@@ -84,7 +84,7 @@ export default function BlogPostPage({ post, projectPages = [] }: Props) {
   const authorInitial = post.author ? post.author[0]?.toUpperCase() : 'A';
 
   return (
-    <div className="min-h-screen bg-[#f0efec]">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
         {/* Back */}
         <Link

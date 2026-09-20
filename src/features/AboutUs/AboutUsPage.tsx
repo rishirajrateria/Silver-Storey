@@ -30,7 +30,7 @@ export default function AboutUsPage({
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <AboutHero />
       <AboutMission />
       <AboutProcess />
@@ -41,7 +41,7 @@ export default function AboutUsPage({
       </section>
 
       {/* ── How it Works intro ── */}
-      <section className="cursor-default bg-[#f2f1ef] px-6 py-20 text-center sm:py-28">
+      <section className="cursor-default px-6 py-20 text-center sm:py-28">
         <h2 className="mb-6 text-5xl font-bold tracking-tight text-black sm:text-6xl lg:text-7xl">
           How it Works&nbsp;!
         </h2>
