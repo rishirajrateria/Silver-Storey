@@ -126,7 +126,7 @@ function BlockView({ block }: { block: Block }) {
       );
     case 'table':
       return (
-        <div className="mb-6 overflow-x-auto rounded-xl bg-white shadow-sm">
+        <div className="glass-panel mb-6 overflow-x-auto rounded-xl">
           <table className="w-full text-left text-sm">
             <thead className="bg-black text-white">
               <tr>

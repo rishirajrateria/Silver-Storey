@@ -185,7 +185,7 @@ export default async function CityPage({ params }: Props) {
               <li key={svc.slug}>
                 <Link
                   href={href}
-                  className="flex h-full flex-col rounded-xl bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md"
+                  className="glass-panel glass-lift flex h-full flex-col rounded-xl px-5 py-4"
                 >
                   <span className="text-sm font-semibold text-black">
                     {label}
@@ -219,7 +219,7 @@ export default async function CityPage({ params }: Props) {
         <p className="mb-8 max-w-3xl text-sm text-black/60 sm:text-base">
           {why.climateSummary}
         </p>
-        <div className="grid gap-8 rounded-xl bg-white p-6 shadow-sm sm:p-8 md:grid-cols-2">
+        <div className="glass-panel grid gap-8 rounded-xl p-6 sm:p-8 md:grid-cols-2">
           <FeatureList
             title={`What we specify in ${city.name}`}
             columns={1}
@@ -233,7 +233,7 @@ export default async function CityPage({ params }: Props) {
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
           {why.housing.map((h) => (
-            <div key={h.label} className="rounded-xl bg-white p-6 shadow-sm">
+            <div key={h.label} className="glass-panel rounded-xl p-6">
               <h3 className="mb-2 text-lg font-bold text-black capitalize">
                 {h.label}
               </h3>
@@ -267,7 +267,7 @@ export default async function CityPage({ params }: Props) {
           {city.localities.map((l) => (
             <li
               key={l}
-              className="inline-block rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black/80 shadow-sm sm:text-sm"
+              className="glass-panel inline-block rounded-full px-4 py-1.5 text-xs font-medium text-black/80 sm:text-sm"
             >
               {l}
             </li>
@@ -288,7 +288,7 @@ export default async function CityPage({ params }: Props) {
         </h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PROCESS_STEPS.map((st, i) => (
-            <li key={st.name} className="rounded-xl bg-white p-6 shadow-sm">
+            <li key={st.name} className="glass-panel rounded-xl p-6">
               <span className="mb-2 block text-xs font-semibold tracking-[0.2em] text-[#6b1a1a]">
                 STEP {String(i + 1).padStart(2, '0')}
               </span>

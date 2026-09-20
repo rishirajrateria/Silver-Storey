@@ -191,7 +191,7 @@ export default async function StatePage({ params }: Props) {
             ) : (
               <li
                 key={d}
-                className="inline-block rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black/70 shadow-sm sm:text-sm"
+                className="glass-panel inline-block rounded-full px-4 py-1.5 text-xs font-medium text-black/70 sm:text-sm"
               >
                 {d}
               </li>
@@ -201,7 +201,7 @@ export default async function StatePage({ params }: Props) {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-8 rounded-xl bg-white p-6 shadow-sm sm:p-8 md:grid-cols-2">
+        <div className="glass-panel grid gap-8 rounded-xl p-6 sm:p-8 md:grid-cols-2">
           <FeatureList
             title={`What we design in ${state.name}`}
             columns={1}

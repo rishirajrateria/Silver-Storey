@@ -144,7 +144,7 @@ export default async function VisualisationPage() {
             {images.map((img) => (
               <li
                 key={img.id}
-                className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                className="glass-panel overflow-hidden rounded-2xl"
               >
                 <img
                   src={img.imageUrl}
@@ -167,7 +167,7 @@ export default async function VisualisationPage() {
         </section>
       ) : (
         <section className="mx-auto max-w-6xl px-6 py-8">
-          <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
+          <div className="glass-panel rounded-2xl p-8 text-center">
             <p className="mb-2 font-semibold text-black">
               Render gallery coming soon
             </p>

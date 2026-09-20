@@ -179,7 +179,7 @@ export default async function ServiceCityPage({ params }: Props) {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-8 rounded-xl bg-white p-6 shadow-sm sm:p-8 md:grid-cols-2">
+        <div className="glass-panel grid gap-8 rounded-xl p-6 sm:p-8 md:grid-cols-2">
           <FeatureList
             title="What’s included"
             columns={1}
@@ -207,7 +207,7 @@ export default async function ServiceCityPage({ params }: Props) {
           {city.localities.map((l) => (
             <li
               key={l}
-              className="inline-block rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black/80 shadow-sm sm:text-sm"
+              className="glass-panel inline-block rounded-full px-4 py-1.5 text-xs font-medium text-black/80 sm:text-sm"
             >
               {l}
             </li>

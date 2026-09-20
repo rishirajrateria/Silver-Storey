@@ -129,6 +129,52 @@ body {
   }
 }
 
+/* ── Glass ──
+   Liquid-glass surfacing, in two variants, because a backdrop blur only
+   earns its cost where there is detail behind it to soften.
+
+   .glass       floats over video, photography or scrolling content, so it
+                gets a real backdrop blur — there is texture back there.
+   .glass-panel sits on the site canvas, which is a smooth gradient.
+                Blurring a smooth gradient returns the same gradient, so
+                this skips the filter and looks identical for nothing. That
+                matters here: the canvas animates, and a backdrop-filter
+                over a moving backdrop re-blurs every single frame.
+
+   Both share the edge, which is what actually reads as glass — a bright
+   rim along the top where light catches the lip, a hairline around it, and
+   a soft shadow lifting it off the ground. */
+.glass,
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 1px 2px rgba(60, 50, 40, 0.05),
+    0 12px 28px -14px rgba(60, 50, 40, 0.22);
+}
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+.glass {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+/* Replaces transition-shadow/hover:shadow-md on glass, which would
+   otherwise drop the rim highlight on hover by overwriting box-shadow. */
+.glass-lift {
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+.glass-lift:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 2px 4px rgba(60, 50, 40, 0.06),
+    0 18px 40px -16px rgba(60, 50, 40, 0.3);
+}
+
 /* hero-specific tweaks */
 .hero-heading {
   letter-spacing: -0.02em;

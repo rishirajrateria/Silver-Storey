@@ -21,7 +21,7 @@ export interface CityOption {
   priceIndex: number;
 }
 
-const card = 'rounded-2xl bg-white p-6 shadow-sm sm:p-8';
+const card = 'glass-panel rounded-2xl p-6 sm:p-8';
 const stepTitle = 'mb-1 text-lg font-bold text-black';
 const stepHint = 'mb-5 text-sm text-black/55';
 const chip = (on: boolean) =>

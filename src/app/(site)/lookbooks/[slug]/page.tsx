@@ -91,7 +91,7 @@ export default async function LookbookPage({ params }: Props) {
           <LookbookDownload slug={lookbook.slug} title={lookbook.title} />
           <dl className="grid grid-cols-2 gap-3 text-sm">
             {lookbook.pages && (
-              <div className="rounded-xl bg-white p-4 shadow-sm">
+              <div className="glass-panel rounded-xl p-4">
                 <dt className="text-xs tracking-wide text-black/50 uppercase">
                   Pages
                 </dt>
@@ -100,7 +100,7 @@ export default async function LookbookPage({ params }: Props) {
                 </dd>
               </div>
             )}
-            <div className="rounded-xl bg-white p-4 shadow-sm">
+            <div className="glass-panel rounded-xl p-4">
               <dt className="text-xs tracking-wide text-black/50 uppercase">
                 Format
               </dt>
@@ -120,7 +120,7 @@ export default async function LookbookPage({ params }: Props) {
               <li key={l.id}>
                 <Link
                   href={`/lookbooks/${l.slug}`}
-                  className="block rounded-xl bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                  className="glass-panel glass-lift block rounded-xl p-5"
                 >
                   <span className="block font-semibold text-black">
                     {l.title}

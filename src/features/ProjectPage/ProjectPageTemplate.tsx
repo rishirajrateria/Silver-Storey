@@ -190,7 +190,7 @@ export default function ProjectPageTemplate({
                   </div>
                 )}
                 {materials.length > 0 && (
-                  <aside className="h-fit rounded-2xl bg-white p-6 shadow-sm">
+                  <aside className="glass-panel h-fit rounded-2xl p-6">
                     <h3 className="mb-3 text-sm font-semibold tracking-[0.2em] text-black/50 uppercase">
                       Materials & brands
                     </h3>

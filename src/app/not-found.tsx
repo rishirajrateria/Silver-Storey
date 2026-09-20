@@ -54,7 +54,7 @@ export default function NotFound() {
           </Link>
         </div>
         <div className="grid gap-8 text-left sm:grid-cols-2">
-          <div className="rounded-xl bg-white p-6 shadow-sm">
+          <div className="glass-panel rounded-xl p-6">
             <h2 className="mb-3 text-sm font-semibold tracking-wide text-black/60 uppercase">
               Popular cities
             </h2>
@@ -71,7 +71,7 @@ export default function NotFound() {
               ))}
             </ul>
           </div>
-          <div className="rounded-xl bg-white p-6 shadow-sm">
+          <div className="glass-panel rounded-xl p-6">
             <h2 className="mb-3 text-sm font-semibold tracking-wide text-black/60 uppercase">
               Services
             </h2>

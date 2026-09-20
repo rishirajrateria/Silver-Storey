@@ -178,7 +178,7 @@ export default async function InteriorDesignersIndiaPage() {
         </p>
         <div className="grid gap-8 md:grid-cols-2">
           {regions.map(({ region, states }) => (
-            <div key={region} className="rounded-xl bg-white p-6 shadow-sm">
+            <div key={region} className="glass-panel rounded-xl p-6">
               <h3 className="mb-4 text-lg font-bold text-black">
                 {region} India
               </h3>

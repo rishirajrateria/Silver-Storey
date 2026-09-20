@@ -59,10 +59,7 @@ export function StatsRow() {
     <div className="mx-auto max-w-6xl px-6 py-8">
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {stats.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-xl bg-white px-5 py-5 shadow-sm"
-          >
+          <div key={s.label} className="glass-panel rounded-xl px-5 py-5">
             <dt className="order-2 text-xs tracking-wide text-black/50 uppercase">
               {s.label}
             </dt>

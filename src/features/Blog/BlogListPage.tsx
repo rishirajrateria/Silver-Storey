@@ -73,7 +73,7 @@ export default function BlogListPage({
                   className={
                     c.active
                       ? 'rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white sm:text-sm'
-                      : 'rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black/70 shadow-sm transition-colors hover:text-black sm:text-sm'
+                      : 'glass-panel rounded-full px-4 py-1.5 text-xs font-medium text-black/70 transition-colors hover:text-black sm:text-sm'
                   }
                 >
                   {c.name}
@@ -92,7 +92,7 @@ export default function BlogListPage({
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
-                className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-shadow hover:shadow-md"
+                className="glass-panel glass-lift group flex flex-col overflow-hidden rounded-xl"
               >
                 {/* Image */}
                 <div className="aspect-[16/10] overflow-hidden bg-zinc-100">

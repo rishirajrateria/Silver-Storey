@@ -87,7 +87,7 @@ export default async function SearchPage({
 
       <section className="mx-auto max-w-4xl px-6 py-6">
         {query && hits.length === 0 && (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm">
+          <div className="glass-panel rounded-xl p-8 text-center">
             <p className="mb-2 font-semibold text-black">
               Nothing matched “{query}”.
             </p>
@@ -105,7 +105,7 @@ export default async function SearchPage({
           </div>
         )}
         {hits.length > 0 && (
-          <ol className="divide-y divide-black/10 rounded-xl bg-white shadow-sm">
+          <ol className="glass-panel divide-y divide-black/10 rounded-xl">
             {hits.map((h) => (
               <li key={`${h.type}-${h.path}`}>
                 <Link

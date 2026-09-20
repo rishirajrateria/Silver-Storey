@@ -142,7 +142,7 @@ export default function ArticlePage({
 
         {article.keyTakeaways && article.keyTakeaways.length > 0 && (
           <aside
-            className="mb-10 rounded-xl bg-white p-6 shadow-sm"
+            className="glass-panel mb-10 rounded-xl p-6"
             aria-label="Key takeaways"
           >
             <h2 className="mb-3 text-sm font-semibold tracking-wide text-black/60 uppercase">
@@ -237,7 +237,7 @@ export default function ArticlePage({
                   </ol>
                 )}
                 {s.table && (
-                  <div className="mb-6 overflow-x-auto rounded-xl bg-white shadow-sm">
+                  <div className="glass-panel mb-6 overflow-x-auto rounded-xl">
                     <table className="w-full text-left text-sm">
                       <thead className="bg-black text-white">
                         <tr>
@@ -282,17 +282,14 @@ export default function ArticlePage({
         {article.tags.length > 0 && (
           <p className="mt-10 flex flex-wrap gap-2 text-xs text-black/50">
             {article.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-white px-3 py-1 shadow-sm"
-              >
+              <span key={t} className="glass-panel rounded-full px-3 py-1">
                 #{t}
               </span>
             ))}
           </p>
         )}
 
-        <div className="mt-10 rounded-xl bg-white p-6 shadow-sm">
+        <div className="glass-panel mt-10 rounded-xl p-6">
           <p className="text-sm font-semibold text-black">About the author</p>
           <p className="mt-1 text-sm text-black/65">
             {article.author} — the designers, project managers and workshop team
@@ -323,7 +320,7 @@ export default function ArticlePage({
               <Link
                 key={r.slug}
                 href={articlePath(r.slug)}
-                className="group flex flex-col rounded-xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="glass-panel glass-lift group flex flex-col rounded-xl p-6"
               >
                 <span className="mb-2 text-xs font-semibold tracking-wide text-[#6b1a1a] uppercase">
                   {CATEGORY_BY_SLUG[r.category]?.name}

@@ -381,7 +381,7 @@ export default function MenuOverlay({
               </span>
             </Link>
 
-            <div className="rounded-2xl bg-white p-6 shadow-sm">
+            <div className="glass-panel rounded-2xl p-6">
               <h2 className="mb-4 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
                 Talk to a designer
               </h2>
