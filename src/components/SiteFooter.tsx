@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { SITE } from '@/lib/seo/site';
+import SocialLinks from '@/components/SocialLinks';
 import { SERVICES, servicePath } from '@/lib/services';
 import {
   TIER1_CITIES,
@@ -96,6 +97,7 @@ export default function SiteFooter() {
                 Book Free Consultation
               </a>
             </div>
+            <SocialLinks variant="dark" className="mt-6 flex-wrap" />
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:col-span-7">
             <Column title="Head office">

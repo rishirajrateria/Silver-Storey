@@ -81,21 +81,26 @@ export const SITE = {
     'Kohler',
   ],
   /**
-   * Social profiles. Fill these in (or set the NEXT_PUBLIC_SOCIAL_* env vars)
-   * and they appear in Organization `sameAs`, the menu, the social bar and
-   * llms.txt. Icons for networks without a URL are not rendered, so the site
-   * never links to a dead "#".
+   * Social profiles, shown in the footer, the menu and the hero bar, and
+   * emitted as Organization `sameAs` — so each URL must be a profile the
+   * business really owns. Set the matching NEXT_PUBLIC_SOCIAL_* env var to
+   * override or to add a network; networks left empty render no icon, so the
+   * site never links to a dead "#".
    */
   socials: [
     {
       label: 'Instagram',
       key: 'instagram',
-      href: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM ?? '',
+      href:
+        process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM ??
+        'https://www.instagram.com/silver_storey/',
     },
     {
       label: 'Facebook',
       key: 'facebook',
-      href: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK ?? '',
+      href:
+        process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK ??
+        'https://www.facebook.com/SilverStoreyInteriorDesigners/',
     },
     {
       label: 'LinkedIn',
