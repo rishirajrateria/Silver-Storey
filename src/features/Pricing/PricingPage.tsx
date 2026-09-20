@@ -18,7 +18,7 @@ export default function PricingPage({
         className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center sm:pt-32 sm:pb-20"
         style={{
           background:
-            'linear-gradient(to bottom, rgba(20, 18, 16, 0.8) 0%, rgba(50, 45, 40, 0.5) 40%, #e8e4de 85%, #e8e4de 100%)',
+            'linear-gradient(to bottom, rgba(20, 18, 16, 0.8) 0%, rgba(50, 45, 40, 0.5) 40%, #f2efea 85%, #f4f1ed 100%)',
         }}
       >
         {/* Logo */}
@@ -48,7 +48,7 @@ export default function PricingPage({
       </section>
 
       {/* ── Content ── */}
-      <div style={{ background: '#e8e4de' }}>
+      <div>
         <section className="mx-auto max-w-4xl px-6 pb-24 sm:px-10 sm:pb-32 lg:px-8">
           {/* Intro */}
           <p className="mb-10 text-base leading-relaxed text-black sm:mb-12 sm:text-lg">

@@ -7,6 +7,8 @@ export default function CategoryCard(props: Category) {
     <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-zinc-800 shadow-xl sm:h-64 md:h-72">
       {imageUrl && (
         <img
+          loading="lazy"
+          decoding="async"
           src={imageUrl}
           alt={name}
           className="absolute inset-0 h-full w-full object-cover"

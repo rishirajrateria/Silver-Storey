@@ -47,7 +47,7 @@ export default function BlogListPage({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f0efec] px-6 py-20 sm:py-28">
+    <div className="min-h-screen px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-16 text-center">
@@ -98,6 +98,8 @@ export default function BlogListPage({
                 <div className="aspect-[16/10] overflow-hidden bg-zinc-100">
                   {post.mainImageUrl ? (
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={post.mainImageUrl}
                       alt={post.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

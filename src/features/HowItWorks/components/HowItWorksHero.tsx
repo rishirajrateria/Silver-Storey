@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function HowItWorksHero() {
   return (
-    <section className="cursor-default bg-[#f2f1ef] px-6 py-20 sm:py-28">
+    <section className="cursor-default px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
           {/* Left — text */}

@@ -18,11 +18,13 @@ export default function TermsConditionsPage({
         className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center sm:pt-32 sm:pb-20"
         style={{
           background:
-            'linear-gradient(to bottom, rgba(20, 18, 16, 0.8) 0%, rgba(50, 45, 40, 0.5) 40%, #e8e4de 85%, #e8e4de 100%)',
+            'linear-gradient(to bottom, rgba(20, 18, 16, 0.8) 0%, rgba(50, 45, 40, 0.5) 40%, #f2efea 85%, #f4f1ed 100%)',
         }}
       >
         <div className="mb-4 w-16 sm:w-20">
           <img
+            loading="lazy"
+            decoding="async"
             src="/images/home_logo.avif"
             alt="Silver Storey logo"
             className="h-auto w-full object-contain"
@@ -41,7 +43,7 @@ export default function TermsConditionsPage({
       </section>
 
       {/* ── Content ── */}
-      <div style={{ background: '#e8e4de' }}>
+      <div>
         <section className="mx-auto max-w-4xl px-6 pb-24 sm:px-10 sm:pb-32 lg:px-8">
           {/* ══ Modular Systems ══ */}
           <div className="mb-12 sm:mb-16">

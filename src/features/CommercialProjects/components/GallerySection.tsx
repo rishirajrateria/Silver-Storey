@@ -7,6 +7,8 @@ function GalleryCard({ project }: { project: GalleryProject }) {
   return (
     <div className="relative h-[55vh] w-65 shrink-0 overflow-hidden rounded-2xl shadow-lg sm:h-[60vh] sm:w-75 md:w-80">
       <img
+        loading="lazy"
+        decoding="async"
         src={project.image}
         alt={project.title}
         className="h-full w-full object-cover"
@@ -25,7 +27,7 @@ function GalleryCard({ project }: { project: GalleryProject }) {
 }
 
 interface GallerySectionProps {
-  /** Gallery items from Sanity — falls back to hardcoded constants when empty */
+  /** Gallery items from the CMS — falls back to hardcoded constants when empty */
   projects?: GalleryProject[];
   /** Admin-defined section heading — defaults to "Gallery" */
   title?: string;

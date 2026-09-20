@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { SanityVideo } from '../../../lib/sanity/types';
+import type { VideoItem as CmsVideo } from '../../../lib/db/content';
 
 interface VideoItem {
   id: string;
@@ -55,6 +55,8 @@ function VideoCard({
         >
           {/* Thumbnail */}
           <img
+            loading="lazy"
+            decoding="async"
             src={thumbnailUrl}
             alt={title}
             className="h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-95"
@@ -74,6 +76,8 @@ function VideoCard({
             <div className="flex items-center gap-2">
               <div className="h-7 w-7 overflow-hidden rounded-full">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src="/images/home_logo.avif"
                   alt="Silver Storey"
                   className="h-full w-full object-cover"
@@ -129,7 +133,7 @@ const STATIC_VIDEOS: VideoItem[] = [1, 2, 3, 4].map((i) => ({
 }));
 
 interface VideoSectionProps {
-  videos?: SanityVideo[];
+  videos?: CmsVideo[];
 }
 
 export default function VideoSection({ videos = [] }: VideoSectionProps) {
@@ -138,7 +142,7 @@ export default function VideoSection({ videos = [] }: VideoSectionProps) {
   const items: VideoItem[] =
     videos.length > 0
       ? videos.map((v) => ({
-          id: v._id,
+          id: v.id,
           title: v.title,
           youtubeId: v.youtubeId,
         }))

@@ -11,7 +11,7 @@ import MenuOverlay from '@/features/Hero/components/MenuOverlay';
 export default function PageShell({
   children,
   projectPages = [],
-  className = 'min-h-screen bg-[#f0efec]',
+  className = 'min-h-screen',
 }: {
   children: React.ReactNode;
   projectPages?: { title: string; slug: string }[];

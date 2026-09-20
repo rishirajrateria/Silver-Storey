@@ -60,6 +60,8 @@ export default function WarrantySection() {
         <div className="relative w-full max-w-[260px] sm:max-w-sm md:max-w-md lg:w-1/3 lg:max-w-none">
           <div className="relative aspect-16/10 overflow-hidden rounded-t-xl border-4 border-b-8 border-black bg-black shadow-2xl sm:rounded-t-2xl sm:border-6 sm:border-b-12 md:rounded-t-3xl md:border-8 md:border-b-14">
             <img
+              loading="lazy"
+              decoding="async"
               src="/images/laptop.avif"
               alt="Interior preview screen"
               className="h-full w-full object-cover"

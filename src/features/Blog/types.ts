@@ -6,8 +6,10 @@ export interface BlogPost {
   author?: string;
   publishedAt?: string;
   mainImageUrl?: string;
+  category?: string;
 }
 
 export interface BlogPostFull extends BlogPost {
-  body?: any[];
+  /** Markdown source. */
+  body?: string;
 }

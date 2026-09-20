@@ -15,6 +15,8 @@ export default function ServicesSection() {
             className="flex flex-col items-center justify-center gap-6 text-black/80 transition-colors hover:text-black"
           >
             <img
+              loading="lazy"
+              decoding="async"
               src={service.image}
               alt={service.name}
               className="h-28 w-28 object-contain"

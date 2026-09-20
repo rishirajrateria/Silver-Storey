@@ -197,6 +197,7 @@ export default function ContactForm() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [budget, setBudget] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [loading, setLoading] = useState(false);
 
   const numbersOnly = (e: React.FormEvent<HTMLInputElement>) => {
@@ -220,6 +221,7 @@ export default function ContactForm() {
           address: address.trim(),
           projectType,
           budget: budget.trim(),
+          company_website: honeypot,
         }),
       });
       if (!res.ok) {
@@ -247,10 +249,7 @@ export default function ContactForm() {
     <>
       {/* Calendly modal removed in favor of direct Calendly links */}
 
-      <div
-        id="contact-form"
-        className="cursor-default bg-[#f0efec] px-6 py-20 sm:py-28"
-      >
+      <div id="contact-form" className="cursor-default px-6 py-20 sm:py-28">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-4 text-4xl font-semibold tracking-wide sm:text-5xl lg:text-6xl">
@@ -272,6 +271,30 @@ export default function ContactForm() {
         {/* Form */}
         <div className="mx-auto max-w-4xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Honeypot — hidden from people, filled in by bots */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '-10000px',
+                top: 'auto',
+                width: 1,
+                height: 1,
+                overflow: 'hidden',
+              }}
+            >
+              <label>
+                Company website
+                <input
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </label>
+            </div>
             {/* Name + Phone */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>

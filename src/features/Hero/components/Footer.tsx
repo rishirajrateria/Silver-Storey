@@ -1,22 +1,59 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+const VIDEO_MP4 = '/videos/OFFICE full_1.mp4';
+const VIDEO_WEBM: string | null = null;
+// Set to '/videos/office-poster.jpg' after running `npm run optimize:videos`.
+const VIDEO_POSTER: string | null = null;
 
 export default function Footer() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  // Only fetch the background video once the section is close to the
+  // viewport, so it never competes with above-the-fold content.
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setShouldLoad(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShouldLoad(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
+    <div
+      ref={wrapperRef}
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden"
+    >
       <div className="absolute inset-0 bg-black">
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        >
-          <source src="videos/OFFICE full_1.mp4" type="video/mp4" />
-        </video>
+        {shouldLoad && (
+          <video
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster={VIDEO_POSTER ?? undefined}
+            aria-hidden="true"
+          >
+            {VIDEO_WEBM && <source src={VIDEO_WEBM} type="video/webm" />}
+            <source src={VIDEO_MP4} type="video/mp4" />
+          </video>
+        )}
       </div>
 
       <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 text-center">

@@ -12,21 +12,25 @@ import AboutFoundersSection from './components/AboutFoundersSection';
 import AboutHero from './components/AboutHero';
 import AboutMission from './components/AboutMission';
 import AboutProcess from './components/AboutProcess';
-import { reviews } from '../Hero/constants';
+import { reviews as defaultReviews } from '../Hero/constants';
+import type { Review } from '../Hero/types';
 import { useSlider } from '../../hooks/useSlider';
 
 export default function AboutUsPage({
   projectPages = [],
+  reviews: cmsReviews,
 }: {
   projectPages?: { title: string; slug: string }[];
+  reviews?: Review[];
 }) {
+  const reviews = cmsReviews?.length ? cmsReviews : defaultReviews;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentSlide, nextSlide, prevSlide, setCurrentSlide } = useSlider(
     reviews.length,
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <AboutHero />
       <AboutMission />
       <AboutProcess />
@@ -37,7 +41,7 @@ export default function AboutUsPage({
       </section>
 
       {/* ── How it Works intro ── */}
-      <section className="cursor-default bg-[#f2f1ef] px-6 py-20 text-center sm:py-28">
+      <section className="cursor-default px-6 py-20 text-center sm:py-28">
         <h2 className="mb-6 text-5xl font-bold tracking-tight text-black sm:text-6xl lg:text-7xl">
           How it Works&nbsp;!
         </h2>
