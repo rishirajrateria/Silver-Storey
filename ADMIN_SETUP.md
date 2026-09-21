@@ -69,7 +69,21 @@ WebP before being stored — the equivalent of the on-the-fly resizing Sanity's
 CDN used to do. A 9 MB phone photo lands at roughly 1.4 MB. Images already
 smaller than the re-encoded version are stored untouched.
 
-## 4. (Optional) Import your existing Sanity content
+## 4. (Optional) Seed the home page room cards
+
+The home page has a scrolling strip of room cards ("Bedroom — 2.1 L Onwards").
+It reads published categories, so it renders nothing until some exist. To
+recreate the six the site originally shipped with:
+
+```bash
+DATABASE_URL="postgres://…" node scripts/seed-starter-content.mjs
+```
+
+They arrive without images — add those in /admin → Categories, which uploads
+them to Blob storage. Re-running is safe: a price you have since edited in the
+admin panel is left alone unless you pass `--force`.
+
+## 5. (Optional) Import your existing Sanity content
 
 Run once, from a machine that can reach the Sanity API:
 
@@ -93,7 +107,7 @@ If you skip `BLOB_READ_WRITE_TOKEN`, images keep their Sanity CDN URLs: the site
 works, but images are still hosted by Sanity. Supply the token to become fully
 independent.
 
-## 5. Sign in
+## 6. Sign in
 
 Visit `/admin`. You will be redirected to the login page.
 

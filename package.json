@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "node scripts/prepare-database.mjs && prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
