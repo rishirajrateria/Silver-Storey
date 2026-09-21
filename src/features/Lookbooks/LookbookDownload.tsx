@@ -55,7 +55,7 @@ export default function LookbookDownload({
 
   if (status === 'ready') {
     return (
-      <div className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+      <div className="glass-panel rounded-2xl p-6 sm:p-8">
         <p className="mb-3 text-lg font-bold text-black">
           Your lookbook is ready
         </p>
@@ -77,10 +77,7 @@ export default function LookbookDownload({
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"
-    >
+    <form onSubmit={submit} className="glass-panel rounded-2xl p-6 sm:p-8">
       <p className="mb-1 text-lg font-bold text-black">Download the lookbook</p>
       <p className="mb-5 text-sm text-black/60">
         Free PDF. Tell us where to send design ideas and we unlock it instantly.

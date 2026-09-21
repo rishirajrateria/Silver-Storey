@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const VIDEO_MP4 = '/videos/OFFICE full_1.mp4';
+import { FOOTER_VIDEO, FOOTER_VIDEO_POSTER } from '../media';
+
+const VIDEO_MP4 = FOOTER_VIDEO;
 const VIDEO_WEBM: string | null = null;
-// Set to '/videos/office-poster.jpg' after running `npm run optimize:videos`.
-const VIDEO_POSTER: string | null = null;
+const VIDEO_POSTER = FOOTER_VIDEO_POSTER;
 
 export default function Footer() {
   const wrapperRef = useRef<HTMLDivElement>(null);

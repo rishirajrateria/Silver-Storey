@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: SITE.shortDescription,
     start_url: '/',
     display: 'standalone',
-    background_color: '#eeeae5',
+    background_color: '#ece5db',
     theme_color: '#000000',
     lang: 'en-IN',
     categories: ['business', 'lifestyle', 'shopping'],

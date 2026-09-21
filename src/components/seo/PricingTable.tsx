@@ -28,7 +28,7 @@ export default function PricingTable({
         {note ??
           'Indicative starting estimates. Every Silver Storey quote is itemised — consultation, site measurement and 3D visualisation are complimentary.'}
       </p>
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+      <div className="glass-panel overflow-hidden rounded-xl">
         <table className="w-full text-left text-sm sm:text-base">
           <thead className="bg-black text-white">
             <tr>

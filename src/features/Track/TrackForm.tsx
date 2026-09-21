@@ -68,7 +68,7 @@ export default function TrackForm() {
         </div>
 
         <ol
-          className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"
+          className="glass-panel rounded-2xl p-6 sm:p-8"
           aria-label="Project milestones"
         >
           {TRACK_STEPS.map((s, i) => {
@@ -110,7 +110,7 @@ export default function TrackForm() {
         </ol>
 
         {p.notes && (
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <div className="glass-panel rounded-2xl p-6">
             <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-black/50 uppercase">
               Note from your team
             </p>
@@ -121,7 +121,7 @@ export default function TrackForm() {
         <div>
           <h3 className="mb-4 text-lg font-bold text-black">Updates</h3>
           {p.updates.length === 0 ? (
-            <p className="rounded-2xl bg-white p-6 text-sm text-black/55 shadow-sm">
+            <p className="glass-panel rounded-2xl p-6 text-sm text-black/55">
               No updates posted yet — your project manager will add photos and
               notes as work progresses.
             </p>
@@ -130,7 +130,7 @@ export default function TrackForm() {
               {p.updates.map((u) => (
                 <li
                   key={u.id}
-                  className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                  className="glass-panel overflow-hidden rounded-2xl"
                 >
                   {u.imageUrl && (
                     <img
@@ -169,10 +169,7 @@ export default function TrackForm() {
   }
 
   return (
-    <form
-      action={formAction}
-      className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"
-    >
+    <form action={formAction} className="glass-panel rounded-2xl p-6 sm:p-8">
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-black">

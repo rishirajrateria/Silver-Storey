@@ -113,7 +113,7 @@ export default async function ServicePage({ params }: Props) {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-8 rounded-xl bg-white p-6 shadow-sm sm:p-8 md:grid-cols-2">
+        <div className="glass-panel grid gap-8 rounded-xl p-6 sm:p-8 md:grid-cols-2">
           <FeatureList title="What’s included" columns={1} items={s.includes} />
           <FeatureList
             title="Materials & brands"
@@ -134,7 +134,7 @@ export default async function ServicePage({ params }: Props) {
           >
             {s.shortName} cost
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm sm:p-8">
+          <div className="glass-panel rounded-xl p-6 sm:p-8">
             <p className="text-3xl font-bold text-[#6b1a1a]">
               {s.category === 'commercial'
                 ? `₹${s.typicalRangeINR[0].toLocaleString('en-IN')} – ₹${s.typicalRangeINR[1].toLocaleString('en-IN')} per sq ft`
@@ -160,7 +160,7 @@ export default async function ServicePage({ params }: Props) {
         </h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PROCESS_STEPS.map((st, i) => (
-            <li key={st.name} className="rounded-xl bg-white p-6 shadow-sm">
+            <li key={st.name} className="glass-panel rounded-xl p-6">
               <span className="mb-2 block text-xs font-semibold tracking-[0.2em] text-[#6b1a1a]">
                 STEP {String(i + 1).padStart(2, '0')}
               </span>

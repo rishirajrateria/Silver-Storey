@@ -23,7 +23,7 @@ export default function FAQSection({
       >
         {title}
       </h2>
-      <div className="divide-y divide-black/10 rounded-xl bg-white shadow-sm">
+      <div className="glass-panel divide-y divide-black/10 rounded-xl">
         {faqs.map((f) => (
           <details key={f.question} className="group px-6 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold text-black">

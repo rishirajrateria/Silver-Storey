@@ -1,8 +1,22 @@
 @import 'tailwindcss';
 
 :root {
-  /* The site's ground: one soft cream-to-white wash, defined once. */
-  --site-canvas: linear-gradient(168deg, #f8f5f2 0%, #efebe6 45%, #e6e0d9 100%);
+  /* The site's ground: one soft cream-to-white wash, defined once.
+
+     The light end is pinned just short of white — cards on this site are
+     white with only a shadow-sm to separate them, so anything brighter
+     swallows them. All of the range therefore comes from the beige end,
+     which is why it runs this deep. */
+  --site-canvas: linear-gradient(168deg, #f8f5f2 0%, #ece5db 45%, #dcd3c6 100%);
+  /* The same three tones lit from the opposite corner. The backdrop
+     cross-fades between the two, which moves the light without ever going
+     brighter than either one on its own. */
+  --site-canvas-alt: linear-gradient(
+    20deg,
+    #f8f5f2 0%,
+    #ece5db 52%,
+    #dcd3c6 100%
+  );
   --font-space-grotesk:
     'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
@@ -22,37 +36,143 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  /* Shows through during overscroll, and is the fallback if ::before is
-     ever suppressed. */
-  background-color: #eeeae5;
+  /* Shows through during overscroll, behind the fixed canvas. */
+  background-color: #ece5db;
 }
 
 /* ── Site canvas ──
-   One soft cream-to-white wash behind every public page, so the whole site
-   shares a single ground instead of four slightly different flat beiges.
+   The backdrop for the whole site: a cream-to-white wash that drifts.
 
-   Painted on a fixed pseudo-element rather than as a body background: it
-   stays put while the page scrolls, so a 6000px city page shows the same
-   gentle wash as a short one instead of banding, and it costs nothing to
-   scroll because nothing repaints.
+   Sits behind everything at a negative z-index and is pinned to the
+   viewport, so a long page shows the same gentle wash as a short one
+   rather than stretching the gradient over its full height.
 
-   The light end deliberately stops short of pure white. Cards on this site
-   are white with only a shadow-sm to separate them, so a canvas that
+   Both layers are oversized, so however far they travel their edges never
+   come into view, and both animate transform/opacity only — the compositor
+   keeps them on the GPU and the pages above them never repaint.
+
+   The light end deliberately stops short of pure white: cards on this site
+   are white with only a shadow-sm to separate them, so a backdrop that
    reached #fff would swallow them. */
-body::before {
-  content: '';
+.site-canvas {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -10;
+  overflow: hidden;
   pointer-events: none;
-  background: var(--site-canvas);
+  /* Visible for the instant before the layers paint, and during overscroll. */
+  background-color: #ece5db;
 }
 
-/* For a surface that cannot sit directly on the body canvas because an
-   opaque ancestor is in the way — paints the same wash, sized to the
-   element. */
-.site-canvas {
-  background-image: var(--site-canvas);
+/* Two full-bleed arrangements of the same wash, cross-fading. A cross-fade
+   is an interpolation, so the result is always between the two — it can
+   never land brighter than either, which is what keeps the white cards
+   readable while the light still visibly moves. */
+.site-drift {
+  position: absolute;
+  inset: 0;
+}
+.site-drift-a {
+  background: var(--site-canvas);
+}
+.site-drift-b {
+  background: var(--site-canvas-alt);
+  opacity: 0;
+  animation: site-fade 48s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes site-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* A soft pool of light crossing on a different cycle, so the two rhythms
+   never line up the same way twice. Kept light: this one does add
+   brightness rather than interpolate. */
+.site-drift-c {
+  position: absolute;
+  top: -25%;
+  left: -15%;
+  width: 70vw;
+  height: 70vw;
+  max-width: 1100px;
+  max-height: 1100px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: site-drift-c 66s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes site-drift-c {
+  0%,
+  100% {
+    transform: translate3d(-12%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(52%, 42%, 0) scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-drift-b,
+  .site-drift-c {
+    animation: none;
+  }
+}
+
+/* ── Glass ──
+   Liquid-glass surfacing, in two variants, because a backdrop blur only
+   earns its cost where there is detail behind it to soften.
+
+   .glass       floats over video, photography or scrolling content, so it
+                gets a real backdrop blur — there is texture back there.
+   .glass-panel sits on the site canvas, which is a smooth gradient.
+                Blurring a smooth gradient returns the same gradient, so
+                this skips the filter and looks identical for nothing. That
+                matters here: the canvas animates, and a backdrop-filter
+                over a moving backdrop re-blurs every single frame.
+
+   Both share the edge, which is what actually reads as glass — a bright
+   rim along the top where light catches the lip, a hairline around it, and
+   a soft shadow lifting it off the ground. */
+.glass,
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 1px 2px rgba(60, 50, 40, 0.05),
+    0 12px 28px -14px rgba(60, 50, 40, 0.22);
+}
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+.glass {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+/* Replaces transition-shadow/hover:shadow-md on glass, which would
+   otherwise drop the rim highlight on hover by overwriting box-shadow. */
+.glass-lift {
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+.glass-lift:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 2px 4px rgba(60, 50, 40, 0.06),
+    0 18px 40px -16px rgba(60, 50, 40, 0.3);
 }
 
 /* hero-specific tweaks */

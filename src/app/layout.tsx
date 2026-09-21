@@ -3,6 +3,7 @@ import { Space_Grotesk } from 'next/font/google';
 import { Toaster } from 'sonner';
 import './globals.css';
 import JsonLd from '@/lib/seo/JsonLd';
+import SiteCanvas from '@/components/SiteCanvas';
 import { graph, organizationSchema, websiteSchema } from '@/lib/seo/schema';
 import { SITE, SITE_URL, PRIMARY_KEYWORDS } from '@/lib/seo/site';
 
@@ -98,6 +99,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://blob.vercel-storage.com" />
       </head>
       <body className="flex min-h-full flex-col">
+        <SiteCanvas />
         <JsonLd
           id="org-jsonld"
           data={graph(organizationSchema(), websiteSchema())}

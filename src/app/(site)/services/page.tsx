@@ -122,7 +122,7 @@ export default async function ServicesPage() {
                 <li key={s.slug}>
                   <Link
                     href={servicePath(s)}
-                    className="flex h-full flex-col rounded-xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                    className="glass-panel glass-lift flex h-full flex-col rounded-xl p-6"
                   >
                     <h3 className="mb-2 text-lg font-bold text-black">
                       {s.name}

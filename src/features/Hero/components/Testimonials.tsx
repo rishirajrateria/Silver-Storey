@@ -86,7 +86,9 @@ export default function Testimonials({
         </div>
 
         {/* Dots */}
-        <div className="mt-12 flex justify-center gap-3">
+        {/* The dot stays 6px; the button around it is 24px so it can
+            actually be tapped. */}
+        <div className="mt-12 flex justify-center">
           {reviews.map((_, idx) => (
             <button
               key={idx}
@@ -94,13 +96,17 @@ export default function Testimonials({
                 e.preventDefault();
                 setCurrentSlide(idx);
               }}
-              className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                currentSlide === idx
-                  ? 'bg-[#f95738]'
-                  : 'bg-black/10 hover:bg-black/20'
-              }`}
+              className="flex h-6 w-6 items-center justify-center"
               aria-label={`Go to slide ${idx + 1}`}
-            />
+            >
+              <span
+                className={`block h-1.5 w-1.5 rounded-full transition-colors ${
+                  currentSlide === idx
+                    ? 'bg-[#f95738]'
+                    : 'bg-black/10 hover:bg-black/20'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

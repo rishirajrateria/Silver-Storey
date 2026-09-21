@@ -125,7 +125,7 @@ export default async function WarrantyPage() {
       </PageHero>
 
       <section className="mx-auto max-w-5xl px-6 py-10">
-        <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+        <div className="glass-panel overflow-hidden rounded-xl">
           <table className="w-full text-left text-sm sm:text-base">
             <thead className="bg-black text-white">
               <tr>

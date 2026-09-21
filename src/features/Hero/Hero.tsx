@@ -15,7 +15,6 @@ import BookConsultation from './components/BookConsultation';
 import BrandsMarquee from './components/BrandsMarquee';
 import Testimonials from './components/Testimonials';
 import FoundersSection from './components/FoundersSection';
-import Footer from './components/Footer';
 import { useSlider } from '../../hooks/useSlider';
 import type { Category, Review } from './types';
 import type { VideoItem } from '../../lib/db/content';
@@ -128,9 +127,6 @@ export default function Hero({
         {/* 11. Our Creative Founders Section */}
         <FoundersSection brochureUrl={brochureUrl} />
       </div>
-
-      {/* 12. Footer Section */}
-      <Footer />
     </div>
   );
 }

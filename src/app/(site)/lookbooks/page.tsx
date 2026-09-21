@@ -98,7 +98,7 @@ export default async function LookbooksPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-8">
         {lookbooks.length === 0 ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+          <div className="glass-panel rounded-2xl p-10 text-center">
             <p className="mb-2 text-lg font-bold text-black">
               Lookbooks are on their way
             </p>
@@ -119,7 +119,7 @@ export default async function LookbooksPage() {
               <li key={l.id}>
                 <Link
                   href={`/lookbooks/${l.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className="glass-panel glass-lift group flex h-full flex-col overflow-hidden rounded-2xl"
                 >
                   <div className="aspect-[4/3] w-full overflow-hidden bg-black/5">
                     {l.coverImageUrl && (

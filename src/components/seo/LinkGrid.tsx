@@ -45,7 +45,7 @@ export default function LinkGrid({
           <li key={it.path}>
             <Link
               href={it.path}
-              className="flex items-center justify-between rounded-xl bg-white px-5 py-4 text-sm font-medium text-black shadow-sm transition-shadow hover:shadow-md"
+              className="glass-panel glass-lift flex items-center justify-between rounded-xl px-5 py-4 text-sm font-medium text-black"
             >
               <span>{it.name}</span>
               <span className="text-xs text-black/40">{it.meta ?? '→'}</span>

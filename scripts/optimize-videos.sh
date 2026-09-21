@@ -31,14 +31,11 @@ poster() {
   ffmpeg -y -loglevel error -ss "$at" -i "$src" -frames:v 1 -q:v 4 -vf "scale=-2:1080" "$out"
 }
 
-# Hero video: it's the LCP element, so keep quality reasonable but small.
-optimize "$VID/home_video1.mp4" 1080 28
-poster   "$VID/home_video1.mp4" "$VID/home_video1.jpg" 1
-
-# Footer background: plays at 60% opacity behind text — 720p / CRF 30 is plenty.
-optimize "$VID/OFFICE full_1.mp4" 720 30
-poster   "$VID/OFFICE full_1.mp4" "$VID/office-poster.jpg" 2
+# The one clip the site uses, on both the home hero and /contact. It arrives
+# already compressed and remuxed for faststart, so all that is left is the
+# poster frame — re-encoding it again would only lose quality.
+poster   "$VID/hero.mp4" "$VID/hero-poster.jpg" 2
 
 echo
-echo "Done. Expected sizes: hero ≈ 1.5–2.5 MB, footer ≈ 2–4 MB (from 6.3 MB / 32 MB)."
+echo "Then set SITE_VIDEO_POSTER in src/features/Hero/media.ts to '/videos/hero-poster.jpg'."
 echo "Commit the updated files in public/videos (not the originals/ folder)."
