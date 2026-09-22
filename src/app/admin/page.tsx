@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { requireSession } from '@/lib/auth';
 import { prisma, isDatabaseConfigured, safeQuery } from '@/lib/db/client';
 import { getDashboardData, getRecentLeads } from '@/lib/analytics/queries';
+import { SOURCE_LABELS } from '@/lib/analytics/sources';
 import { parseRange } from '@/lib/analytics/range';
 import AdminNav from '@/components/admin/AdminNav';
 import { AdminPageHeader, Banner, Card } from '@/components/admin/ui';
@@ -15,13 +16,6 @@ import DeviceBar from '@/components/admin/charts/DeviceBar';
 import { isBlobConfigured } from '@/lib/storage';
 
 export const dynamic = 'force-dynamic';
-
-const SOURCE_LABELS: Record<string, string> = {
-  organic: 'Search engines',
-  direct: 'Direct',
-  referral: 'Other websites',
-  social: 'Social media',
-};
 
 const CMS_SECTIONS = [
   {
@@ -197,6 +191,26 @@ export default async function AdminDashboard({
               rows={data.countries}
               labelHeading="Country"
               emptyMessage="No country data yet."
+            />
+          </Card>
+        </div>
+
+        {/* Named sources, not just buckets */}
+        <div className="mb-8">
+          <Card>
+            <h2 className="mb-1 text-lg font-bold text-black">
+              Exactly where visitors come from
+            </h2>
+            <p className="mb-5 text-sm text-black/50">
+              The named site behind each visit — Google, Instagram, ChatGPT and
+              the rest. Direct visits carry no referrer and so do not appear
+              here; see &ldquo;Where visitors come from&rdquo; above for the
+              split including those.
+            </p>
+            <BarList
+              rows={data.referrers}
+              labelHeading="Source"
+              emptyMessage="No referring sites yet — every visit so far was direct."
             />
           </Card>
         </div>

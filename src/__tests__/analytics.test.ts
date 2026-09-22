@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { countryLabel, regionLabel } from '@/lib/analytics/regions';
+import { sourceName } from '@/lib/analytics/sources';
 import {
   classifySource,
   detectDevice,
@@ -241,5 +242,59 @@ describe('country labels', () => {
   it('leaves anything that is not a two-letter code alone', () => {
     expect(countryLabel('Nowhere')).toBe('Nowhere');
     expect(countryLabel(null)).toBe('—');
+  });
+});
+
+describe('AI assistant traffic', () => {
+  const self = 'silverstorey.com';
+
+  it('counts the assistants as their own source, not as search or referral', () => {
+    for (const url of [
+      'https://chatgpt.com/',
+      'https://chat.openai.com/',
+      'https://claude.ai/',
+      'https://perplexity.ai/search',
+      'https://copilot.microsoft.com/',
+      'https://grok.com/',
+    ]) {
+      expect(classifySource(url, self), url).toBe('ai');
+    }
+  });
+
+  it('does not let Gemini be swallowed by the Google search pattern', () => {
+    // gemini.google.com contains "google"; checked before SEARCH_ENGINES so
+    // AI referrals are not reported as organic search.
+    expect(classifySource('https://gemini.google.com/app', self)).toBe('ai');
+    expect(classifySource('https://bard.google.com/', self)).toBe('ai');
+    // Real Google search must still be organic.
+    expect(classifySource('https://www.google.com/search?q=x', self)).toBe(
+      'organic',
+    );
+    expect(classifySource('https://www.google.co.in/search?q=x', self)).toBe(
+      'organic',
+    );
+  });
+});
+
+describe('source names', () => {
+  it('names the sites people recognise', () => {
+    expect(sourceName('google.com')).toBe('Google');
+    expect(sourceName('chatgpt.com')).toBe('ChatGPT');
+    expect(sourceName('claude.ai')).toBe('Claude');
+    expect(sourceName('gemini.google.com')).toBe('Gemini');
+    expect(sourceName('l.instagram.com')).toBe('Instagram');
+    expect(sourceName('t.co')).toBe('X (Twitter)');
+  });
+
+  it('folds regional Google domains onto one name', () => {
+    expect(sourceName('google.co.in')).toBe('Google');
+    expect(sourceName('www.google.co.uk')).toBe('Google');
+    expect(sourceName('news.google.com')).toBe('Google');
+  });
+
+  it('keeps unknown hosts, and calls a missing referrer Direct', () => {
+    expect(sourceName('somearchitectblog.in')).toBe('somearchitectblog.in');
+    expect(sourceName('www.example.com')).toBe('example.com');
+    expect(sourceName(null)).toBe('Direct');
   });
 });
