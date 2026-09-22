@@ -4,7 +4,13 @@
  */
 
 export type Device = 'desktop' | 'mobile' | 'tablet';
-export type Source = 'direct' | 'organic' | 'social' | 'referral' | 'internal';
+export type Source =
+  | 'direct'
+  | 'organic'
+  | 'ai'
+  | 'social'
+  | 'referral'
+  | 'internal';
 
 const BOT_PATTERN =
   /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|telegram|preview|monitor|uptime|pingdom|lighthouse|headless|curl|wget|python-requests|axios|node-fetch|scrapy|semrush|ahrefs|mj12|dotbot|petalbot|gptbot|claudebot|perplexity|applebot|amazonbot|bytespider/i;
@@ -24,6 +30,16 @@ export function detectDevice(userAgent: string | null | undefined): Device {
     return 'mobile';
   return 'desktop';
 }
+
+/**
+ * AI assistants, checked before everything else.
+ *
+ * Order matters: gemini.google.com and copilot.microsoft.com would otherwise
+ * match the search-engine pattern and be reported as ordinary search traffic,
+ * hiding exactly the number the llms.txt work exists to move.
+ */
+const AI_ASSISTANTS =
+  /^(chatgpt\.com|chat\.openai\.com|openai\.com)$|^(claude\.ai|anthropic\.com)$|^gemini\.google\.com$|^bard\.google\.com$|^(perplexity\.ai|www\.perplexity\.ai)$|^copilot\.microsoft\.com$|^(grok\.com|x\.ai)$|^(deepseek\.com|chat\.deepseek\.com)$|^(mistral\.ai|chat\.mistral\.ai)$|^poe\.com$|^you\.com$|^phind\.com$/i;
 
 const SEARCH_ENGINES =
   /google|bing|yahoo|duckduckgo|baidu|yandex|ecosia|brave|startpage|qwant/i;
@@ -50,6 +66,7 @@ export function classifySource(
   const host = referrerHost(referrer);
   if (!host) return 'direct';
   if (selfHost && host === selfHost.replace(/^www\./, '')) return 'internal';
+  if (AI_ASSISTANTS.test(host)) return 'ai';
   if (SEARCH_ENGINES.test(host)) return 'organic';
   if (SOCIAL.test(host)) return 'social';
   return 'referral';

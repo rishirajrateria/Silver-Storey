@@ -2,6 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import { prisma, safeQuery } from '@/lib/db/client';
 import { countryLabel, regionLabel } from './regions';
+import { sourceName } from './sources';
 import {
   buildPeriod,
   dayKeys,
@@ -39,6 +40,7 @@ export interface DashboardData {
   sources: Breakdown[];
   devices: Breakdown[];
   countries: Breakdown[];
+  referrers: Breakdown[];
   states: Breakdown[];
   cities: Breakdown[];
   totalViews: number;
@@ -77,6 +79,7 @@ export const getDashboardData = cache(
       sources: [],
       devices: [],
       countries: [],
+      referrers: [],
       states: [],
       cities: [],
       totalViews: 0,
@@ -95,6 +98,7 @@ export const getDashboardData = cache(
           countries,
           states,
           cities,
+          referrers,
         ] = await Promise.all([
           countsFor(period.from, period.to),
           countsFor(period.previousFrom, period.previousTo),
@@ -153,6 +157,19 @@ export const getDashboardData = cache(
             _count: { city: true },
             orderBy: { _count: { city: 'desc' } },
             take: 12,
+          }),
+          // The named site each visit came from, as opposed to the bucket it
+          // falls into. Taken generously and folded down afterwards, since
+          // several hosts collapse to one brand (google.co.in, google.com).
+          prisma.pageView.groupBy({
+            by: ['referrer'],
+            where: {
+              createdAt: { gte: period.from, lte: period.to },
+              referrer: { not: null },
+            },
+            _count: { referrer: true },
+            orderBy: { _count: { referrer: 'desc' } },
+            take: 40,
           }),
         ]);
 
@@ -251,6 +268,7 @@ export const getDashboardData = cache(
               value: c._count.city,
             })),
           ),
+          referrers: toBreakdown(foldByName(referrers).slice(0, 12)),
         };
       },
       empty,
@@ -258,6 +276,23 @@ export const getDashboardData = cache(
     );
   },
 );
+
+/**
+ * Collapses referring hosts onto their brand name and re-sorts, so Google
+ * reached through google.com and google.co.in counts once.
+ */
+function foldByName(
+  rows: { referrer: string | null; _count: { referrer: number } }[],
+): { label: string; value: number }[] {
+  const totals = new Map<string, number>();
+  for (const row of rows) {
+    const label = sourceName(row.referrer);
+    totals.set(label, (totals.get(label) ?? 0) + row._count.referrer);
+  }
+  return [...totals.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value);
+}
 
 export const getRecentLeads = cache(async (take = 8) =>
   safeQuery(
