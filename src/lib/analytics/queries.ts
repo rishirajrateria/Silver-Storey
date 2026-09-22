@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { prisma, safeQuery } from '@/lib/db/client';
+import { countryLabel, regionLabel } from './regions';
 import {
   buildPeriod,
   dayKeys,
@@ -38,6 +39,8 @@ export interface DashboardData {
   sources: Breakdown[];
   devices: Breakdown[];
   countries: Breakdown[];
+  states: Breakdown[];
+  cities: Breakdown[];
   totalViews: number;
   hasData: boolean;
 }
@@ -74,50 +77,84 @@ export const getDashboardData = cache(
       sources: [],
       devices: [],
       countries: [],
+      states: [],
+      cities: [],
       totalViews: 0,
       hasData: false,
     };
 
     return safeQuery(
       async () => {
-        const [current, previous, rows, pages, sources, devices, countries] =
-          await Promise.all([
-            countsFor(period.from, period.to),
-            countsFor(period.previousFrom, period.previousTo),
-            prisma.pageView.findMany({
-              where: { createdAt: { gte: period.from, lte: period.to } },
-              select: { createdAt: true, visitorHash: true },
-            }),
-            prisma.pageView.groupBy({
-              by: ['path'],
-              where: { createdAt: { gte: period.from, lte: period.to } },
-              _count: { path: true },
-              orderBy: { _count: { path: 'desc' } },
-              take: 10,
-            }),
-            prisma.pageView.groupBy({
-              by: ['source'],
-              where: { createdAt: { gte: period.from, lte: period.to } },
-              _count: { source: true },
-              orderBy: { _count: { source: 'desc' } },
-            }),
-            prisma.pageView.groupBy({
-              by: ['device'],
-              where: { createdAt: { gte: period.from, lte: period.to } },
-              _count: { device: true },
-              orderBy: { _count: { device: 'desc' } },
-            }),
-            prisma.pageView.groupBy({
-              by: ['country'],
-              where: {
-                createdAt: { gte: period.from, lte: period.to },
-                country: { not: null },
-              },
-              _count: { country: true },
-              orderBy: { _count: { country: 'desc' } },
-              take: 8,
-            }),
-          ]);
+        const [
+          current,
+          previous,
+          rows,
+          pages,
+          sources,
+          devices,
+          countries,
+          states,
+          cities,
+        ] = await Promise.all([
+          countsFor(period.from, period.to),
+          countsFor(period.previousFrom, period.previousTo),
+          prisma.pageView.findMany({
+            where: { createdAt: { gte: period.from, lte: period.to } },
+            select: { createdAt: true, visitorHash: true },
+          }),
+          prisma.pageView.groupBy({
+            by: ['path'],
+            where: { createdAt: { gte: period.from, lte: period.to } },
+            _count: { path: true },
+            orderBy: { _count: { path: 'desc' } },
+            take: 10,
+          }),
+          prisma.pageView.groupBy({
+            by: ['source'],
+            where: { createdAt: { gte: period.from, lte: period.to } },
+            _count: { source: true },
+            orderBy: { _count: { source: 'desc' } },
+          }),
+          prisma.pageView.groupBy({
+            by: ['device'],
+            where: { createdAt: { gte: period.from, lte: period.to } },
+            _count: { device: true },
+            orderBy: { _count: { device: 'desc' } },
+          }),
+          prisma.pageView.groupBy({
+            by: ['country'],
+            where: {
+              createdAt: { gte: period.from, lte: period.to },
+              country: { not: null },
+            },
+            _count: { country: true },
+            orderBy: { _count: { country: 'desc' } },
+            take: 8,
+          }),
+          // Grouped with the country so "WB" can be resolved safely — the
+          // same subdivision code means different places in different
+          // countries.
+          prisma.pageView.groupBy({
+            by: ['region', 'country'],
+            where: {
+              createdAt: { gte: period.from, lte: period.to },
+              region: { not: null },
+            },
+            _count: { region: true },
+            orderBy: { _count: { region: 'desc' } },
+            take: 12,
+          }),
+          prisma.pageView.groupBy({
+            by: ['city'],
+            where: {
+              createdAt: { gte: period.from, lte: period.to },
+              city: { not: null },
+            },
+            _count: { city: true },
+            orderBy: { _count: { city: 'desc' } },
+            take: 12,
+          }),
+        ]);
 
         // Bucket by UTC day, counting unique visitors per day.
         const buckets = new Map<
@@ -198,8 +235,20 @@ export const getDashboardData = cache(
           ),
           countries: toBreakdown(
             countries.map((c) => ({
-              label: c.country ?? '—',
+              label: countryLabel(c.country),
               value: c._count.country,
+            })),
+          ),
+          states: toBreakdown(
+            states.map((s) => ({
+              label: regionLabel(s.region, s.country),
+              value: s._count.region,
+            })),
+          ),
+          cities: toBreakdown(
+            cities.map((c) => ({
+              label: c.city ?? '—',
+              value: c._count.city,
             })),
           ),
         };

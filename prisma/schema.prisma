@@ -170,6 +170,11 @@ model PageView {
   /// desktop | mobile | tablet
   device      String   @default("desktop")
   country     String?
+  /// ISO 3166-2 subdivision code from the edge, e.g. "WB". Resolved to a
+  /// readable state name for display; see lib/analytics/regions.
+  region      String?
+  /// City name from the edge, e.g. "Kolkata".
+  city        String?
   /// sha256(dailySalt + ip + userAgent), truncated. Not reversible.
   visitorHash String
   createdAt   DateTime @default(now())
