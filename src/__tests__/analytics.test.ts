@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { countryLabel, regionLabel } from '@/lib/analytics/regions';
 import {
   classifySource,
   detectDevice,
@@ -203,5 +204,42 @@ describe('axis helpers', () => {
   it('formats compact numbers', () => {
     expect(formatCompact(950)).toBe('950');
     expect(formatCompact(12500)).toMatch(/12\.5/);
+  });
+});
+
+describe('region labels', () => {
+  it('spells out Indian subdivision codes', () => {
+    expect(regionLabel('WB', 'IN')).toBe('West Bengal');
+    expect(regionLabel('mh', 'IN')).toBe('Maharashtra');
+    expect(regionLabel('DH', 'IN')).toBe(
+      'Dadra and Nagar Haveli and Daman and Diu',
+    );
+  });
+
+  it('accepts the prefixed form edge networks sometimes send', () => {
+    expect(regionLabel('IN-KA', null)).toBe('Karnataka');
+  });
+
+  it('does not claim a code is Indian when the country says otherwise', () => {
+    // WB is West Bengal in India and Western Bahr el Ghazal in South Sudan.
+    expect(regionLabel('WB', 'SS')).toBe('WB');
+  });
+
+  it('passes through codes it does not know, and handles missing values', () => {
+    expect(regionLabel('DXB', 'AE')).toBe('DXB');
+    expect(regionLabel(null)).toBe('—');
+    expect(regionLabel('')).toBe('—');
+  });
+});
+
+describe('country labels', () => {
+  it('spells out ISO country codes', () => {
+    expect(countryLabel('IN')).toBe('India');
+    expect(countryLabel('ae')).toBe('United Arab Emirates');
+  });
+
+  it('leaves anything that is not a two-letter code alone', () => {
+    expect(countryLabel('Nowhere')).toBe('Nowhere');
+    expect(countryLabel(null)).toBe('—');
   });
 });

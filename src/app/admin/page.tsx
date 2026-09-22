@@ -201,6 +201,35 @@ export default async function AdminDashboard({
           </Card>
         </div>
 
+        {/* Where in India the demand is */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
+          <Card>
+            <h2 className="mb-1 text-lg font-bold text-black">States</h2>
+            <p className="mb-5 text-sm text-black/50">
+              Which markets the pan-India pages are actually reaching, beyond
+              West Bengal.
+            </p>
+            <BarList
+              rows={data.states}
+              labelHeading="State"
+              emptyMessage="No state data yet."
+            />
+          </Card>
+
+          <Card>
+            <h2 className="mb-1 text-lg font-bold text-black">Cities</h2>
+            <p className="mb-5 text-sm text-black/50">
+              The clearest signal of where to open next, and which city pages
+              are earning their place.
+            </p>
+            <BarList
+              rows={data.cities}
+              labelHeading="City"
+              emptyMessage="No city data yet."
+            />
+          </Card>
+        </div>
+
         {/* Leads */}
         <Card className="mb-8 !p-0">
           <div className="flex items-center justify-between border-b border-black/10 px-6 py-4">
