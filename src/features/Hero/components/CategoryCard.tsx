@@ -1,17 +1,31 @@
 import React from 'react';
+import Link from 'next/link';
 import { Category } from '../types';
 
 export default function CategoryCard(props: Category) {
-  const { name, price, imageUrl } = props;
+  const { name, price, imageUrl, slug } = props;
+
+  // A card without a slug predates the gallery and stays a plain tile.
+  const Wrapper = slug ? Link : 'div';
+  const wrapperProps = slug
+    ? {
+        href: `/gallery/${slug}`,
+        'aria-label': `${name} interior design gallery`,
+      }
+    : {};
+
   return (
-    <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-zinc-800 shadow-xl sm:h-64 md:h-72">
+    <Wrapper
+      {...(wrapperProps as { href: string })}
+      className="group relative block h-56 w-full overflow-hidden rounded-2xl bg-zinc-800 shadow-xl sm:h-64 md:h-72"
+    >
       {imageUrl && (
         <img
           loading="lazy"
           decoding="async"
           src={imageUrl}
           alt={name}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       )}
       <div className="absolute inset-0 bg-linear-to-br from-black/40 via-black/20 to-black/70" />
@@ -24,6 +38,6 @@ export default function CategoryCard(props: Category) {
         </div>
         <div className="text-base font-light sm:text-lg">Onwards</div>
       </div>
-    </div>
+    </Wrapper>
   );
 }

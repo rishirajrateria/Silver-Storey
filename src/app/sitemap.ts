@@ -21,6 +21,7 @@ import {
 } from '@/lib/blog';
 import {
   getAllProjectSlugs,
+  getCategories,
   getLookbooks,
   RESERVED_PROJECT_SLUGS,
 } from '@/lib/db/content';
@@ -57,6 +58,12 @@ export default async function sitemap(props: {
         lastModified: BUILD_DATE,
         changeFrequency: 'weekly',
         priority: 0.9,
+      },
+      {
+        url: absoluteUrl('/gallery'),
+        lastModified: BUILD_DATE,
+        changeFrequency: 'weekly',
+        priority: 0.8,
       },
       {
         url: absoluteUrl('/services'),
@@ -163,7 +170,13 @@ export default async function sitemap(props: {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     }));
-    return [...core, ...services, ...projects, ...lookbooks];
+    const gallery = (await getCategories()).map((category) => ({
+      url: absoluteUrl(`/gallery/${category.slug}`),
+      lastModified: BUILD_DATE,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
+    return [...core, ...services, ...projects, ...lookbooks, ...gallery];
   }
 
   if (id === 1) {

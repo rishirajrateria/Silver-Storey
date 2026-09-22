@@ -11,6 +11,7 @@ import {
   CITIES,
 } from '@/lib/locations';
 import { BLOG_CATEGORIES, categoryPath } from '@/lib/blog/categories';
+import type { CategoryCard } from '@/lib/db/content';
 
 const COMPANY_LINKS = [
   { label: 'Home', href: '/' },
@@ -20,6 +21,7 @@ const COMPANY_LINKS = [
   { label: 'Residential Projects', href: '/residential-projects' },
   { label: 'Commercial Projects', href: '/commercial-projects' },
   { label: 'Interior Designers in India', href: '/interior-designers' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'All Services', href: '/services' },
   { label: 'Cost Calculator', href: '/estimate' },
   { label: '3D Visualisation', href: '/3d-visualisation' },
@@ -58,7 +60,12 @@ const linkCls =
  * states, blog categories, company pages and NAP data. Rendered from the root
  * layout beneath every page; existing page components are untouched.
  */
-export default function SiteFooter() {
+export default function SiteFooter({
+  categories = [],
+}: {
+  /** CMS room categories, linked to their gallery pages. */
+  categories?: CategoryCard[];
+}) {
   const year = new Date().getFullYear();
   const popularCities = [
     ...TIER1_CITIES,
@@ -147,7 +154,7 @@ export default function SiteFooter() {
         </div>
 
         {/* Middle: link columns */}
-        <div className="grid gap-10 border-b border-white/10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 border-b border-white/10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <Column title="Services">
             <ul>
               {SERVICES.map((s) => (
@@ -174,6 +181,25 @@ export default function SiteFooter() {
                   className={`${linkCls} font-semibold text-white`}
                 >
                   All {CITIES.length} cities →
+                </Link>
+              </li>
+            </ul>
+          </Column>
+          <Column title="Browse by room">
+            <ul>
+              {categories.map((category) => (
+                <li key={category.slug}>
+                  <Link href={`/gallery/${category.slug}`} className={linkCls}>
+                    {category.name} Interiors
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link
+                  href="/gallery"
+                  className={`${linkCls} font-semibold text-white`}
+                >
+                  Full gallery →
                 </Link>
               </li>
             </ul>

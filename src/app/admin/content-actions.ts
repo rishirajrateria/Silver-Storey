@@ -41,6 +41,57 @@ function fail(error: string): ActionState {
 
 /* ───────────────────────────── Categories ───────────────────────────── */
 
+interface CategoryImageInput {
+  imageUrl: string;
+  title: string | null;
+  price: string | null;
+}
+
+/** Parses the gallery payload from CategoryImagesEditor, dropping junk rows. */
+function parseCategoryImages(raw: string): CategoryImageInput[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.flatMap((image) => {
+      if (typeof image !== 'object' || image === null) return [];
+      const i = image as Record<string, unknown>;
+      const imageUrl = typeof i.imageUrl === 'string' ? i.imageUrl.trim() : '';
+      if (!imageUrl) return [];
+      const title = typeof i.title === 'string' ? i.title.trim() : '';
+      const price = typeof i.price === 'string' ? i.price.trim() : '';
+      return [{ imageUrl, title: title || null, price: price || null }];
+    });
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * A category's slug must be unique, and renaming one must not collide with
+ * another. Suffixes -2, -3, … the way uniqueSlug does, but checked against
+ * the database rather than an in-memory list.
+ */
+async function uniqueCategorySlug(
+  name: string,
+  currentId: string | null,
+): Promise<string> {
+  const base = slugify(name) || 'category';
+  let candidate = base;
+  let n = 2;
+  for (;;) {
+    const clash = await prisma.category.findFirst({
+      where: {
+        slug: candidate,
+        ...(currentId ? { NOT: { id: currentId } } : {}),
+      },
+      select: { id: true },
+    });
+    if (!clash) return candidate;
+    candidate = `${base}-${n++}`;
+  }
+}
+
 export async function saveCategory(
   _prev: ActionState,
   form: FormData,
@@ -53,17 +104,35 @@ export async function saveCategory(
   if (!name) return fail('Name is required.');
   if (!price) return fail('Starting price is required.');
 
-  const data = {
-    name,
-    price,
-    imageUrl: optional(form, 'imageUrl'),
-    order: num(form, 'order'),
-    published: bool(form, 'published'),
-  };
+  const images = parseCategoryImages(str(form, 'images'));
 
   try {
-    if (id) await prisma.category.update({ where: { id }, data });
-    else await prisma.category.create({ data });
+    const data = {
+      name,
+      slug: await uniqueCategorySlug(name, id || null),
+      price,
+      imageUrl: optional(form, 'imageUrl'),
+      order: num(form, 'order'),
+      published: bool(form, 'published'),
+    };
+
+    const imageCreate = {
+      create: images.map((image, index) => ({ ...image, order: index })),
+    };
+
+    if (id) {
+      // Photos are fully replaced rather than diffed — the volumes are small
+      // and it keeps the editor's ordering authoritative.
+      await prisma.$transaction([
+        prisma.categoryImage.deleteMany({ where: { categoryId: id } }),
+        prisma.category.update({
+          where: { id },
+          data: { ...data, images: imageCreate },
+        }),
+      ]);
+    } else {
+      await prisma.category.create({ data: { ...data, images: imageCreate } });
+    }
   } catch (error) {
     console.error('[admin] saveCategory failed:', error);
     return fail('Could not save. Check the database connection.');

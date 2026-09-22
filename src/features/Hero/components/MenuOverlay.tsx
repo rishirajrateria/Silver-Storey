@@ -3,12 +3,15 @@
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { SITE } from '@/lib/seo/site';
+import { useMenuCategories } from '@/features/Gallery/CategoriesContext';
 import SocialLinks from '@/components/SocialLinks';
 
 interface MenuOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   projectPages?: { title: string; slug: string }[];
+  /** CMS room categories, shown as their own menu group. */
+  categories?: { name: string; slug: string }[];
 }
 
 interface NavLinkItem {
@@ -26,6 +29,7 @@ const EXPLORE: NavLinkItem[] = [
   { label: 'Services & Prices', href: '/services' },
   { label: 'Residential Projects', href: '/residential-projects' },
   { label: 'Commercial Projects', href: '/commercial-projects' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Cities We Serve', href: '/interior-designers' },
   { label: 'Blog', href: '/blog' },
 ];
@@ -110,9 +114,12 @@ export default function MenuOverlay({
   isOpen,
   onClose,
   projectPages = [],
+  categories,
 }: MenuOverlayProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const restoreFocusTo = useRef<Element | null>(null);
+  // Every page inside the site layout supplies these; an explicit prop wins.
+  const fromContext = useMenuCategories();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -146,6 +153,14 @@ export default function MenuOverlay({
     })),
     ...EXPLORE.slice(4),
   ];
+
+  // Rooms come from the CMS, so the menu follows whatever the studio adds.
+  const rooms: NavLinkItem[] = (categories ?? fromContext).map(
+    ({ name, slug }) => ({
+      label: name,
+      href: `/gallery/${slug}`,
+    }),
+  );
 
   return (
     <div
@@ -284,10 +299,43 @@ export default function MenuOverlay({
               />
             </nav>
 
+            {rooms.length > 0 && (
+              <div
+                className="menu-in mt-10 border-t border-black/10 pt-6"
+                style={{ animationDelay: '250ms' }}
+              >
+                <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
+                  Browse by room
+                </h2>
+                <ul className="flex list-none flex-wrap gap-2">
+                  {rooms.map((room) => (
+                    <li key={room.href}>
+                      <Link
+                        href={room.href}
+                        onClick={onClose}
+                        className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black/40"
+                      >
+                        {room.label}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link
+                      href="/gallery"
+                      onClick={onClose}
+                      className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
+                    >
+                      Full gallery →
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
+
             {/* Straight to the commonest journey: "designers in my city" */}
             <div
               className="menu-in mt-10 border-t border-black/10 pt-6"
-              style={{ animationDelay: '260ms' }}
+              style={{ animationDelay: '290ms' }}
             >
               <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
                 Popular cities

@@ -17,17 +17,35 @@ datasource db {
 
 /// Room category cards on the home page (Bedroom, Kitchen, …).
 model Category {
-  id        String   @id @default(cuid())
+  id        String          @id @default(cuid())
   name      String
+  /// URL segment for the category's gallery page: /gallery/<slug>.
+  slug      String          @unique
   /// Free text so it can read "2.1 L", "₹1.4 L", "On request", …
   price     String
   imageUrl  String?
-  order     Int      @default(0)
-  published Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  order     Int             @default(0)
+  published Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  images    CategoryImage[]
 
   @@index([published, order])
+}
+
+/// A photo inside a category's gallery. Title and price are optional so a
+/// category can be a plain set of photos when there is nothing to quote.
+model CategoryImage {
+  id         String   @id @default(cuid())
+  imageUrl   String
+  title      String?
+  /// Free text, like the category's own price: "1.2 L", "₹80,000", "On request".
+  price      String?
+  order      Int      @default(0)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, order])
 }
 
 /// YouTube videos shown in the home page carousel.
