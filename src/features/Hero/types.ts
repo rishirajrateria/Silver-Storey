@@ -8,6 +8,8 @@ export interface Category {
   price: string;
   /** Uploaded image URL — optional, falls back to a plain background */
   imageUrl?: string;
+  /** Links the card to /gallery/<slug>; absent on the hardcoded fallbacks. */
+  slug?: string;
 }
 
 export interface StatItem {

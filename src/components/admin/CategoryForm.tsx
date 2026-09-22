@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { saveCategory, type ActionState } from '@/app/admin/content-actions';
 import { Button, Card, Field, inputClass } from './ui';
 import ImageField from './ImageField';
+import CategoryImagesEditor, {
+  type EditorCategoryImage,
+} from './CategoryImagesEditor';
 
 export interface CategoryValues {
   id?: string;
@@ -13,6 +16,7 @@ export interface CategoryValues {
   imageUrl?: string;
   order?: number;
   published?: boolean;
+  images?: EditorCategoryImage[];
 }
 
 export default function CategoryForm({
@@ -55,10 +59,14 @@ export default function CategoryForm({
 
         <ImageField
           name="imageUrl"
-          label="Background image"
+          label="Card image"
           defaultValue={values.imageUrl}
-          hint="Portrait images work best (roughly 400×500)."
+          hint="The home page card and the gallery cover. Portrait images work best (roughly 400×500)."
         />
+
+        <div className="border-t border-black/10 pt-6">
+          <CategoryImagesEditor name="images" initial={values.images ?? []} />
+        </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field label="Display order" hint="Lower numbers appear first.">

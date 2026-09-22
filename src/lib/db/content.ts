@@ -6,8 +6,22 @@ import { prisma, safeQuery } from './client';
 export interface CategoryCard {
   id: string;
   name: string;
+  slug: string;
   price: string;
   imageUrl?: string;
+}
+
+/** One photo in a category's gallery. */
+export interface CategoryImageData {
+  id: string;
+  imageUrl: string;
+  title?: string;
+  price?: string;
+}
+
+/** A category together with its gallery photos. */
+export interface CategoryWithImages extends CategoryCard {
+  images: CategoryImageData[];
 }
 
 export interface VideoItem {
@@ -127,12 +141,75 @@ export const getCategories = cache(
         return rows.map((c) => ({
           id: c.id,
           name: c.name,
+          slug: c.slug,
           price: c.price,
           imageUrl: c.imageUrl ?? undefined,
         }));
       },
       [],
       'getCategories',
+    ),
+);
+
+/**
+ * Every published category with its gallery photos — the stacked carousels
+ * on /gallery. Categories with no photos are kept: the page links to them so
+ * the set of rooms reads the same everywhere.
+ */
+export const getCategoriesWithImages = cache(
+  async (): Promise<CategoryWithImages[]> =>
+    safeQuery(
+      async () => {
+        const rows = await prisma.category.findMany({
+          where: { published: true },
+          orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
+          include: { images: { orderBy: { order: 'asc' } } },
+        });
+        return rows.map((c) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          price: c.price,
+          imageUrl: c.imageUrl ?? undefined,
+          images: c.images.map((i) => ({
+            id: i.id,
+            imageUrl: i.imageUrl,
+            title: i.title ?? undefined,
+            price: i.price ?? undefined,
+          })),
+        }));
+      },
+      [],
+      'getCategoriesWithImages',
+    ),
+);
+
+/** One published category and its photos, for /gallery/[slug]. */
+export const getCategoryBySlug = cache(
+  async (slug: string): Promise<CategoryWithImages | null> =>
+    safeQuery(
+      async () => {
+        const c = await prisma.category.findFirst({
+          where: { slug, published: true },
+          include: { images: { orderBy: { order: 'asc' } } },
+        });
+        if (!c) return null;
+        return {
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          price: c.price,
+          imageUrl: c.imageUrl ?? undefined,
+          images: c.images.map((i) => ({
+            id: i.id,
+            imageUrl: i.imageUrl,
+            title: i.title ?? undefined,
+            price: i.price ?? undefined,
+          })),
+        };
+      },
+      null,
+      'getCategoryBySlug',
     ),
 );
 

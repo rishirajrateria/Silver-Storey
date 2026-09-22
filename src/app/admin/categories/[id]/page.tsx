@@ -16,7 +16,11 @@ export default async function EditCategoryPage({
   const session = await requireSession();
   const { id } = await params;
   const row = await safeQuery(
-    () => prisma.category.findUnique({ where: { id } }),
+    () =>
+      prisma.category.findUnique({
+        where: { id },
+        include: { images: { orderBy: { order: 'asc' } } },
+      }),
     null,
     'edit category',
   );
@@ -38,6 +42,12 @@ export default async function EditCategoryPage({
             imageUrl: row.imageUrl ?? undefined,
             order: row.order,
             published: row.published,
+            images: row.images.map((image) => ({
+              key: image.id,
+              imageUrl: image.imageUrl,
+              title: image.title ?? '',
+              price: image.price ?? '',
+            })),
           }}
         />
       </main>
