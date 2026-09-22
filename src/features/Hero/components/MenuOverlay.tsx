@@ -27,8 +27,6 @@ interface NavLinkItem {
 const EXPLORE: NavLinkItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Services & Prices', href: '/services' },
-  { label: 'Residential Projects', href: '/residential-projects' },
-  { label: 'Commercial Projects', href: '/commercial-projects' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Cities We Serve', href: '/interior-designers' },
   { label: 'Blog', href: '/blog' },

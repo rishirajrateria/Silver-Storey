@@ -7,6 +7,10 @@ import { Button, Card, Field, inputClass } from './ui';
 import ImageField from './ImageField';
 import GalleryEditor, { type EditorSection } from './GalleryEditor';
 import { slugify } from '@/lib/admin/slug';
+import {
+  RESERVED_PROJECT_SLUGS,
+  RETIRED_PROJECT_SLUGS,
+} from '@/lib/project-slugs';
 
 export interface ProjectPageValues {
   id?: string;
@@ -32,12 +36,8 @@ export interface ProjectPageValues {
   afterImageUrl?: string;
 }
 
-/** Slugs the site renders through dedicated routes. */
-const RESERVED = [
-  'residential-projects',
-  'commercial-projects',
-  '3d-visualisation',
-];
+/** Slugs that are not served at /projects/<slug>. */
+const RESERVED = RESERVED_PROJECT_SLUGS;
 
 export default function ProjectPageForm({
   values = {},
@@ -78,7 +78,9 @@ export default function ProjectPageForm({
           label="URL slug"
           hint={
             isReserved
-              ? `Reserved slug — this page will render at /${effectiveSlug} instead of /projects/${effectiveSlug}.`
+              ? RETIRED_PROJECT_SLUGS.includes(effectiveSlug)
+                ? `Retired slug — this page is no longer shown on the site, and /${effectiveSlug} redirects to the gallery. Choose another slug to publish it.`
+                : `Reserved slug — this page will render at /${effectiveSlug} instead of /projects/${effectiveSlug}.`
               : `The page will live at /projects/${effectiveSlug || '…'}`
           }
           required

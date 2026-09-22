@@ -12,6 +12,26 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'img.youtube.com' },
     ],
   },
+  /**
+   * The residential and commercial project landing pages were retired; their
+   * work now lives in the room galleries. A permanent redirect keeps old
+   * Google results, brochures and shared links working, and hands the pages'
+   * existing ranking to /gallery rather than throwing it away on a 404.
+   */
+  async redirects() {
+    return [
+      {
+        source: '/residential-projects',
+        destination: '/gallery',
+        permanent: true,
+      },
+      {
+        source: '/commercial-projects',
+        destination: '/gallery',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       // Static media in /public never changes without a new filename → cache for a year.

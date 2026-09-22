@@ -18,8 +18,6 @@ const COMPANY_LINKS = [
   { label: 'About Us', href: '/about-us' },
   { label: 'How it Works', href: '/how-it-works' },
   { label: 'Pricing Structure', href: '/pricing-structure' },
-  { label: 'Residential Projects', href: '/residential-projects' },
-  { label: 'Commercial Projects', href: '/commercial-projects' },
   { label: 'Interior Designers in India', href: '/interior-designers' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'All Services', href: '/services' },

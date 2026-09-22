@@ -99,10 +99,6 @@ export function buildLlmsTxt(): string {
   lines.push(`- [About Us](${absoluteUrl('/about-us')})`);
   lines.push(`- [How it Works](${absoluteUrl('/how-it-works')})`);
   lines.push(`- [Pricing Structure](${absoluteUrl('/pricing-structure')})`);
-  lines.push(
-    `- [Residential Projects](${absoluteUrl('/residential-projects')})`,
-  );
-  lines.push(`- [Commercial Projects](${absoluteUrl('/commercial-projects')})`);
   lines.push(`- [Contact](${absoluteUrl('/contact')})`);
   lines.push(`- [Terms & Conditions](${absoluteUrl('/terms-conditions')})`);
   lines.push('');

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { galleryProjects, type GalleryProject } from '../constants';
+import type { GalleryProject } from './gallery-types';
 
 function GalleryCard({ project }: { project: GalleryProject }) {
   return (
@@ -27,14 +27,14 @@ function GalleryCard({ project }: { project: GalleryProject }) {
 }
 
 interface GallerySectionProps {
-  /** Gallery items from the CMS — falls back to hardcoded constants when empty */
-  projects?: GalleryProject[];
+  /** Gallery items from the CMS. */
+  projects: GalleryProject[];
   /** Admin-defined section heading — defaults to "Gallery" */
   title?: string;
 }
 
 export default function GallerySection({
-  projects = galleryProjects,
+  projects,
   title = 'Gallery',
 }: GallerySectionProps) {
   return (

@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { prisma, safeQuery } from './client';
+import { RESERVED_PROJECT_SLUGS } from '../project-slugs';
 
 /* ────────────────────────────── Types ────────────────────────────── */
 
@@ -116,17 +117,11 @@ export interface LookbookData {
   updatedAt: Date;
 }
 
-/** Slugs whose project pages are rendered by dedicated routes. */
-export const RESIDENTIAL_SLUG = 'residential-projects';
-export const COMMERCIAL_SLUG = 'commercial-projects';
-/** Slug of the project page whose galleries feed /3d-visualisation. */
-export const VISUALISATION_SLUG = '3d-visualisation';
-/** Project pages rendered by dedicated routes rather than /projects/[slug]. */
-export const RESERVED_PROJECT_SLUGS = [
-  RESIDENTIAL_SLUG,
-  COMMERCIAL_SLUG,
+export {
   VISUALISATION_SLUG,
-];
+  RETIRED_PROJECT_SLUGS,
+  RESERVED_PROJECT_SLUGS,
+} from '../project-slugs';
 
 /* ──────────────────────────── Categories ──────────────────────────── */
 

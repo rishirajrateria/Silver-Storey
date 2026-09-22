@@ -12,14 +12,9 @@ import {
 } from '@/components/admin/ui';
 import DeleteButton from '@/components/admin/DeleteButton';
 import { deleteProjectPage } from '../content-actions';
+import { RETIRED_PROJECT_SLUGS, VISUALISATION_SLUG } from '@/lib/project-slugs';
 
 export const dynamic = 'force-dynamic';
-
-const RESERVED = [
-  'residential-projects',
-  'commercial-projects',
-  '3d-visualisation',
-];
 
 export default async function ProjectsPage() {
   const session = await requireSession();
@@ -39,7 +34,7 @@ export default async function ProjectsPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <AdminPageHeader
           title="Project Pages"
-          description="Gallery pages. The reserved slugs residential-projects, commercial-projects and 3d-visualisation power those top-level pages."
+          description="Gallery pages, published at /projects/<slug>. The reserved slug 3d-visualisation powers that top-level page instead."
           backHref="/admin"
           action={<LinkButton href="/admin/projects/new">Add page</LinkButton>}
         />
@@ -57,9 +52,11 @@ export default async function ProjectsPage() {
           <Card className="!p-0">
             <ul className="divide-y divide-black/10">
               {rows.map((p) => {
-                const href = RESERVED.includes(p.slug)
-                  ? `/${p.slug}`
-                  : `/projects/${p.slug}`;
+                const href = RETIRED_PROJECT_SLUGS.includes(p.slug)
+                  ? 'not shown on the site'
+                  : p.slug === VISUALISATION_SLUG
+                    ? `/${p.slug}`
+                    : `/projects/${p.slug}`;
                 return (
                   <li key={p.id} className="flex items-center gap-4 px-6 py-4">
                     <div className="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-black/5">

@@ -10,8 +10,6 @@ export function revalidateForContent(kind: string, slug?: string): void {
 
   switch (kind) {
     case 'projectPage':
-      paths.add('/residential-projects');
-      paths.add('/commercial-projects');
       if (slug) paths.add(`/projects/${slug}`);
       break;
     case 'blogPost':

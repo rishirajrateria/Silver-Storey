@@ -3,8 +3,8 @@
 import React, { useMemo, useState } from 'react';
 import HeroControls from '../Hero/components/HeroControls';
 import MenuOverlay from '../Hero/components/MenuOverlay';
-import GallerySection from '../CommercialProjects/components/GallerySection';
-import type { GalleryProject } from '../CommercialProjects/constants';
+import GallerySection from './GallerySection';
+import type { GalleryProject } from './gallery-types';
 import Markdown from '@/components/Markdown';
 import { roomLabel } from '@/lib/rooms';
 import BeforeAfterSlider from './BeforeAfterSlider';
