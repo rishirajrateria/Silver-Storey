@@ -106,10 +106,13 @@ export async function saveCategory(
 
   const images = parseCategoryImages(str(form, 'images'));
 
+  // Needed after the try block to revalidate this room's own gallery page.
+  let savedSlug = '';
+
   try {
     const data = {
       name,
-      slug: await uniqueCategorySlug(name, id || null),
+      slug: (savedSlug = await uniqueCategorySlug(name, id || null)),
       price,
       imageUrl: optional(form, 'imageUrl'),
       order: num(form, 'order'),
@@ -138,7 +141,7 @@ export async function saveCategory(
     return fail('Could not save. Check the database connection.');
   }
 
-  revalidateForContent('category');
+  revalidateForContent('category', savedSlug);
   revalidatePath('/admin/categories');
   redirect('/admin/categories');
 }
@@ -147,14 +150,18 @@ export async function deleteCategory(form: FormData): Promise<void> {
   await guard();
   const id = str(form, 'id');
   if (!id) return;
+  let removedSlug: string | undefined;
   try {
     const existing = await prisma.category.findUnique({ where: { id } });
+    removedSlug = existing?.slug;
     await prisma.category.delete({ where: { id } });
     if (existing?.imageUrl) await deleteUpload(existing.imageUrl);
   } catch (error) {
     console.error('[admin] deleteCategory failed:', error);
   }
-  revalidateForContent('category');
+  // Clearing the removed room's page too, so it 404s instead of serving a
+  // cached copy of a room that no longer exists.
+  revalidateForContent('category', removedSlug);
   revalidatePath('/admin/categories');
   redirect('/admin/categories');
 }

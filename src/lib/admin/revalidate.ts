@@ -19,6 +19,13 @@ export function revalidateForContent(kind: string, slug?: string): void {
       paths.add('/blog/rss.xml');
       if (slug) paths.add(`/blog/${slug}`);
       break;
+    case 'category':
+      // The room cards on the home page, the stacked gallery, and the room's
+      // own page. Without these the gallery keeps serving its cached copy for
+      // the whole ISR window and newly added photos look like they vanished.
+      paths.add('/gallery');
+      if (slug) paths.add(`/gallery/${slug}`);
+      break;
     case 'testimonial':
       paths.add('/about-us');
       break;
