@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { CategoryImageData } from '@/lib/db/content';
+import GalleryPhotoCard from './GalleryPhotoCard';
 
 /**
  * A horizontal strip of photos for one category.
@@ -58,31 +59,7 @@ export default function CategoryCarousel({
             key={image.id}
             className="w-64 shrink-0 snap-start sm:w-72 md:w-80"
           >
-            <figure className="glass-lift overflow-hidden rounded-2xl bg-white">
-              <div className="relative aspect-4/5 overflow-hidden bg-black/5">
-                <img
-                  src={image.imageUrl}
-                  alt={image.title ? `${image.title} — ${name}` : name}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {(image.title || image.price) && (
-                <figcaption className="px-4 py-3">
-                  {image.title && (
-                    <p className="text-sm font-medium text-black">
-                      {image.title}
-                    </p>
-                  )}
-                  {image.price && (
-                    <p className="mt-0.5 text-sm text-black/55">
-                      {image.price}
-                    </p>
-                  )}
-                </figcaption>
-              )}
-            </figure>
+            <GalleryPhotoCard image={image} categoryName={name} />
           </li>
         ))}
       </ul>

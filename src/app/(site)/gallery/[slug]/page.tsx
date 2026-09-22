@@ -11,6 +11,7 @@ import { buildMetadata } from '@/lib/seo/metadata';
 import { breadcrumbSchema, graph, webPageSchema } from '@/lib/seo/schema';
 import { absoluteUrl } from '@/lib/seo/site';
 import CategoryStrip from '@/features/Gallery/CategoryStrip';
+import GalleryPhotoCard from '@/features/Gallery/GalleryPhotoCard';
 import {
   getCategories,
   getCategoryBySlug,
@@ -158,33 +159,7 @@ export default async function CategoryGalleryPage({
           <ul className="grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {category.images.map((image) => (
               <li key={image.id}>
-                <figure className="glass-lift h-full overflow-hidden rounded-2xl bg-white">
-                  <div className="relative aspect-4/5 overflow-hidden bg-black/5">
-                    <img
-                      src={image.imageUrl}
-                      alt={
-                        image.title
-                          ? `${image.title} — ${category.name} interior by Silver Storey`
-                          : `${category.name} interior by Silver Storey`
-                      }
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {(image.title || image.price) && (
-                    <figcaption className="px-4 py-3.5">
-                      {image.title && (
-                        <p className="font-medium text-black">{image.title}</p>
-                      )}
-                      {image.price && (
-                        <p className="mt-0.5 text-sm text-black/55">
-                          {image.price}
-                        </p>
-                      )}
-                    </figcaption>
-                  )}
-                </figure>
+                <GalleryPhotoCard image={image} categoryName={category.name} />
               </li>
             ))}
           </ul>
