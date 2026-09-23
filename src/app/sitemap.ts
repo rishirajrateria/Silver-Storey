@@ -120,18 +120,6 @@ export default async function sitemap(props: {
         priority: 0.8,
       },
       {
-        url: absoluteUrl('/residential-projects'),
-        lastModified: BUILD_DATE,
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      },
-      {
-        url: absoluteUrl('/commercial-projects'),
-        lastModified: BUILD_DATE,
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      },
-      {
         url: absoluteUrl('/contact'),
         lastModified: BUILD_DATE,
         changeFrequency: 'yearly',

@@ -27,12 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ revalidated: [path], now: Date.now() });
     }
 
-    const paths = [
-      '/',
-      '/blog',
-      '/residential-projects',
-      '/commercial-projects',
-    ];
+    const paths = ['/', '/blog', '/gallery'];
     for (const p of paths) revalidatePath(p);
     return NextResponse.json({ revalidated: paths, now: Date.now() });
   } catch (error) {

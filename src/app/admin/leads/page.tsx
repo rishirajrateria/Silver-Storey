@@ -16,7 +16,16 @@ const KIND_LABELS: Record<string, string> = {
   contact: 'Contact',
   estimate: 'Estimate',
   lookbook: 'Lookbook',
+  callback: 'Call back',
 };
+
+/**
+ * The one-field estimate popup collects a number and nothing else, so show
+ * the number where the name would go rather than an empty cell.
+ */
+function leadLabel(lead: { name: string; phone: string }): string {
+  return lead.name.trim() || lead.phone;
+}
 const STATUS_LABELS: Record<string, string> = {
   new: 'New',
   contacted: 'Contacted',
@@ -42,7 +51,7 @@ export default async function LeadsPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <AdminPageHeader
           title="Enquiries"
-          description="Every enquiry — contact form, cost-calculator estimates and lookbook downloads — saved as it arrives."
+          description="Every enquiry — the call-back popup, the contact form, cost-calculator estimates and lookbook downloads — saved as it arrives."
           backHref="/admin"
         />
 
@@ -95,7 +104,7 @@ export default async function LeadsPage() {
                   {leads.map((lead) => (
                     <tr key={lead.id}>
                       <td className="px-5 py-3 font-medium text-black">
-                        {lead.name}
+                        {leadLabel(lead)}
                         <span className="ml-2 inline-block rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-black/60 uppercase">
                           {KIND_LABELS[lead.kind] ?? lead.kind}
                         </span>
@@ -140,7 +149,7 @@ export default async function LeadsPage() {
                         <DeleteButton
                           action={deleteLead}
                           id={lead.id}
-                          label={lead.name}
+                          label={leadLabel(lead)}
                         />
                       </td>
                     </tr>

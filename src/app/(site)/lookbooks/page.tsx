@@ -104,13 +104,13 @@ export default async function LookbooksPage() {
             </p>
             <p className="mx-auto mb-6 max-w-md text-sm text-black/60">
               We are putting the first catalogues together. In the meantime,
-              browse our projects or ask for a personalised set of designs.
+              browse the room gallery or ask for a personalised set of designs.
             </p>
             <Link
-              href="/residential-projects"
+              href="/gallery"
               className="btn-bump inline-flex rounded-full bg-black px-6 py-3 text-sm font-medium text-white"
             >
-              Browse projects
+              Browse the gallery
             </Link>
           </div>
         ) : (

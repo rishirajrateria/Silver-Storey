@@ -172,13 +172,18 @@ Enquiries now come from three places: the contact form, the cost calculator at `
 
 ### Reserved project slugs
 
-Two slugs power the existing top-level pages rather than `/projects/…`:
+One slug powers a top-level page rather than `/projects/…`:
 
-- `residential-projects` → `/residential-projects`
-- `commercial-projects` → `/commercial-projects`
+- `3d-visualisation` → `/3d-visualisation`
 
-Create a project page with one of those slugs to control those pages. Any other
-slug becomes `/projects/<slug>` and is added to the site menu automatically.
+Any other slug becomes `/projects/<slug>` and is added to the site menu
+automatically.
+
+The slugs `residential-projects` and `commercial-projects` are **retired**.
+Those landing pages were removed in favour of the room galleries, and both URLs
+now redirect to `/gallery`. Existing rows with those slugs are left in the CMS
+but are not published anywhere; rename the slug to bring one back as a
+`/projects/<slug>` case study.
 
 ### Blog: CMS posts and built-in guides
 

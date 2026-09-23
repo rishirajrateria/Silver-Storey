@@ -74,15 +74,15 @@ export default async function GalleryPage() {
 
       {categories.length === 0 ? (
         <p className="mx-auto max-w-6xl px-6 py-16 text-black/60">
-          The gallery is being put together. In the meantime, see our{' '}
-          <Link href="/residential-projects" className="underline">
-            residential
+          The gallery is being put together. In the meantime, browse our{' '}
+          <Link href="/services" className="underline">
+            services and prices
           </Link>{' '}
-          and{' '}
-          <Link href="/commercial-projects" className="underline">
-            commercial
-          </Link>{' '}
-          projects.
+          or{' '}
+          <Link href="/estimate" className="underline">
+            price your own room
+          </Link>
+          .
         </p>
       ) : (
         <div className="mx-auto max-w-6xl space-y-16 px-6 py-8">

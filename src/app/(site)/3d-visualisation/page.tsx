@@ -172,15 +172,11 @@ export default async function VisualisationPage() {
               Render gallery coming soon
             </p>
             <p className="mx-auto max-w-md text-sm text-black/60">
-              Until then, our{' '}
-              <Link href="/residential-projects" className="underline">
-                residential
+              Until then, the{' '}
+              <Link href="/gallery" className="underline">
+                room gallery
               </Link>{' '}
-              and{' '}
-              <Link href="/commercial-projects" className="underline">
-                commercial
-              </Link>{' '}
-              project pages show finished spaces that started as 3D models.
+              shows finished spaces that started as 3D models.
             </p>
           </div>
         </section>

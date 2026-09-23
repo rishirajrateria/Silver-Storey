@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function BookConsultation() {
   return (
-    <div className="mx-auto max-w-360 cursor-default px-6 pt-0 pb-4 text-center md:pb-12 lg:pt-0">
+    <div className="mx-auto max-w-360 cursor-default px-6 pt-24 pb-4 text-center sm:pt-32 md:pb-12">
       <h1 className="mb-4 text-4xl font-semibold tracking-wide sm:text-5xl lg:text-6xl">
         Book your free Consultation
       </h1>

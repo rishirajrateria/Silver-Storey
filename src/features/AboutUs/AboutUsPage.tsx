@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import HeroControls from '../Hero/components/HeroControls';
 import MenuOverlay from '../Hero/components/MenuOverlay';
 import ServicesSection from '../Hero/components/ServicesSection';
@@ -10,6 +9,7 @@ import BrandsMarquee from '../Hero/components/BrandsMarquee';
 import Testimonials from '../Hero/components/Testimonials';
 import AboutFoundersSection from './components/AboutFoundersSection';
 import AboutHero from './components/AboutHero';
+import EstimatePopup from '@/components/EstimatePopup';
 import AboutMission from './components/AboutMission';
 import AboutProcess from './components/AboutProcess';
 import { reviews as defaultReviews } from '../Hero/constants';
@@ -49,11 +49,9 @@ export default function AboutUsPage({
           Transform your space effortlessly with our expert interior design
           services, tailored to reflect your unique style and vision
         </p>
-        <Link href="/contact#contact-form">
-          <button className="rounded-full border border-black/80 bg-transparent px-8 py-2.5 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white">
-            Get Free Estimate
-          </button>
-        </Link>
+        <EstimatePopup className="rounded-full border border-black/80 bg-transparent px-8 py-2.5 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white">
+          Get Free Estimate
+        </EstimatePopup>
       </section>
 
       {/* ── Process step cards ── */}

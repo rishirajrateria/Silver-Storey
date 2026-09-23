@@ -187,7 +187,7 @@ model PageView {
 /// A contact-form enquiry. Stored so a lead is never lost to a failed email.
 model Lead {
   id          String   @id @default(cuid())
-  /// contact | estimate | lookbook
+  /// contact | estimate | lookbook | callback
   kind        String   @default("contact")
   name        String
   phone       String

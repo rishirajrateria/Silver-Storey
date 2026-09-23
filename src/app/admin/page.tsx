@@ -269,7 +269,9 @@ export default async function AdminDashboard({
                   key={lead.id}
                   className="flex flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3.5"
                 >
-                  <span className="font-medium text-black">{lead.name}</span>
+                  <span className="font-medium text-black">
+                    {lead.name.trim() || lead.phone}
+                  </span>
                   <a
                     href={`tel:${lead.phone}`}
                     className="text-sm text-black/60 underline-offset-2 hover:underline"

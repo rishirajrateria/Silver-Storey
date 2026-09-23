@@ -30,6 +30,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (RESERVED_PROJECT_SLUGS.includes(slug)) return {};
   const page = await getProjectPage(slug);
   if (!page) return {};
   return buildMetadata({
@@ -50,6 +51,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
+  // Reserved slugs have their own route or none at all, so this route must not
+  // serve them as a second copy at /projects/<slug>.
+  if (RESERVED_PROJECT_SLUGS.includes(slug)) notFound();
+
   const [page, projectPages] = await Promise.all([
     getProjectPage(slug),
     getProjectPageLinks(),
@@ -106,7 +111,7 @@ export default async function ProjectPage({ params }: Props) {
     }),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
-      { name: 'Projects', path: '/residential-projects' },
+      { name: 'Gallery', path: '/gallery' },
       { name: page.title, path: `/projects/${slug}` },
     ]),
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { SITE } from '@/lib/seo/site';
+import EstimatePopup from '@/components/EstimatePopup';
 
 const ICONS: Record<string, { src: string; size: string }> = {
   facebook: { src: '/images/facebook.avif', size: 'h-20 w-20' },
@@ -35,12 +36,9 @@ export default function SocialBar({ className = '' }: { className?: string }) {
       <SocialIcon network="facebook" />
       <SocialIcon network="linkedin" />
 
-      <a
-        href="/estimate"
-        className="glass flex h-9 items-center justify-center rounded-sm px-5 text-[10px] font-semibold tracking-wider text-black transition-transform hover:scale-105 sm:text-[11px]"
-      >
+      <EstimatePopup className="glass flex h-9 items-center justify-center rounded-sm px-5 text-[10px] font-semibold tracking-wider text-black transition-transform hover:scale-105 sm:text-[11px]">
         GET FREE ESTIMATE
-      </a>
+      </EstimatePopup>
 
       <SocialIcon network="youtube" />
       <SocialIcon network="instagram" />

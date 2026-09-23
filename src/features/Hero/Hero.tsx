@@ -10,7 +10,6 @@ import MenuOverlay from './components/MenuOverlay';
 import WarrantySection from './components/WarrantySection';
 import VideoSection from './components/VideoSection';
 import ServicesSection from './components/ServicesSection';
-import RoomGallery from './components/RoomGallery';
 import BookConsultation from './components/BookConsultation';
 import BrandsMarquee from './components/BrandsMarquee';
 import Testimonials from './components/Testimonials';
@@ -105,10 +104,9 @@ export default function Hero({
         {/* 5. Youtube Videos Section */}
         <VideoSection videos={videos} />
 
-        {/* 6, 7, 8. All Under One Roof + Room Gallery + Book Consultation */}
+        {/* 6, 7. All Under One Roof + Book Consultation */}
         <div className="relative pt-16 pb-32 sm:pb-40">
           <ServicesSection />
-          <RoomGallery />
           <BookConsultation />
         </div>
 
