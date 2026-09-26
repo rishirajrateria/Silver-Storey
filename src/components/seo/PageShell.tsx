@@ -6,7 +6,9 @@ import MenuOverlay from '@/features/Hero/components/MenuOverlay';
 
 /**
  * Client wrapper that gives server-rendered SEO pages the same floating
- * controls and menu overlay as every other page on the site.
+ * controls and menu overlay as every other page on the site. The page
+ * content is the document's `main` landmark, so pages built on the shell
+ * must not render one of their own.
  */
 export default function PageShell({
   children,
@@ -20,7 +22,7 @@ export default function PageShell({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <div className={className}>
-      {children}
+      <main>{children}</main>
       <HeroControls onMenuClick={() => setIsMenuOpen(true)} />
       <MenuOverlay
         isOpen={isMenuOpen}

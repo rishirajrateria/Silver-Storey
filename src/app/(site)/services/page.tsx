@@ -16,6 +16,7 @@ import {
   webPageSchema,
   type FAQ,
 } from '@/lib/seo/schema';
+import { SITE } from '@/lib/seo/site';
 import { getProjectPageLinks } from '@/lib/db/content';
 import { SERVICES, SERVICE_CATEGORIES, servicePath } from '@/lib/services';
 import { formatINR } from '@/lib/locations/content';
@@ -37,8 +38,9 @@ export const metadata: Metadata = buildMetadata({
 const FAQS: FAQ[] = [
   {
     question: 'Do you charge a design fee?',
-    answer:
-      'No. Consultation, site measurement and 3D visualisation are complimentary for residential projects. You pay only for execution as per the itemised quote you approve.',
+    // The one commitment sentence from site.ts, so this answer never drifts
+    // from the pricing page or the FAQ on a city page.
+    answer: `No. ${SITE.commitment} You pay only for execution as per the itemised quote you approve.`,
   },
   {
     question: 'Can I combine services?',

@@ -34,6 +34,53 @@ function joinList(items: string[], max = items.length): string {
   return `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`;
 }
 
+/**
+ * Lower-cases a name for use mid-sentence without mangling acronyms:
+ * "1BHK Interiors" → "1BHK interiors", "BWP plywood or HDHMR" stays as is.
+ * A plain toLowerCase() produced "bhk", "hdhmr" and "ss-304" on thousands
+ * of pages.
+ */
+export function lowerName(name: string): string {
+  return name
+    .split(' ')
+    .map((w) => (/[A-Z]{2,}/.test(w) ? w : w.toLowerCase()))
+    .join(' ');
+}
+
+/** Head office and home market — the only place the studio claims a local presence. */
+export const HQ_CITY_SLUG = 'kolkata';
+export const HQ_STATE_SLUG = 'west-bengal';
+
+/**
+ * The one-sentence service model for a place, straight from site.ts, so a
+ * city page never implies a local office the studio does not have.
+ */
+export function serviceModelFor(stateSlug: string): string {
+  return stateSlug === HQ_STATE_SLUG
+    ? SITE.serviceModel.hq
+    : SITE.serviceModel.outstation;
+}
+
+/** "Monday–Saturday, 10:00–19:00" from the structured opening hours. */
+export function openingHoursLabel(): string {
+  return SITE.openingHours
+    .map((h) => {
+      const days =
+        h.days.length > 1
+          ? `${h.days[0]}–${h.days[h.days.length - 1]}`
+          : h.days[0];
+      return `${days}, ${h.opens}–${h.closes}`;
+    })
+    .join('; ');
+}
+
+/** Same query URL the LocalBusiness `hasMap` carries, for a visible link. */
+export function studioMapUrl(): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${SITE.name} ${SITE.address.street} ${SITE.address.city} ${SITE.address.postalCode}`,
+  )}`;
+}
+
 /** Deterministic small integer from a string, for picking phrasing variants. */
 function hash(s: string): number {
   let h = 0;
@@ -301,28 +348,47 @@ export function cityTitle(city: CityData) {
   return `Interior Designers in ${city.name}`;
 }
 
+/** One title shape everywhere; "Best" is a self-awarded superlative we cannot substantiate. */
 export function cityMetaTitle(city: CityData) {
-  const variants = [
-    `Interior Designers in ${city.name} | Best Home & Office Interiors`,
-    `Best Interior Designers in ${city.name} – Silver Storey`,
-    `Interior Designers in ${city.name} | 3D Design, 45-Day Delivery`,
-  ];
-  return pick(variants, city.slug);
+  return `Interior Designers in ${city.name} | Silver Storey`;
 }
 
-export function cityMetaDescription(city: CityData, state: StateData) {
+/** Google shows about this much of a description before cutting it. */
+const MAX_META_DESCRIPTION = 150;
+
+/**
+ * The city-unique clause (its neighbourhoods) leads, so the part a searcher
+ * sees is never the boilerplate. Localities drop off until it fits.
+ */
+export function cityMetaDescription(city: CityData) {
   const k = priceRow(city, 'kitchen');
-  return `Interior designers in ${city.name}, ${state.name}. Turnkey home & office interiors across ${joinList(city.localities, 3)}. Free 3D design, kitchens from ${formatINR(k.from)}, 45-day delivery, 10-year warranty.`;
+  for (let n = 3; n >= 1; n--) {
+    const text = `Interior designers in ${city.name} — ${joinList(city.localities, n)}. Kitchens from ${formatINR(k.from)}, free 3D design, 45-day delivery, 10-year warranty.`;
+    if (text.length <= MAX_META_DESCRIPTION || n === 1) return text;
+  }
+  return '';
+}
+
+/**
+ * The pricing-table footnote: where the numbers come from, so a visitor can
+ * tell a scaled price book from a local quote.
+ */
+export function cityPricingNote(city: CityData) {
+  const source =
+    city.slug === HQ_CITY_SLUG
+      ? 'Figures are our Kolkata price book — the baseline every other city is scaled from.'
+      : `Figures are our Kolkata price book scaled by ${city.name}’s cost index (${city.priceIndex}×).`;
+  return `${source} Every quote is itemised; design and 3D visualisation are free.`;
 }
 
 export function cityIntro(city: CityData, state: StateData): string[] {
-  const isHQ = city.slug === 'kolkata';
+  const isHQ = city.slug === HQ_CITY_SLUG;
   const c = CLIMATE_GUIDANCE[city.climate];
   const locs = joinList(city.localities, 4);
 
   const opening = pick(
     [
-      `Searching for the best interior designers in ${city.name}? Silver Storey designs and delivers turnkey home and office interiors across ${city.name} — from ${locs} — with complimentary 3D visualisation, an itemised transparent quote and delivery within 45 days of design approval.`,
+      `Searching for interior designers in ${city.name}? Silver Storey designs and delivers turnkey home and office interiors across ${city.name} — from ${locs} — with complimentary 3D visualisation, an itemised transparent quote and delivery within 45 days of design approval.`,
       `Silver Storey is a premium interior design studio serving ${city.name}, ${state.name}. Whether you have just taken possession of an apartment in ${city.localities[0]} or are renovating a family home in ${city.localities[1] ?? city.localities[0]}, we handle everything from space planning and modular kitchens to lighting, furniture and styling — with free 3D designs and a 10-year warranty.`,
       `If you are looking for an interior designer in ${city.name} who will give you a fixed, itemised price and a finished home in 45 days, you are in the right place. Silver Storey works across ${locs}, designing full homes, modular kitchens, wardrobes and commercial spaces with complimentary 3D visualisation before a single board is cut.`,
     ],
@@ -331,7 +397,7 @@ export function cityIntro(city: CityData, state: StateData): string[] {
 
   const context = `${city.housingNote} ${city.styleNote}`;
 
-  const climate = `${city.name} has a ${c.label}. ${c.summary} That is why our ${city.name} specifications default to ${c.materials[0].toLowerCase()} and ${c.materials[1].toLowerCase()} — details that separate an interior that looks good on handover day from one that still looks good ten years later.`;
+  const climate = `${city.name} has a ${c.label}. ${c.summary} That is why our ${city.name} specifications default to ${lowerName(c.materials[0])} and ${lowerName(c.materials[1])} — details that separate an interior that looks good on handover day from one that still looks good ten years later.`;
 
   const coverage = isHQ
     ? `Our head office and workshop are in Tangra, Kolkata, which means the shortest lead times, the most site visits and the deepest vendor network of any city we serve. Our founders, ${SITE.founders[0].name} and ${SITE.founders[1].name}, personally review every Kolkata project.`
@@ -365,8 +431,9 @@ export function cityFaqs(city: CityData, state: StateData): FAQ[] {
   const two = p.find((r) => r.key === '2bhk')!;
   const three = p.find((r) => r.key === '3bhk')!;
   const c = CLIMATE_GUIDANCE[city.climate];
-  const isHQ = city.slug === 'kolkata';
+  const isHQ = city.slug === HQ_CITY_SLUG;
   const housingLabels = city.housing.map((h) => HOUSING_GUIDANCE[h].label);
+  const near = nearbyCities(city, 3).map((n) => n.name);
 
   return [
     {
@@ -375,7 +442,7 @@ export function cityFaqs(city: CityData, state: StateData): FAQ[] {
     },
     {
       question: `Which areas of ${city.name} does Silver Storey serve?`,
-      answer: `We take up projects across ${city.name} including ${joinList(city.localities)}${city.nearby.length ? `, and in nearby cities such as ${joinList(nearbyCities(city, 3).map((n) => n.name))}` : ''}.`,
+      answer: `We take up projects across ${city.name} including ${joinList(city.localities)}${near.length ? `, and in nearby cities such as ${joinList(near)}` : ''}.`,
     },
     {
       question: `How long does a full home interior project in ${city.name} take?`,
@@ -383,7 +450,7 @@ export function cityFaqs(city: CityData, state: StateData): FAQ[] {
     },
     {
       question: `What materials do you recommend for homes in ${city.name}?`,
-      answer: `${city.name} has a ${c.label}. ${c.summary} We recommend ${joinList(c.materials.slice(0, 3).map((m) => m.toLowerCase()))}, and we avoid ${joinList(c.avoid.map((a) => a.toLowerCase()))}.`,
+      answer: `${city.name} has a ${c.label}. ${c.summary} We recommend ${joinList(c.materials.slice(0, 3).map(lowerName))}, and we avoid ${joinList(c.avoid.map(lowerName))}.`,
     },
     {
       question: `Do you design ${joinList(housingLabels)} in ${city.name}?`,
@@ -393,7 +460,7 @@ export function cityFaqs(city: CityData, state: StateData): FAQ[] {
       question: `Is Silver Storey based in ${city.name}?`,
       answer: isHQ
         ? `Yes — our head office and manufacturing workshop are at ${SITE.address.street}, Kolkata ${SITE.address.postalCode}. You are welcome to visit by appointment.`
-        : `Silver Storey is headquartered in Kolkata and serves ${city.name} through on-site consultations, a dedicated project manager and supervised execution teams. Design approvals happen in 3D and we share weekly photo and video progress reports, so distance never affects quality or communication.`,
+        : `No. ${serviceModelFor(city.state)}`,
     },
     {
       question: `Do I get to see the design before work starts in my ${city.name} home?`,
@@ -422,30 +489,97 @@ export function stateTitle(state: StateData) {
   return `Interior Designers in ${state.name}`;
 }
 
+/**
+ * "Dadra and Nagar Haveli and Daman and Diu" would push the standard title
+ * past the point where the metadata builder cuts it to "…Haveli and |
+ * Silver Storey", so long names fall back to shorter shapes that still
+ * carry the brand.
+ */
 export function stateMetaTitle(state: StateData) {
-  return `Interior Designers in ${state.name} | Silver Storey`;
+  const shapes = [
+    `Interior Designers in ${state.name} | Silver Storey`,
+    `Interiors in ${state.name} | Silver Storey`,
+    `${state.name} | Silver Storey`,
+  ];
+  return shapes.find((t) => t.length <= 65) ?? shapes[shapes.length - 1];
 }
 
+/**
+ * A hub with no city page beneath it used to render "interiors in  — free
+ * 3D design"; it now says what is true: work there is taken up on request.
+ */
 export function stateMetaDescription(state: StateData) {
   const cities = citiesInState(state.slug);
-  const names = cities.slice(0, 4).map((c) => c.name);
-  return `Best interior designers in ${state.name}. Silver Storey delivers turnkey home & commercial interiors in ${joinList(names)}${cities.length > 4 ? ' and more' : ''} — free 3D design, transparent pricing, 45-day delivery, 10-year warranty.`;
+  if (!cities.length) {
+    const full = `Silver Storey takes up home and office interiors across ${state.name} on request — free 3D design, itemised pricing, 45-day delivery, 10-year warranty.`;
+    // "Dadra and Nagar Haveli and Daman and Diu" alone is 40 characters.
+    const brief = `Silver Storey takes up interiors in ${state.name} on request — free 3D design, 45-day delivery, 10-year warranty.`;
+    return full.length <= MAX_META_DESCRIPTION ? full : brief;
+  }
+  // Goa's one city page is named Goa; its localities are the unique clause there.
+  const names = cities.map((c) => c.name).filter((n) => n !== state.name);
+  if (!names.length) names.push(...cities[0].localities.slice(0, 3));
+  for (let n = Math.min(4, names.length); n >= 1; n--) {
+    const listed =
+      names.length > n
+        ? `${names.slice(0, n).join(', ')} and more`
+        : joinList(names);
+    const text = `Interior designers in ${state.name} — ${listed}. Free 3D design, itemised pricing, 45-day delivery, 10-year warranty.`;
+    if (text.length <= MAX_META_DESCRIPTION || n === 1) return text;
+  }
+  return '';
+}
+
+/**
+ * The paragraph under "How we work in {state}": the service model plus, for
+ * hubs without a city page, the plain statement that work is on request.
+ */
+export function stateHowWeWork(state: StateData): string {
+  const cities = citiesInState(state.slug);
+  const model = serviceModelFor(state.slug);
+  if (!cities.length)
+    return `We take up projects in ${state.name} on request; there is no dedicated city page yet. ${model}`;
+  return model;
+}
+
+/**
+ * The state-wide price band for a scope, from the price indices of the
+ * cities we actually list there. A hub without cities falls back to the
+ * span the dataset allows, so the sentence still describes real numbers.
+ */
+function statePriceBand(state: StateData, key: string): [number, number] {
+  const base = BASE_PRICING.find((r) => r.key === key)!;
+  const indices = citiesInState(state.slug).map((c) => c.priceIndex);
+  const lo = indices.length ? Math.min(...indices) : 0.85;
+  const hi = indices.length ? Math.max(...indices) : 1.2;
+  const step = base.from >= 1000000 ? 50000 : 10000;
+  return [roundTo(base.from * lo, step), roundTo(base.from * hi, step)];
+}
+
+function fromBand([lo, hi]: [number, number]) {
+  return lo === hi
+    ? `from ${formatINR(lo)}`
+    : `between ${formatINR(lo)} and ${formatINR(hi)}`;
 }
 
 export function stateFaqs(state: StateData): FAQ[] {
   const cities = citiesInState(state.slug);
   const names = cities.map((c) => c.name);
-  const isHome = state.slug === 'west-bengal';
+  const isHome = state.slug === HQ_STATE_SLUG;
+  const coverage =
+    cities.length === 1 && cities[0].name === state.name
+      ? `We have dedicated design coverage across ${state.name} — ${joinList(cities[0].localities, 4)} — and take up projects elsewhere in the state on request.`
+      : names.length
+        ? `We have dedicated design coverage for ${joinList(names)}, and take up projects in other towns across ${state.name} on request.`
+        : `We take up projects across ${state.name} on request — contact us with your location for availability.`;
   return [
     {
       question: `Which cities in ${state.name} does Silver Storey serve?`,
-      answer: names.length
-        ? `We have dedicated design coverage for ${joinList(names)}, and take up projects in other towns across ${state.name} on request.`
-        : `We take up projects across ${state.name} on request — contact us with your location for availability.`,
+      answer: coverage,
     },
     {
       question: `How much does interior design cost in ${state.name}?`,
-      answer: `Costs vary by city and scope. Across ${state.name}, modular kitchens typically start between ${formatINR(120000)} and ${formatINR(170000)}, 2BHK full home packages between ${formatINR(480000)} and ${formatINR(680000)}, and 3BHK packages between ${formatINR(700000)} and ${formatINR(980000)}. Every quote is itemised and the design and 3D visualisation are complimentary.`,
+      answer: `Costs vary by city and scope. Across ${state.name}, modular kitchens typically start ${fromBand(statePriceBand(state, 'kitchen'))}, 2BHK full home packages ${fromBand(statePriceBand(state, '2bhk'))}, and 3BHK packages ${fromBand(statePriceBand(state, '3bhk'))}. Every quote is itemised and the design and 3D visualisation are complimentary.`,
     },
     {
       question: `What should I consider when designing a home in ${state.name}?`,
@@ -454,8 +588,8 @@ export function stateFaqs(state: StateData): FAQ[] {
     {
       question: `Is Silver Storey a local interior designer in ${state.name}?`,
       answer: isHome
-        ? `Yes. Our head office and workshop are in Tangra, Kolkata, and ${state.name} is our home market.`
-        : `Silver Storey is headquartered in Kolkata and serves ${state.name} through on-site consultations, a dedicated project manager and supervised execution teams, with 3D approvals and weekly progress reports.`,
+        ? `Yes. ${SITE.serviceModel.hq}`
+        : `Silver Storey is headquartered in Kolkata. ${SITE.serviceModel.outstation}`,
     },
     {
       question: `Do you offer a warranty on interiors in ${state.name}?`,
@@ -472,33 +606,61 @@ export function stateFaqs(state: StateData): FAQ[] {
 /* Service × city copy                                                        */
 /* ────────────────────────────────────────────────────────────────────────── */
 
+/** Scale a Kolkata-baseline price to a city, rounded the way the price book is. */
+export function cityPrice(baseINR: number, city: CityData): number {
+  return roundTo(baseINR * city.priceIndex, baseINR >= 1000000 ? 50000 : 10000);
+}
+
+/** Who a service is for, in the words the page uses; drives every template branch. */
+export function serviceAudience(category: string) {
+  return category === 'commercial'
+    ? {
+        commercial: true,
+        forWhom: 'for businesses',
+        spaces: 'offices, retail and hospitality',
+        // Fit-outs run to lease dates, not the 45-day residential promise.
+        delivery: 'a fixed timeline aligned to your lease or opening date',
+      }
+    : {
+        commercial: false,
+        forWhom: 'for homes',
+        spaces: 'homes',
+        delivery: 'installation within 45 days of design approval',
+      };
+}
+
 export function serviceCityIntro(opts: {
   serviceName: string;
   serviceShort: string;
+  category: string;
   city: CityData;
   state: StateData;
   startingPriceINR?: number;
 }): string[] {
   const { serviceName, serviceShort, city, state } = opts;
   const c = CLIMATE_GUIDANCE[city.climate];
+  const who = serviceAudience(opts.category);
+  const short = lowerName(serviceShort);
   const start = opts.startingPriceINR
-    ? roundTo(
-        opts.startingPriceINR * city.priceIndex,
-        opts.startingPriceINR >= 1000000 ? 50000 : 10000,
-      )
+    ? cityPrice(opts.startingPriceINR, city)
     : undefined;
 
   const p1 = pick(
     [
-      `Looking for ${serviceName.toLowerCase()} in ${city.name}? Silver Storey delivers ${serviceShort.toLowerCase()} projects across ${joinList(city.localities, 4)} with complimentary 3D visualisation, an itemised quote${start ? ` (starting around ${formatINR(start)} in ${city.name})` : ''} and installation within 45 days of design approval.`,
-      `Silver Storey designs and installs ${serviceShort.toLowerCase()} for homes across ${city.name}, ${state.name} — from ${city.localities[0]} to ${city.localities[Math.min(3, city.localities.length - 1)]}. Every project starts with a free consultation and 3D design${start ? `, with ${city.name} pricing starting around ${formatINR(start)}` : ''}.`,
+      `Looking for ${lowerName(serviceName)} in ${city.name}? Silver Storey delivers ${short} projects across ${joinList(city.localities, 4)} with complimentary 3D visualisation, an itemised quote${start ? ` (starting around ${formatINR(start)} in ${city.name})` : ''} and ${who.delivery}.`,
+      `Silver Storey designs and installs ${short} ${who.forWhom} across ${city.name}, ${state.name} — from ${city.localities[0]} to ${city.localities[Math.min(3, city.localities.length - 1)]}. Every project starts with a free consultation and 3D design${start ? `, with ${city.name} pricing starting around ${formatINR(start)}` : ''}.`,
     ],
     `${city.slug}:${serviceShort}:1`,
   );
 
-  const p2 = `${city.housingNote} For ${serviceShort.toLowerCase()} in ${city.name} this means ${HOUSING_GUIDANCE[city.housing[0]].text.charAt(0).toLowerCase()}${HOUSING_GUIDANCE[city.housing[0]].text.slice(1)}`;
+  // The housing notes describe homes; a fit-out page gets the commercial
+  // brief instead of a paragraph about apartment towers.
+  const housing = HOUSING_GUIDANCE[city.housing[0]].text;
+  const p2 = who.commercial
+    ? `We take up ${short} projects across ${city.name} — ${joinList(city.localities, 4)} — with ${who.delivery}, and coordinate acoustics, HVAC, data cabling and fire compliance from the first drawing so the fit-out hands over ready to occupy.`
+    : `${city.housingNote} For ${short} in ${city.name} this means ${housing.charAt(0).toLowerCase()}${housing.slice(1)}`;
 
-  const p3 = `Because ${city.name} has a ${c.label}, our ${serviceShort.toLowerCase()} specifications for the city use ${c.materials[0].toLowerCase()} and ${c.materials[2].toLowerCase()}, and avoid ${c.avoid[0].toLowerCase()}. ${city.styleNote}`;
+  const p3 = `Because ${city.name} has a ${c.label}, our ${short} specifications for the city use ${lowerName(c.materials[0])} and ${lowerName(c.materials[2])}, and avoid ${lowerName(c.avoid[0])}.${who.commercial ? '' : ` ${city.styleNote}`}`;
 
   return [p1, p2, p3];
 }
@@ -506,41 +668,39 @@ export function serviceCityIntro(opts: {
 export function serviceCityFaqs(opts: {
   serviceName: string;
   serviceShort: string;
+  category: string;
   city: CityData;
+  /** The service's own materials list, used on commercial pages. */
+  materials?: string[];
   startingPriceINR?: number;
   typicalRangeINR?: [number, number];
   baseFaqs: FAQ[];
 }): FAQ[] {
   const { serviceName, serviceShort, city } = opts;
   const c = CLIMATE_GUIDANCE[city.climate];
-  const idx = city.priceIndex;
+  const who = serviceAudience(opts.category);
+  const short = lowerName(serviceShort);
   const range = opts.typicalRangeINR
-    ? [
-        roundTo(
-          opts.typicalRangeINR[0] * idx,
-          opts.typicalRangeINR[0] >= 1000000 ? 50000 : 10000,
-        ),
-        roundTo(
-          opts.typicalRangeINR[1] * idx,
-          opts.typicalRangeINR[1] >= 1000000 ? 50000 : 10000,
-        ),
-      ]
+    ? opts.typicalRangeINR.map((n) => cityPrice(n, city))
     : undefined;
 
   const local: FAQ[] = [
     {
-      question: `How much does ${serviceShort.toLowerCase()} cost in ${city.name}?`,
+      question: `How much does ${short} cost in ${city.name}?`,
       answer: range
-        ? `In ${city.name}, Silver Storey ${serviceShort.toLowerCase()} projects typically range from ${formatINR(range[0])} to ${formatINR(range[1])} depending on size, finish grade and scope. We share an itemised estimate after a free site measurement, and the 3D design is complimentary.`
+        ? `In ${city.name}, Silver Storey ${short} projects typically range from ${formatINR(range[0])} to ${formatINR(range[1])} depending on size, finish grade and scope. We share an itemised estimate after a free site measurement, and the 3D design is complimentary.`
         : `Pricing in ${city.name} depends on size and scope. We share an itemised estimate after a free site measurement, and the 3D design is complimentary.`,
     },
     {
-      question: `Which parts of ${city.name} do you cover for ${serviceShort.toLowerCase()}?`,
-      answer: `We take up ${serviceShort.toLowerCase()} projects across ${joinList(city.localities)}.`,
+      question: `Which parts of ${city.name} do you cover for ${short}?`,
+      answer: `We take up ${short} projects across ${joinList(city.localities)}.`,
     },
     {
-      question: `What materials do you use for ${serviceShort.toLowerCase()} in ${city.name}?`,
-      answer: `${city.name}’s ${c.label} calls for ${joinList(c.materials.slice(0, 3).map((m) => m.toLowerCase()))}. We avoid ${joinList(c.avoid.map((a) => a.toLowerCase()))}.`,
+      question: `What materials do you use for ${short} in ${city.name}?`,
+      answer:
+        who.commercial && opts.materials?.length
+          ? `${city.name}’s ${c.label} calls for ${joinList(c.materials.slice(0, 2).map(lowerName))}. For fit-outs we specify ${joinList(opts.materials.map(lowerName))}, and avoid ${joinList(c.avoid.map(lowerName))}.`
+          : `${city.name}’s ${c.label} calls for ${joinList(c.materials.slice(0, 3).map(lowerName))}. We avoid ${joinList(c.avoid.map(lowerName))}.`,
     },
   ];
 
@@ -552,7 +712,7 @@ export function serviceCityFaqs(opts: {
     ...local,
     ...base.slice(0, 4),
     {
-      question: `How do I get started with ${serviceName.toLowerCase()} in ${city.name}?`,
+      question: `How do I get started with ${lowerName(serviceName)} in ${city.name}?`,
       answer: `Call or WhatsApp ${SITE.phoneDisplay}, email ${SITE.email}, or book a free consultation online. We will measure your space, share an itemised estimate and create 3D visualisations before any work begins.`,
     },
   ];

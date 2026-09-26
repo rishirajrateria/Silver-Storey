@@ -32,27 +32,20 @@ import { SERVICES, servicePath } from '@/lib/services';
 export const revalidate = 3600;
 
 const PATH = '/interior-designers';
-const TITLE = 'Interior Designers in India | Best Home & Office Interiors';
-const DESCRIPTION =
-  'Silver Storey — premium interior designers serving 150+ cities across all 28 states and 8 union territories of India. Free 3D design, transparent pricing, 45-day delivery, 10-year warranty.';
+const TITLE = 'Interior Designers in India | Silver Storey';
+// The city count comes from the dataset, so the number never drifts from the pages that exist.
+const DESCRIPTION = `Interior designers across India — pages for ${CITIES.length} cities in all 28 states and 8 UTs. Free 3D design, itemised pricing, 45-day delivery, 10-year warranty.`;
 
 export const metadata: Metadata = buildMetadata({
   title: TITLE,
   description: DESCRIPTION,
   path: PATH,
-  keywords: [
-    'interior designers in India',
-    'best interior designers India',
-    'interior design company India',
-    'interior designer near me',
-  ],
 });
 
 const FAQS: FAQ[] = [
   {
-    question: 'Who are the best interior designers in India?',
-    answer:
-      'The best interior designer for you is one who shows you the design in 3D before building, gives a fixed itemised price, uses branded materials and stands behind the work with a written warranty. Silver Storey does all four — complimentary 3D visualisation, transparent pricing, Greenply/Hettich/Asian Paints/Kohler materials and a 10-year warranty — across 150+ Indian cities.',
+    question: 'How do I choose an interior designer in India?',
+    answer: `Choose one who shows you the design in 3D before building, gives a fixed itemised price, uses branded materials and stands behind the work with a written warranty. Silver Storey does all four — complimentary 3D visualisation, transparent pricing, Greenply/Hettich/Asian Paints/Kohler materials and a 10-year warranty — with city pages for ${CITIES.length} Indian cities.`,
   },
   {
     question: 'How much does an interior designer cost in India?',
@@ -113,7 +106,7 @@ export default async function InteriorDesignersIndiaPage() {
       <PageHero
         eyebrow="Pan-India interior design studio"
         title="Interior Designers in India"
-        subtitle={`Silver Storey designs and delivers turnkey home and commercial interiors in ${CITIES.length} cities across all 28 states and 8 union territories — with complimentary 3D visualisation, transparent itemised pricing, delivery in 45 days and a 10-year warranty.`}
+        subtitle={`Silver Storey takes up turnkey home and commercial interiors across all 28 states and 8 union territories of India, with dedicated pages for ${CITIES.length} cities — complimentary 3D visualisation, transparent itemised pricing, delivery in 45 days and a 10-year warranty.`}
       >
         <Breadcrumbs items={crumbs} />
       </PageHero>
