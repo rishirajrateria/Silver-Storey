@@ -34,7 +34,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Full Home Interiors',
     category: 'package',
     description:
-      'Turnkey full home interior design — space planning, modular kitchen, wardrobes, false ceiling, lighting, painting and furnishing — delivered in 45 days with a 10-year warranty.',
+      'Turnkey full home interiors — space planning, modular kitchen, wardrobes, false ceiling, lighting, painting and furnishing — in 45 days, 10-year warranty.',
     intro: [
       'A full home interior package is the simplest way to move into a finished, cohesive home. Instead of coordinating a carpenter, an electrician, a painter and a dozen vendors yourself, Silver Storey takes single-point responsibility for the entire scope: layout planning, modular kitchen and wardrobes, false ceilings and lighting, wall finishes, loose furniture, soft furnishings and décor styling.',
       'We start with a free consultation and site measurement, follow it with an itemised estimate and complimentary 3D visualisations of every room, and only begin execution once you have approved the design down to the last handle. Our in-house workshop manufactures the modular units while site work proceeds in parallel, which is how we deliver most homes within 45 days of design sign-off.',
@@ -118,7 +118,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Modular Kitchen',
     category: 'room',
     description:
-      'Custom modular kitchens — L-shaped, U-shaped, parallel, island and straight — with BWP plywood, Hettich/Ebco hardware and a 10-year warranty. Starting ₹1.4 lakh.',
+      'Custom modular kitchens — L-shaped, U-shaped, parallel, island and straight — BWP plywood, Hettich/Ebco hardware, 10-year warranty, from ₹1.4 lakh.',
     intro: [
       'The kitchen is the hardest-working room in an Indian home, and a modular kitchen is the most valuable interior investment you can make. Silver Storey designs kitchens around how you actually cook — the work triangle between hob, sink and fridge, tall units for pantry storage, corner solutions that don’t waste space, and a chimney and hob layout that keeps the room smoke-free.',
       'We manufacture cabinets in our own workshop from BWP (boiling water proof) plywood or HDHMR, with Hettich or Ebco soft-close hinges and channels, and offer finishes from durable laminates to high-gloss acrylic, PU and natural veneer. Countertops are specified for Indian cooking: quartz, granite or Dekton, with a full-height backsplash for easy cleaning.',
@@ -193,7 +193,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Living Room',
     category: 'room',
     description:
-      'Living room interior design with TV units, wall panelling, false ceiling, lighting and furniture — designed in 3D, delivered in 45 days. Starting ₹2.4 lakh.',
+      'Living room interiors with TV units, wall panelling, false ceiling, lighting and furniture — designed in 3D, delivered in 45 days, from ₹2.4 lakh.',
     intro: [
       'The living room sets the tone for the whole home. Silver Storey designs living rooms that balance a statement — a fluted wood panel, a stone-clad TV wall, a layered cove-lit ceiling — with everyday comfort and enough hidden storage to keep the space calm.',
       'We plan seating for how you live: a sectional facing the TV for family evenings, a formal arrangement for guests, or both in an open-plan living-dining layout. Lighting is designed in three layers (ambient, task, accent) and we coordinate curtains, rugs and décor so the room feels complete on handover day.',
@@ -253,7 +253,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Bedroom',
     category: 'room',
     description:
-      'Master, guest and kids’ bedroom interiors — wardrobes, headboard walls, false ceilings, dressers and study units — with 3D visualisation and a 10-year warranty. Starting ₹2.1 lakh.',
+      'Master, guest and kids’ bedroom interiors — wardrobes, headboard walls, false ceilings, dressers and study units — in 3D, 10-year warranty, from ₹2.1 lakh.',
     intro: [
       'A bedroom should do two things well: help you rest and hide clutter. Silver Storey bedroom packages centre on a well-planned wardrobe (sliding or hinged, with loft), a headboard wall that gives the room its character, and layered lighting that lets you dim down at night.',
       'For master bedrooms we add dressers, walk-in wardrobes where space allows, and reading nooks; for kids’ rooms, study desks and flexible storage that grows with them; for guest rooms, compact multi-use furniture.',
@@ -312,7 +312,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Bathroom',
     category: 'room',
     description:
-      'Bathroom interior design and renovation — vanity units, wall-hung sanitaryware, glass partitions, tiling and lighting with Kohler fittings. Starting ₹1.8 lakh.',
+      'Bathroom design and renovation — vanity units, wall-hung sanitaryware, glass partitions, tiling and lighting with Kohler fittings, from ₹1.8 lakh.',
     intro: [
       'Bathrooms are the most technically demanding rooms to get right — waterproofing, slopes, plumbing points and ventilation all have to be perfect before the beautiful finishes go on. Silver Storey designs bathrooms that feel like a hotel: wall-hung WCs, frameless glass showers, floating vanities with drawer storage, and warm, layered lighting.',
       'We specify moisture-proof materials throughout — WPC or marine-grade vanities, large-format vitrified tiles, SS-304 fittings — and work with Kohler and equivalent brands for sanitaryware and faucets.',
@@ -372,7 +372,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Dining Room',
     category: 'room',
     description:
-      'Dining room interiors — dining tables, crockery units, bar counters, feature walls and pendant lighting designed for Indian family living. Starting ₹1 lakh.',
+      'Dining room interiors — dining tables, crockery units, bar counters, feature walls and pendant lighting for Indian family living, from ₹1 lakh.',
     intro: [
       'The dining area is where Indian families actually gather, so we design it to work for daily meals and festival crowds alike. Silver Storey dining packages include a crockery unit sized for your collection, a table and chairs proportioned to the room, a feature wall or mirror to add depth, and pendant lighting that sets the mood.',
       'In open-plan homes we design the dining zone as a bridge between kitchen and living room, often with a breakfast counter or bar unit doing double duty as a partition.',
@@ -474,7 +474,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Wardrobes',
     category: 'specialty',
     description:
-      'Custom wardrobes — sliding, hinged, walk-in and loft — with internal organisers, mirrors and soft-close hardware, built from BWP plywood with a 10-year warranty.',
+      'Custom wardrobes — sliding, hinged, walk-in and loft — with internal organisers, mirrors and soft-close hardware in BWP plywood, 10-year warranty.',
     intro: [
       'A wardrobe is the biggest piece of furniture in most bedrooms, and the one that determines whether the room stays tidy. Silver Storey designs wardrobes around your actual wardrobe contents — hanging length for sarees and suits, drawer stacks for folded clothes, dedicated space for luggage, and lofts that use the full ceiling height.',
       'Choose from hinged, sliding, walk-in and L-shaped configurations with laminate, acrylic, veneer, glass or mirror shutters, all built from BWP plywood with Hettich or Ebco hardware.',
@@ -577,7 +577,7 @@ export const SERVICES: ServiceData[] = [
     shortName: '1BHK Interiors',
     category: 'bhk',
     description:
-      '1BHK interior design packages that make compact homes feel spacious — smart storage, modular kitchen, wardrobe and multifunctional furniture. Starting ₹3.5 lakh.',
+      '1BHK interior packages that make compact homes feel spacious — smart storage, modular kitchen, wardrobe and multifunctional furniture, from ₹3.5 lakh.',
     intro: [
       'A 1BHK rewards clever design more than any other home. Silver Storey 1BHK packages focus on storage that disappears into walls and ceilings, a compact but complete modular kitchen, a wardrobe with loft, and multifunctional furniture — sofa-cum-beds, fold-down desks, storage ottomans — that lets one room do three jobs.',
       'Light palettes, mirrors and continuous flooring make 400–550 sq ft feel airy, and we keep the budget honest with an itemised estimate.',
@@ -624,7 +624,7 @@ export const SERVICES: ServiceData[] = [
     shortName: '2BHK Interiors',
     category: 'bhk',
     description:
-      '2BHK interior design packages — modular kitchen, two wardrobes, living room TV unit, false ceilings and lighting — delivered in 45 days. Starting ₹5.5 lakh.',
+      '2BHK interior packages — modular kitchen, two wardrobes, living room TV unit, false ceilings and lighting — delivered in 45 days, from ₹5.5 lakh.',
     intro: [
       'The 2BHK is India’s most common home, and Silver Storey has refined a package that covers everything a family needs: a modular kitchen, wardrobes in both bedrooms, a living room TV unit and feature wall, false ceilings with lighting, and finishing touches like curtains and décor.',
       'We have optimised layouts for the standard 2BHK floor plates in major townships, so design moves quickly and pricing is predictable. Every package comes with complimentary 3D visualisation and our 10-year warranty.',
@@ -677,7 +677,7 @@ export const SERVICES: ServiceData[] = [
     shortName: '3BHK Interiors',
     category: 'bhk',
     description:
-      '3BHK interior design packages — modular kitchen, three wardrobes, living-dining design, pooja unit, false ceilings and lighting. Starting ₹8 lakh, delivered in 45 days.',
+      '3BHK interior packages — modular kitchen, three wardrobes, living-dining design, pooja unit, false ceilings and lighting — 45 days, from ₹8 lakh.',
     intro: [
       'A 3BHK gives room for a master suite, a kids’ room and a guest or study room, plus a proper living-dining zone. Silver Storey 3BHK packages plan each bedroom for its purpose, design an open living-dining with a feature wall and crockery unit, and add a pooja unit, foyer storage and utility-area cabinets that most families forget until they move in.',
       'Our itemised quote lets you choose finish grades room by room — acrylic in the kitchen, veneer in the living room, laminate in the guest room — to hit your budget without compromising where it matters.',
@@ -732,7 +732,7 @@ export const SERVICES: ServiceData[] = [
     shortName: '4BHK Interiors',
     category: 'bhk',
     description:
-      'Luxury 4BHK, duplex and penthouse interior design — bespoke joinery, home theatre, walk-in wardrobes, staircase design and automation. Starting ₹14 lakh.',
+      'Luxury 4BHK, duplex and penthouse interiors — bespoke joinery, home theatre, walk-in wardrobes, staircase design and automation, from ₹14 lakh.',
     intro: [
       'Large homes need a designer who can hold a single vision across many rooms. Silver Storey 4BHK, duplex and penthouse projects are led by a principal designer who develops a material and colour story for the whole home, then details each space — a double-height living room, a home theatre, a walk-in master wardrobe, a staircase with integrated lighting — so it all reads as one.',
       'We integrate smart-home automation, custom furniture and art curation, and manage the longer construction sequence with a dedicated project manager and weekly reports.',
@@ -787,7 +787,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Villa Interiors',
     category: 'package',
     description:
-      'Villa, bungalow and independent house interior design — landscape-to-living continuity, double-height spaces, staircases, home theatres and bespoke furniture.',
+      'Villa, bungalow and independent house interiors — landscape-to-living continuity, double-height spaces, staircases, home theatres and bespoke furniture.',
     intro: [
       'Villas and independent houses give the freedom that apartments cannot: double-height volumes, indoor–outdoor living, a proper foyer and staircase, and rooms that can be planned around views and light. Silver Storey designs villas as a complete narrative — from the entrance gate to the master bath — with a single material palette and lighting concept.',
       'We handle the complexity that comes with size: multiple contractors, landscape coordination, home automation and custom-made furniture, with one project manager and a fixed, itemised budget.',
@@ -841,7 +841,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Office Interiors',
     category: 'commercial',
     description:
-      'Corporate office, co-working and commercial interior design — workstations, cabins, meeting rooms, reception, acoustics and branding — delivered on schedule.',
+      'Corporate office, co-working and commercial interiors — workstations, cabins, meeting rooms, reception, acoustics and branding — delivered on schedule.',
     intro: [
       'A well-designed office is a recruiting and productivity tool. Silver Storey designs commercial interiors that balance open collaboration zones with focused cabins and quiet rooms, express your brand at reception and in meeting spaces, and meet the practical requirements of acoustics, HVAC, data cabling and fire compliance.',
       'We work with startups, professional firms, clinics and corporates on fit-outs from 1,000 to 50,000 sq ft, with fixed timelines that respect your lease commencement date.',
@@ -1135,7 +1135,7 @@ export const SERVICES: ServiceData[] = [
     shortName: 'Renovation',
     category: 'package',
     description:
-      'Home renovation and remodelling — kitchen and bathroom refits, layout changes, flooring, painting, electrical rewiring and complete makeovers of older flats and houses.',
+      'Home renovation and remodelling — kitchen and bathroom refits, layout changes, flooring, painting, rewiring and makeovers of older flats and houses.',
     intro: [
       'Renovating an older home is different from fitting out a new one: there are surprises behind the walls, existing plumbing and wiring to work around, and often a family living in the house during the work. Silver Storey has renovated 1970s cooperative flats, 1990s builder floors and heritage homes, and we plan every project with a proper survey, a phased schedule and dust control.',
       'Scope can range from a kitchen and bathroom refit to a complete gut renovation with new flooring, false ceilings, rewiring and a modern layout.',

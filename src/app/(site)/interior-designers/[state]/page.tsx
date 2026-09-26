@@ -9,6 +9,7 @@ import LinkGrid from '@/components/seo/LinkGrid';
 import { PageHero, Prose, StatsRow, FeatureList } from '@/components/seo/Prose';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
+import { isStateIndexable } from '@/lib/seo/indexing';
 import {
   breadcrumbSchema,
   faqSchema,
@@ -28,6 +29,7 @@ import {
 } from '@/lib/locations';
 import {
   stateFaqs,
+  stateHowWeWork,
   stateMetaDescription,
   stateMetaTitle,
   stateTitle,
@@ -51,12 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: stateMetaTitle(state),
     description: stateMetaDescription(state),
     path: statePath(state),
-    keywords: [
-      `interior designers in ${state.name}`,
-      `best interior designer ${state.name}`,
-      `home interior ${state.name}`,
-      `interior design company ${state.name}`,
-    ],
+    noIndex: !isStateIndexable(citiesInState(state.slug).length),
   });
 }
 
@@ -137,6 +134,25 @@ export default async function StatePage({ params }: Props) {
         </Prose>
       </section>
 
+      {/* The quotable service-model sentence, in the same words on every page. */}
+      <section
+        id="how-we-work"
+        className="mx-auto max-w-4xl px-6 py-10"
+        aria-labelledby="how-we-work-title"
+      >
+        <div className="glass-panel rounded-xl p-6 sm:p-8">
+          <h2
+            id="how-we-work-title"
+            className="mb-3 text-2xl font-bold tracking-tight text-black sm:text-3xl"
+          >
+            How we work in {state.name}
+          </h2>
+          <p className="text-sm leading-relaxed text-black/70 sm:text-base">
+            {stateHowWeWork(state)}
+          </p>
+        </div>
+      </section>
+
       {cities.length > 0 && (
         <LinkGrid
           id="cities"
@@ -163,12 +179,14 @@ export default async function StatePage({ params }: Props) {
           id="districts-title"
           className="mb-3 text-2xl font-bold tracking-tight text-black sm:text-3xl"
         >
-          Districts of {state.name} we serve
+          Districts of {state.name}
         </h2>
         <p className="mb-8 max-w-2xl text-sm text-black/55 sm:text-base">
-          We take up residential and commercial interior projects across all{' '}
-          {state.districts.length} districts of {state.name}. Districts with a
-          dedicated city page are linked.
+          {cities.length
+            ? `We take up residential and commercial interior projects across the ${state.districts.length} districts of ${state.name}. Districts with a dedicated city page are linked.`
+            : state.districts.length === 1
+              ? `We take up projects in ${state.name} on request; there is no dedicated city page yet.`
+              : `We take up projects in ${state.name} on request, in any of its ${state.districts.length} districts; there is no dedicated city page yet.`}
         </p>
         <ul className="flex flex-wrap gap-2">
           {state.districts.map((d) => {

@@ -45,16 +45,68 @@ export function citiesInState(stateSlug: string): CityData[] {
   );
 }
 
+/**
+ * Anything further than this is not "near" by any reading a visitor or a
+ * search engine would accept. The curated lists were written for link
+ * equity and paired Nagpur with Pune (620 km) and Kolkata with Siliguri
+ * (460 km); the cap applies to them as well.
+ */
+export const NEARBY_MAX_KM = 250;
+
+/** Great-circle distance between two cities, in km; undefined without coordinates. */
+export function distanceKm(a: CityData, b: CityData): number | undefined {
+  if (!a.geo || !b.geo) return undefined;
+  const rad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = rad(b.geo.lat - a.geo.lat);
+  const dLng = rad(b.geo.lng - a.geo.lng);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a.geo.lat)) *
+      Math.cos(rad(b.geo.lat)) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Cities genuinely near `city`: the curated list first, then the rest of the
+ * dataset by distance, every one within NEARBY_MAX_KM. Same-state cities
+ * come before other states at the top-up stage, and a same-state city whose
+ * distance cannot be computed is the only thing allowed in without a
+ * measurement. The list may be short for isolated cities — Leh, Srinagar —
+ * which is the honest answer.
+ */
 export function nearbyCities(city: CityData, limit = 6): CityData[] {
-  const list = city.nearby
+  const within = (other: CityData) => {
+    const d = distanceKm(city, other);
+    return d !== undefined && d <= NEARBY_MAX_KM;
+  };
+  const byDistance = (a: CityData, b: CityData) =>
+    (distanceKm(city, a) ?? Infinity) - (distanceKm(city, b) ?? Infinity);
+
+  const picked: CityData[] = [];
+  const add = (c: CityData) => {
+    if (c.slug !== city.slug && !picked.some((p) => p.slug === c.slug))
+      picked.push(c);
+  };
+
+  city.nearby
     .map((s) => CITY_BY_SLUG[s])
-    .filter((c): c is CityData => Boolean(c) && c.slug !== city.slug);
-  if (list.length >= limit) return list.slice(0, limit);
-  // top up with other cities from the same state
-  const extra = citiesInState(city.state).filter(
-    (c) => c.slug !== city.slug && !list.some((l) => l.slug === c.slug),
-  );
-  return [...list, ...extra].slice(0, limit);
+    .filter((c): c is CityData => Boolean(c) && within(c))
+    .forEach(add);
+
+  if (picked.length < limit) {
+    const rest = CITIES.filter(within).sort(byDistance);
+    rest.filter((c) => c.state === city.state).forEach(add);
+    rest.forEach(add);
+  }
+
+  if (picked.length < limit) {
+    citiesInState(city.state)
+      .filter((c) => distanceKm(city, c) === undefined)
+      .forEach(add);
+  }
+
+  return picked.slice(0, limit);
 }
 
 export const TIER1_CITIES = CITIES.filter((c) => c.tier === 1);
