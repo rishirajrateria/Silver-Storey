@@ -9,9 +9,14 @@ function easeOutCubic(t: number): number {
 /**
  * Counts up to `target` over `duration` ms once the returned `ref` element
  * enters the viewport. The animation runs only once.
+ *
+ * The displayed value starts AT the target: the server-rendered HTML (and any
+ * crawler that reads it without running JavaScript) carries the real figure,
+ * and the count-up is only a flourish that plays once the element is on
+ * screen.
  */
 export function useCountUp(target: number, duration = 2000) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(target);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 

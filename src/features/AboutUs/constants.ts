@@ -1,346 +1,179 @@
 import type { Stat, ProcessStep, ProcessPhase } from './types';
+import { PROCESS_STEPS } from '@/lib/seo/process';
+import { SITE } from '@/lib/seo/site';
 
 export const QUOTE =
-  'Our advice to those who have never worked with a designer, \u201cWe are here to make the process fun and simple for you! There is easy access these days to design tips and ideas, which is wonderful, but it can be stressful to try to incorporate that into your own space. Let the designer do that work and iron out details which you might not consider. We are happy to create space that are a reflection of you, forming comforting sentiments and place for the best memories to be made\u201d';
+  'Our advice to those who have never worked with a designer, “We are here to make the process fun and simple for you! There is easy access these days to design tips and ideas, which is wonderful, but it can be stressful to try to incorporate that into your own space. Let the designer do that work and iron out details which you might not consider. We are happy to create space that are a reflection of you, forming comforting sentiments and place for the best memories to be made”';
 
+// The same figures the schema and llms.txt publish, so the page never drifts.
 export const stats: Stat[] = [
-  { value: '60+', label: 'Happy Customers' },
-  { value: '50000', label: 'Square Feet Transformed' },
-  { value: '30+', label: 'Expert Team Members' },
-  { value: '15', label: 'Years of Experience' },
+  { value: SITE.stats.happyCustomers, label: 'Happy Customers' },
+  { value: SITE.stats.sqftTransformed, label: 'Square Feet Transformed' },
+  { value: SITE.stats.teamMembers, label: 'Expert Team Members' },
+  { value: String(SITE.stats.yearsExperience), label: 'Years of Experience' },
 ];
 
-// ── Phase 1: Initial Assessment ───────────────────────────────────────────────
-const assessmentSteps: ProcessStep[] = [
+const [meet, estimate, token, visualise, approve, deliver] = PROCESS_STEPS;
+const { warranty, payment } = SITE;
+
+// ── Phase 1: Consultation and estimate ───────────────────────────────────────
+const consultationSteps: ProcessStep[] = [
   {
     number: '01',
-    title: 'Initial Site Assessment',
+    title: meet.name,
     items: [
+      { bold: 'Free consultation:', text: meet.text },
       {
-        bold: 'Prepare a Checklist:',
-        text: 'List out everything you need to assess\u2014dimensions, lighting, existing furnishings, architectural details, and any structural elements.',
-      },
-      {
-        bold: 'Assess Lighting:',
-        text: 'Observe both natural and artificial lighting at different times of the day. This will help you understand how light affects the space.',
-      },
-      {
-        bold: 'Understand the Client\u2019s Vision:',
-        text: 'If this visit is for a client, make sure you have a clear understanding of their preferences, lifestyle, and budget.',
+        bold: 'Kolkata and beyond:',
+        text: `We meet Kolkata clients at the site or in our ${SITE.address.locality} studio. Outside West Bengal we begin over video and confirm coverage and timelines before you commit to anything.`,
       },
     ],
   },
   {
     number: '02',
-    title: 'Preliminary Design and Concept Development',
+    title: estimate.name,
     items: [
-      {
-        bold: 'Conceptual Design:',
-        text: 'Create initial design concepts or mood boards based on the client\u2019s preferences and the site assessment.',
-      },
-      {
-        bold: 'Space Planning:',
-        text: 'Develop preliminary layouts to show how furniture and other elements will fit within the space.',
-      },
+      { bold: 'Line-by-line pricing:', text: estimate.text },
+      { bold: 'No design fee:', text: SITE.commitment },
     ],
   },
   {
     number: '03',
-    title: 'Estimating & Budgeting',
+    title: token.name,
     items: [
+      { bold: 'Confirming the project:', text: token.text },
       {
-        bold: 'Material Costs:',
-        text: 'Estimate the cost of materials, including flooring, paint, wallpaper, and finishes. Research prices and consider options within the client\u2019s budget.',
-      },
-      {
-        bold: 'Labor Costs:',
-        text: 'Estimate costs for any required contractors, such as painters, carpenters, or electricians.',
-      },
-      {
-        bold: 'Design Fees:',
-        text: 'Include your own design fees based on your pricing structure. This could be an hourly rate, a flat fee, or a percentage of the total project cost.',
-      },
-    ],
-  },
-  {
-    number: '04',
-    title: 'Book the Project with Initial Token and Approvals',
-    items: [
-      {
-        bold: 'Refine Design:',
-        text: 'Adjust the design and budget based on client feedback and any additional site considerations.',
-      },
-      {
-        bold: 'Obtain Approvals:',
-        text: 'Get final approval from the client on the design and budget before proceeding to the next stages of the project.',
+        bold: 'The only payment before approval:',
+        text: 'The token is the only money that changes hands before you approve the design. The 50% advance is due at contract signing, and the contract is signed only after you have signed off on the 3D design and the itemised quote.',
       },
     ],
   },
 ];
 
-// ── Phase 2: Design Phase ─────────────────────────────────────────────────────
-const designPhaseSteps: ProcessStep[] = [
+// ── Phase 2: Design and 3D approval ──────────────────────────────────────────
+const designSteps: ProcessStep[] = [
   {
     number: '01',
-    title: 'Design Development',
+    title: visualise.name,
     items: [
+      { bold: 'See it before we build it:', text: visualise.text },
       {
-        bold: 'Detailed Drawings:',
-        text: 'Create detailed drawings, including floor plans, elevations, and sections. These should show how different elements will be installed and how they relate to each other.',
-      },
-      {
-        bold: 'Materials and Finishes:',
-        text: 'Choose materials, finishes, and colors. Present samples and swatches to the client for approval.',
-      },
-      {
-        bold: 'Lighting Design:',
-        text: 'Plan the lighting scheme, including types of fixtures, placement, and lighting effects. Consider natural and artificial light sources.',
+        bold: 'Real materials:',
+        text: `We render with the actual finishes, hardware and lighting we order from our brand partners — ${SITE.brandPartners.join(', ')} — so what you approve on screen is what we build.`,
       },
     ],
   },
   {
     number: '02',
-    title: 'Presentation',
+    title: 'Revisions until it is right',
     items: [
+      { bold: 'Refine with your designer:', text: approve.text },
       {
-        bold: 'Design Presentation:',
-        text: 'Prepare a comprehensive presentation for the client that includes visualizations such as renderings, 3D models, or virtual tours. This helps the client visualize the final outcome.',
-      },
-      {
-        bold: 'Revisions:',
-        text: 'Gather feedback from the client and make necessary revisions to the design. Address any concerns or additional requests.',
+        bold: 'Change freely at this stage:',
+        text: 'Layouts, finishes and units are revised in 3D at no cost until you are happy. Once the design is approved, the drawings become the production set, so we ask for changes before sign-off rather than after.',
       },
     ],
   },
   {
     number: '03',
-    title: 'Specifications and Documentation',
+    title: 'Approval and contract',
     items: [
       {
-        bold: 'Specification Sheets:',
-        text: 'Prepare detailed specification sheets for all materials, fixtures, and furnishings. Include information on suppliers, product codes, and installation requirements.',
+        bold: 'The approval gate:',
+        text: 'Nothing is manufactured and no site work begins until you have approved the 3D design, the drawings, the materials and the itemised quote in writing.',
       },
       {
-        bold: 'Budget and Cost Estimates:',
-        text: 'Update the budget with any changes based on the finalized design. Provide a detailed cost estimate for materials, labor, and other expenses.',
+        bold: 'Payment schedule:',
+        text: `Modular work: ${payment.modular}. On-site work: ${payment.onsite}.`,
       },
     ],
   },
 ];
 
-// ── Phase 3: Implementation Phase ────────────────────────────────────────────
-const implementationPhaseSteps: ProcessStep[] = [
+// ── Phase 3: Manufacturing and execution ─────────────────────────────────────
+const executionSteps: ProcessStep[] = [
   {
     number: '01',
-    title: 'Pre-Construction Preparations',
+    title: 'Manufactured in our workshop',
     items: [
       {
-        bold: 'Finalize Documentation:',
-        text: 'Ensure all design documents, including drawings, specifications, and contracts, are finalized and approved.',
+        bold: 'Our own workshop:',
+        text: `Modular kitchens, wardrobes and storage are manufactured in our ${SITE.address.locality}, ${SITE.address.city} workshop from the approved drawings, while site work proceeds in parallel.`,
       },
       {
-        bold: 'Procure Materials:',
-        text: 'Confirm orders for materials, furnishings, and fixtures. Coordinate delivery schedules with suppliers to ensure timely arrival.',
+        bold: 'One point of contact:',
+        text: 'A dedicated project manager answers for the whole scope — carpentry, electrical, painting and civil work — so you never coordinate vendors yourself.',
       },
     ],
   },
   {
     number: '02',
-    title: 'Project Kickoff',
+    title: 'Weekly progress reports',
     items: [
       {
-        bold: 'Team Briefing:',
-        text: 'Conduct a kickoff meeting with all stakeholders, including contractors, subcontractors, and suppliers. Review the project scope, schedule, and roles.',
+        bold: 'You see every stage:',
+        text: 'Your project manager sends weekly photo and video progress reports, so you follow the work whether you live next door or in another city.',
       },
       {
-        bold: 'Site Preparation:',
-        text: 'Prepare the site for construction or renovation. This may involve clearing out existing furniture, protecting floors and surfaces, and setting up work areas.',
+        bold: 'Supervised execution:',
+        text: 'Our execution teams work from the approved drawings under the project manager, and every change on site is agreed with you in writing before it is made.',
       },
     ],
   },
   {
     number: '03',
-    title: 'Construction and Installation',
+    title: deliver.name,
     items: [
+      { bold: 'The timeline:', text: deliver.text },
       {
-        bold: 'Monitor Progress:',
-        text: 'Regularly check the progress of construction or renovation work.',
-      },
-      {
-        bold: 'Quality Control:',
-        text: 'Inspect workmanship and materials to ensure they meet the specified quality standards.',
-      },
-      {
-        bold: 'Installations:',
-        text: 'Oversee the installation of furniture, fixtures, and finishes.',
-      },
-    ],
-  },
-  {
-    number: '04',
-    title: 'Coordination and Communication',
-    items: [
-      {
-        bold: 'Regular Updates:',
-        text: 'Maintain regular communication with the client to provide updates on progress, address any concerns, and adjust plans as needed.',
-      },
-      {
-        bold: 'Problem Solving:',
-        text: 'Be prepared to address and resolve any issues that arise during the execution phase, such as unexpected delays or changes.',
-      },
-    ],
-  },
-  {
-    number: '05',
-    title: 'Site Management',
-    items: [
-      {
-        bold: 'Safety and Cleanliness:',
-        text: 'Ensure that the site is safe and clean. This includes managing construction debris, securing tools and materials, and following safety protocols.',
-      },
-      {
-        bold: 'Supervision:',
-        text: 'Supervise the work to ensure adherence to the design and quality standards. Conduct site visits to monitor progress and make any necessary adjustments.',
-      },
-    ],
-  },
-  {
-    number: '06',
-    title: 'Final Inspections',
-    items: [
-      {
-        bold: 'Inspect Work:',
-        text: 'Inspect the completed work to ensure it meets the design specifications and quality standards.',
-      },
-      {
-        bold: 'Punch List:',
-        text: 'Create a punch list of any remaining tasks, corrections, or touch-ups required. Ensure that all items on the list are addressed before final completion.',
-      },
-    ],
-  },
-  {
-    number: '07',
-    title: 'Client Walkthrough',
-    items: [
-      {
-        bold: 'Review Completion:',
-        text: 'Schedule a final walkthrough with the client to review the completed project. Address any final adjustments or concerns they may have.',
-      },
-      {
-        bold: 'Client Approval:',
-        text: 'Obtain formal approval from the client that the project meets their expectations and requirements.',
-      },
-    ],
-  },
-  {
-    number: '08',
-    title: 'Project Handover',
-    items: [
-      {
-        bold: 'Documentation:',
-        text: 'Provide the client with all necessary documentation, including warranties, maintenance instructions, and any relevant certificates.',
-      },
-      {
-        bold: 'Final Payment:',
-        text: 'Ensure that all financial matters are settled, including final payments to contractors, suppliers, and any remaining balances.',
+        bold: 'Balance payments:',
+        text: 'The balance on modular items is due before they leave the workshop; on-site work is settled 45% at mid-stage and 5% at handover.',
       },
     ],
   },
 ];
 
-// ── Phase 4: Post Completion ──────────────────────────────────────────────────
-const postCompletionSteps: ProcessStep[] = [
+// ── Phase 4: Handover and warranty ───────────────────────────────────────────
+const handoverSteps: ProcessStep[] = [
   {
     number: '01',
-    title: 'Client Support and Feedback',
+    title: 'Walkthrough and handover',
     items: [
       {
-        bold: 'Provide Documentation:',
-        text: 'Supply the client with any necessary documentation, such as warranties for products, maintenance instructions, and care guidelines for materials.',
+        bold: 'We check before you do:',
+        text: 'We walk through the finished home with you, list every snag and close it before handover.',
       },
       {
-        bold: 'Feedback Collection:',
-        text: 'Solicit feedback from the client about their experience with the project. This can be done through surveys, interviews, or informal discussions.',
+        bold: 'Handover documents:',
+        text: 'You receive the final drawings, the product details and the warranty terms for every component we installed.',
       },
     ],
   },
   {
     number: '02',
-    title: 'Warranty and Maintenance',
+    title: `${warranty.termYears}-year warranty`,
     items: [
       {
-        bold: 'Warranty Services:',
-        text: 'Ensure that the client understands the warranty coverage for any products or services provided. Offer support for any warranty claims if needed.',
+        bold: 'What is covered:',
+        text: `${warranty.termYears} years on ${warranty.covers}.`,
       },
       {
-        bold: 'Maintenance Advice:',
-        text: 'Provide guidance on how to maintain and care for the new furnishings and finishes to ensure longevity and continued satisfaction.',
+        bold: 'Registering and claiming:',
+        text: `Register by calling ${SITE.phoneDisplay} within ${warranty.registerWithinDays} days of handover and lodge any claim within ${warranty.claimWithinDays} days of noticing a defect. A Silver Storey representative inspects and repairs on site or replaces the component.`,
       },
     ],
   },
   {
     number: '03',
-    title: 'Addressing Post-Completion Issues',
+    title: 'After you move in',
     items: [
       {
-        bold: 'Follow-Up Visits:',
-        text: 'Schedule follow-up visits if necessary to address any issues that have arisen after the client has started using the space.',
+        bold: 'Not covered, in plain words:',
+        text: `The warranty excludes ${warranty.excludes}.`,
       },
       {
-        bold: 'Issue Resolution:',
-        text: 'Resolve any problems or defects promptly. This could involve coordinating with contractors, suppliers, or other professionals to fix issues.',
-      },
-    ],
-  },
-  {
-    number: '04',
-    title: 'Ongoing Support',
-    items: [
-      {
-        bold: 'Client Communication:',
-        text: 'Keep in touch with the client to offer continued support and to check in on their satisfaction with the completed project.',
-      },
-      {
-        bold: 'Additional Services:',
-        text: 'Be available for any additional services or modifications the client might request in the future.',
-      },
-    ],
-  },
-  {
-    number: '05',
-    title: 'Documentation and Closure',
-    items: [
-      {
-        bold: 'Complete Documentation:',
-        text: 'Ensure all project documentation is complete and properly archived, including design plans, correspondence, and any project-related paperwork.',
-      },
-      {
-        bold: 'Formal Closure:',
-        text: 'Officially close the project by finalizing all administrative tasks, including financial matters.',
-      },
-    ],
-  },
-  {
-    number: '06',
-    title: 'Client Appreciation',
-    items: [
-      {
-        bold: 'Show Appreciation:',
-        text: 'Consider sending a thank-you note or a small gift to express appreciation for the client\u2019s business and to maintain a positive relationship.',
-      },
-      {
-        bold: 'Referral Requests:',
-        text: 'If appropriate, ask the client for referrals or testimonials if they are satisfied with your work. This can help build your reputation and attract new clients.',
-      },
-    ],
-  },
-  {
-    number: '07',
-    title: 'Future Collaboration',
-    items: [
-      {
-        bold: 'Stay Connected:',
-        text: 'Keep the lines of communication open for potential future projects or updates. This can help foster long-term relationships and encourage repeat business.',
+        bold: 'Still one call away:',
+        text: `For anything after handover, call or WhatsApp ${SITE.phoneDisplay} or email ${SITE.email}.`,
       },
     ],
   },
@@ -348,8 +181,8 @@ const postCompletionSteps: ProcessStep[] = [
 
 // ── All phases (in order) ─────────────────────────────────────────────────────
 export const processPhases: ProcessPhase[] = [
-  { heading: 'Initial Assessment', steps: assessmentSteps },
-  { heading: 'Design Phase', steps: designPhaseSteps },
-  { heading: 'Implementation Phase', steps: implementationPhaseSteps },
-  { heading: 'Post Completion Phase', steps: postCompletionSteps },
+  { heading: 'Consultation and estimate', steps: consultationSteps },
+  { heading: 'Design and 3D approval', steps: designSteps },
+  { heading: 'Manufacturing and execution', steps: executionSteps },
+  { heading: 'Handover and warranty', steps: handoverSteps },
 ];
