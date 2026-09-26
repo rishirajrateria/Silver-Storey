@@ -4,11 +4,15 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import type { BlogPost } from './types';
+import Breadcrumbs, { type Crumb } from '@/components/seo/Breadcrumbs';
+import CmsImage from '@/features/Gallery/CmsImage';
 import HeroControls from '../Hero/components/HeroControls';
 import MenuOverlay from '../Hero/components/MenuOverlay';
 
 interface Props {
   posts: BlogPost[];
+  /** The same trail the route puts in BreadcrumbList schema. */
+  crumbs?: Crumb[];
   projectPages?: { title: string; slug: string }[];
   /** Optional category chips rendered under the header. */
   categories?: { name: string; slug: string; href: string; active?: boolean }[];
@@ -39,6 +43,7 @@ function CalendarIcon() {
 
 export default function BlogListPage({
   posts,
+  crumbs = [],
   projectPages = [],
   categories = [],
   title,
@@ -47,8 +52,10 @@ export default function BlogListPage({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen px-6 py-20 sm:py-28">
+    <main className="min-h-screen px-6 py-12 sm:py-16">
       <div className="mx-auto max-w-6xl">
+        {crumbs.length > 0 && <Breadcrumbs items={crumbs} />}
+
         {/* Header */}
         <div className="mb-16 text-center">
           <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
@@ -95,14 +102,13 @@ export default function BlogListPage({
                 className="glass-panel glass-lift group flex flex-col overflow-hidden rounded-xl"
               >
                 {/* Image */}
-                <div className="aspect-[16/10] overflow-hidden bg-zinc-100">
+                <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
                   {post.mainImageUrl ? (
-                    <img
-                      loading="lazy"
-                      decoding="async"
+                    <CmsImage
                       src={post.mainImageUrl}
                       alt={post.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-sm text-zinc-400">
@@ -125,7 +131,7 @@ export default function BlogListPage({
                     <span className="flex items-center gap-1.5 text-xs text-black/40">
                       <CalendarIcon />
                       {post.publishedAt
-                        ? dayjs(post.publishedAt).format('MMM D, YYYY')
+                        ? dayjs(post.publishedAt).format('D MMM YYYY')
                         : '—'}
                     </span>
                     <span className="text-sm font-medium text-black/60 transition-colors group-hover:text-black">
@@ -144,6 +150,6 @@ export default function BlogListPage({
         onClose={() => setIsMenuOpen(false)}
         projectPages={projectPages}
       />
-    </div>
+    </main>
   );
 }

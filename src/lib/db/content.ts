@@ -39,6 +39,18 @@ export interface ProjectPageLink {
   slug: string;
 }
 
+/** A case study as the /projects index lists it. */
+export interface ProjectPageSummary {
+  slug: string;
+  title: string;
+  heroImageUrl?: string;
+  heroSubtitle?: string;
+  location?: string;
+  /** Markdown of the story; the page excerpts it. */
+  summary?: string;
+  updatedAt: Date;
+}
+
 export interface GalleryItem {
   id: string;
   title: string;
@@ -255,6 +267,46 @@ export const getProjectPageLinks = cache(
       },
       [],
       'getProjectPageLinks',
+    ),
+);
+
+/**
+ * Published case studies for the /projects index, in the menu's order.
+ * Reserved slugs are skipped for the same reason as in the menu: they either
+ * have their own route or none at all.
+ */
+export const getProjectPageSummaries = cache(
+  async (): Promise<ProjectPageSummary[]> =>
+    safeQuery(
+      async () => {
+        const rows = await prisma.projectPage.findMany({
+          where: {
+            published: true,
+            slug: { notIn: RESERVED_PROJECT_SLUGS },
+          },
+          orderBy: [{ order: 'asc' }, { title: 'asc' }],
+          select: {
+            slug: true,
+            title: true,
+            heroImageUrl: true,
+            heroSubtitle: true,
+            location: true,
+            summary: true,
+            updatedAt: true,
+          },
+        });
+        return rows.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          heroImageUrl: p.heroImageUrl ?? undefined,
+          heroSubtitle: p.heroSubtitle ?? undefined,
+          location: p.location ?? undefined,
+          summary: p.summary ?? undefined,
+          updatedAt: p.updatedAt,
+        }));
+      },
+      [],
+      'getProjectPageSummaries',
     ),
 );
 

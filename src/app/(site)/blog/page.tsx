@@ -16,7 +16,7 @@ import {
   webPageSchema,
 } from '@/lib/seo/schema';
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 const TITLE =
   'Interior Design Blog | Cost Guides, Ideas & Expert Advice – Silver Storey';
@@ -35,6 +35,11 @@ export const metadata: Metadata = buildMetadata({
   ],
 });
 
+const CRUMBS = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog' },
+];
+
 export default async function BlogPage() {
   const [posts, projectPages] = await Promise.all([
     getAllBlogItems(),
@@ -47,10 +52,7 @@ export default async function BlogPage() {
       path: '/blog',
       type: 'CollectionPage',
     }),
-    breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Blog', path: '/blog' },
-    ]),
+    breadcrumbSchema(CRUMBS),
     itemListSchema({
       name: 'Latest articles',
       items: posts
@@ -63,6 +65,7 @@ export default async function BlogPage() {
       <JsonLd data={jsonLd} />
       <BlogListPage
         posts={posts}
+        crumbs={CRUMBS}
         projectPages={projectPages}
         categories={BLOG_CATEGORIES.map((c) => ({
           name: c.name,

@@ -2,16 +2,16 @@
 
 import React from 'react';
 import type { GalleryProject } from './gallery-types';
+import CmsImage from '@/features/Gallery/CmsImage';
 
 function GalleryCard({ project }: { project: GalleryProject }) {
   return (
     <div className="relative h-[55vh] w-65 shrink-0 overflow-hidden rounded-2xl shadow-lg sm:h-[60vh] sm:w-75 md:w-80">
-      <img
-        loading="lazy"
-        decoding="async"
+      <CmsImage
         src={project.image}
         alt={project.title}
-        className="h-full w-full object-cover"
+        // The card is a fixed 16–20rem wide at every breakpoint.
+        sizes="320px"
       />
       <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />
       <div className="absolute bottom-0 left-0 p-5">

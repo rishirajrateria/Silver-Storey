@@ -21,10 +21,14 @@ const TITLE = 'Track Your Project | Silver Storey Clients';
 const DESCRIPTION =
   'Silver Storey clients: check the live status of your interior project — current milestone, expected handover, site photos and notes from your project manager.';
 
-export const metadata: Metadata = {
-  ...buildMetadata({ title: TITLE, description: DESCRIPTION, path: PATH }),
-  robots: { index: true, follow: true },
-};
+// Clients reach the tracker from the link in their welcome email; it holds
+// nothing a searcher wants, so it stays out of the index (robots.txt agrees).
+export const metadata: Metadata = buildMetadata({
+  title: TITLE,
+  description: DESCRIPTION,
+  path: PATH,
+  noIndex: true,
+});
 
 const FAQS: FAQ[] = [
   {

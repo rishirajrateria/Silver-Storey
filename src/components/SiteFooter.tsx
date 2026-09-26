@@ -13,22 +13,29 @@ import {
 import { BLOG_CATEGORIES, categoryPath } from '@/lib/blog/categories';
 import type { CategoryCard } from '@/lib/db/content';
 
+// The client tracker is deliberately absent: clients get its link by email,
+// and it is kept out of the index, so a public link would only invite
+// strangers to a login form.
 const COMPANY_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About Us', href: '/about-us' },
   { label: 'How it Works', href: '/how-it-works' },
+  { label: 'What is turnkey?', href: '/turnkey-interiors' },
   { label: 'Pricing Structure', href: '/pricing-structure' },
+  { label: 'Compare', href: '/compare' },
   { label: 'Interior Designers in India', href: '/interior-designers' },
-  { label: 'Gallery', href: '/gallery' },
   { label: 'All Services', href: '/services' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'Reviews', href: '/reviews' },
   { label: 'Cost Calculator', href: '/estimate' },
   { label: '3D Visualisation', href: '/3d-visualisation' },
   { label: 'Lookbooks', href: '/lookbooks' },
   { label: '10-Year Warranty', href: '/warranty' },
-  { label: 'Track Your Project', href: '/track' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
   { label: 'Terms & Conditions', href: '/terms-conditions' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
 ];
 
 function Column({
@@ -102,7 +109,21 @@ export default function SiteFooter({
                 Book Free Consultation
               </a>
             </div>
-            <SocialLinks variant="dark" className="mt-6 flex-wrap" />
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <SocialLinks variant="dark" className="flex-wrap" />
+              {/* The Maps listing is where the public reviews live; linking
+                  it from every page is how assistants tie the two together. */}
+              {SITE.googleBusinessProfile && (
+                <a
+                  href={SITE.googleBusinessProfile}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  className="inline-flex h-10 items-center rounded-full border border-white/20 px-4 text-sm text-white/70 transition-colors hover:border-white/60 hover:bg-white hover:text-black"
+                >
+                  Google Business Profile
+                </a>
+              )}
+            </div>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:col-span-7">
             <Column title="Head office">
@@ -265,6 +286,9 @@ export default function SiteFooter({
             </Link>
             <Link href="/terms-conditions" className="hover:text-white">
               Terms
+            </Link>
+            <Link href="/privacy-policy" className="hover:text-white">
+              Privacy
             </Link>
             <Link href="/contact" className="hover:text-white">
               Contact
