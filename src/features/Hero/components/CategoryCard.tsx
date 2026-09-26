@@ -1,6 +1,23 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Category } from '../types';
+
+// The card is 176px wide, 224px from the `sm` breakpoint (see the marquee in
+// Hero.tsx), so the browser never fetches a wider rendition than that.
+const CARD_SIZES = '(min-width: 640px) 224px, 176px';
+
+/**
+ * Only same-origin uploads and Vercel Blob are on the optimiser's allow-list
+ * (next.config.ts). Anything else is served as-is rather than crashing the
+ * page on an unexpected host.
+ */
+function canOptimise(url: string) {
+  return (
+    url.startsWith('/') ||
+    /^https:\/\/[^/]+\.blob\.vercel-storage\.com\//.test(url)
+  );
+}
 
 export default function CategoryCard(props: Category) {
   const { name, price, imageUrl, slug } = props;
@@ -20,12 +37,13 @@ export default function CategoryCard(props: Category) {
       className="group relative block h-56 w-full overflow-hidden rounded-2xl bg-zinc-800 shadow-xl sm:h-64 md:h-72"
     >
       {imageUrl && (
-        <img
-          loading="lazy"
-          decoding="async"
+        <Image
           src={imageUrl}
           alt={name}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes={CARD_SIZES}
+          unoptimized={!canOptimise(imageUrl)}
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       )}
       <div className="absolute inset-0 bg-linear-to-br from-black/40 via-black/20 to-black/70" />

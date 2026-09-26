@@ -64,6 +64,8 @@ export default function ProcessStepCard({
           decoding="async"
           src={image}
           alt={name}
+          width={40}
+          height={40}
           style={{ width: '2.5rem', height: '2.5rem', objectFit: 'contain' }}
         />
       ) : null}
