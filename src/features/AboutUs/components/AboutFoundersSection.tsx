@@ -1,12 +1,19 @@
 import React from 'react';
-import { founders } from '../../Hero/constants';
+import { SITE } from '@/lib/seo/site';
 
+// Keyed by founder slug so a renamed constant can never orphan a biography.
 const bios: Record<string, string> = {
-  'Palak Singhania':
-    'With over 9 years of experience, she holds a degree from the J.D Birla Institute creating bespoke designs. Known for her sophisticated use of natural light, innovative space planning and unique designing emphasizing sustainable and timeless design principles. Artist and designer Palak Singhania has professionally transformed a variety of spaces, including residential and commercial. She loves how, \u2018No two projects are the same\u2019. She is a distinguished Interior Designer known for her unique blend of modern minimalism and classic elegance.',
-  'Subham Bhattacharya':
+  'palak-singhania':
+    'She holds a degree from the J.D Birla Institute and creates bespoke designs. Known for her sophisticated use of natural light, innovative space planning and unique designing emphasizing sustainable and timeless design principles. Artist and designer Palak Singhania has professionally transformed a variety of spaces, including residential and commercial. She loves how, ‘No two projects are the same’. She is a distinguished Interior Designer known for her unique blend of modern minimalism and classic elegance.',
+  'subham-bhattacharya':
     'Subham Bhattacharya, a distinguished Civil Engineer and seasoned entrepreneur, has carved a remarkable niche in the realms of construction. His journey is characterised by a blend of technical expertise, leadership acumen, and entrepreneurial spirit. Upon graduation, Subham embarked on his professional journey, initially gaining practical experience with leading construction firms. His roles exposed him to diverse facets of project execution to site management, fostering a deep understanding of the industry.',
 };
+
+// The marquee stacks first and last name on two lines.
+const founders = SITE.founders.map((f) => {
+  const [firstName, ...rest] = f.name.split(' ');
+  return { ...f, firstName, lastName: rest.join(' ') };
+});
 
 export default function AboutFoundersSection() {
   return (
@@ -34,7 +41,7 @@ export default function AboutFoundersSection() {
                       loading="lazy"
                       decoding="async"
                       src={founder.image}
-                      alt={founder.alt}
+                      alt={founder.name}
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -60,7 +67,7 @@ export default function AboutFoundersSection() {
                       loading="lazy"
                       decoding="async"
                       src={founder.image}
-                      alt={founder.alt}
+                      alt={founder.name}
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -80,22 +87,25 @@ export default function AboutFoundersSection() {
       <div className="mx-auto hidden max-w-280 px-6 sm:block">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-8 md:gap-16">
           {founders.map((founder) => (
-            <div key={founder.alt} className="flex flex-col items-center">
+            <div key={founder.slug} className="flex flex-col items-center">
               <div className="aspect-4/5 w-full max-w-md overflow-hidden rounded-3xl bg-black/5 shadow-md transition-transform hover:scale-[1.01]">
                 <img
                   loading="lazy"
                   decoding="async"
                   src={founder.image}
-                  alt={founder.alt}
+                  alt={founder.name}
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="mt-6 text-lg leading-tight font-bold text-black sm:text-xl md:text-2xl">
-                {founder.firstName} {founder.lastName}
-              </div>
-              {bios[founder.alt] && (
+              <h3 className="mt-6 text-lg leading-tight font-bold text-black sm:text-xl md:text-2xl">
+                {founder.name}
+              </h3>
+              <p className="mt-1 text-sm font-medium text-black/60">
+                {founder.role}
+              </p>
+              {bios[founder.slug] && (
                 <p className="mt-4 max-w-md text-sm leading-relaxed font-medium text-black/70 sm:text-base">
-                  {bios[founder.alt]}
+                  {bios[founder.slug]}
                 </p>
               )}
             </div>
