@@ -1,6 +1,6 @@
 import type { Article } from '../types';
 
-const AUTHOR = 'Silver Storey Editorial Team';
+const AUTHOR = 'Silver Storey';
 
 export const PLANNING_CITY_ARTICLES: Article[] = [
   {

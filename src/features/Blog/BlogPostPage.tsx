@@ -1,196 +1,137 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import dayjs from 'dayjs';
 import type { BlogPostFull } from './types';
+import type { Article } from '@/lib/blog/types';
+import { CATEGORY_BY_SLUG, categoryPath } from '@/lib/blog/categories';
+import { articlePath } from '@/lib/blog';
+import type { ServiceData } from '@/lib/services';
+import type { CityData } from '@/lib/locations';
 import Markdown from '@/components/Markdown';
 import { markdownReadMinutes } from '@/lib/markdown';
-import HeroControls from '../Hero/components/HeroControls';
-import MenuOverlay from '../Hero/components/MenuOverlay';
+import PageShell from '@/components/seo/PageShell';
+import Breadcrumbs, { type Crumb } from '@/components/seo/Breadcrumbs';
+import CTASection from '@/components/seo/CTASection';
+import CmsImage from '@/features/Gallery/CmsImage';
+import ArticleMeta from './ArticleMeta';
+import ArticleCrossLinks from './ArticleCrossLinks';
+import ShareButton from './ShareButton';
 
-// ── Icons ─────────────────────────────────────────────────────────────────────
-function CalendarIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function ShareIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-    </svg>
-  );
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
 interface Props {
   post: BlogPostFull;
+  /** The same trail the route puts in BreadcrumbList schema. */
+  crumbs: Crumb[];
+  services?: ServiceData[];
+  cities?: CityData[];
+  related?: Article[];
   projectPages?: { title: string; slug: string }[];
 }
 
-export default function BlogPostPage({ post, projectPages = [] }: Props) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+/**
+ * A post written in the admin. Server-rendered like the built-in guides so
+ * the byline, dates and cross-links are in the HTML; only the share button
+ * runs in the browser.
+ */
+export default function BlogPostPage({
+  post,
+  crumbs,
+  services = [],
+  cities = [],
+  related = [],
+  projectPages = [],
+}: Props) {
   const readTime = markdownReadMinutes(post.body ?? '');
-  const authorInitial = post.author ? post.author[0]?.toUpperCase() : 'A';
+  const category = post.category ? CATEGORY_BY_SLUG[post.category] : undefined;
 
   return (
-    <div className="min-h-screen">
+    <PageShell projectPages={projectPages}>
       <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
-        {/* Back */}
-        <Link
-          href="/blog"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm text-black/50 transition-colors hover:text-black"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Back to Blog
-        </Link>
+        <Breadcrumbs items={crumbs} />
 
-        {/* Title */}
+        {category && (
+          <Link
+            href={categoryPath(category.slug)}
+            className="mb-4 inline-block rounded-full bg-[#6b1a1a] px-3 py-1 text-xs font-semibold tracking-wide text-white uppercase"
+          >
+            {category.name}
+          </Link>
+        )}
+
         <h1 className="mb-4 text-3xl leading-tight font-bold text-black sm:text-4xl lg:text-5xl">
           {post.title}
         </h1>
 
-        {/* Description */}
         {post.description && (
           <p className="mb-8 text-base leading-relaxed text-black/50 sm:text-lg">
             {post.description}
           </p>
         )}
 
-        {/* Meta row */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6">
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Author */}
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/10 text-sm font-semibold text-black">
-                {authorInitial}
-              </div>
-              <span className="text-sm font-medium text-black">
-                {post.author ?? 'Silver Storey'}
-              </span>
-            </div>
+        <ArticleMeta
+          author={post.author}
+          publishedAt={post.publishedAt}
+          updatedAt={post.updatedAt}
+          readMinutes={readTime}
+        >
+          <ShareButton title={post.title} />
+        </ArticleMeta>
 
-            {/* Date */}
-            {post.publishedAt && (
-              <span className="flex items-center gap-1.5 text-sm text-black/45">
-                <CalendarIcon />
-                {dayjs(post.publishedAt).format('MMMM D, YYYY')}
-              </span>
-            )}
-
-            {/* Read time */}
-            <span className="flex items-center gap-1.5 text-sm text-black/45">
-              <ClockIcon />
-              {readTime} min read
-            </span>
-          </div>
-
-          {/* Share */}
-          <button
-            className="flex items-center gap-1.5 text-sm text-black/45 transition-colors hover:text-black"
-            onClick={() => {
-              if (typeof navigator !== 'undefined' && navigator.share) {
-                void navigator.share({
-                  title: post.title,
-                  url: window.location.href,
-                });
-              } else if (typeof navigator !== 'undefined') {
-                void navigator.clipboard.writeText(window.location.href);
-              }
-            }}
-          >
-            <ShareIcon />
-            Share
-          </button>
-        </div>
-
-        {/* Cover image */}
         {post.mainImageUrl && (
-          <div className="mb-10 overflow-hidden rounded-xl">
-            <img
+          <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-xl bg-zinc-100">
+            <CmsImage
               src={post.mainImageUrl}
               alt={post.title}
-              className="w-full object-cover"
+              sizes="(max-width: 768px) 100vw, 768px"
+              preload
             />
           </div>
         )}
 
-        {/* Body */}
         {post.body && post.body.trim().length > 0 && (
           <article>
             <Markdown source={post.body} />
           </article>
         )}
       </div>
-      <HeroControls onMenuClick={() => setIsMenuOpen(true)} />
-      <MenuOverlay
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        projectPages={projectPages}
+
+      <ArticleCrossLinks services={services} cities={cities} />
+
+      {related.length > 0 && (
+        <section
+          className="mx-auto max-w-6xl px-6 py-10"
+          aria-labelledby="related-title"
+        >
+          <h2
+            id="related-title"
+            className="mb-6 text-2xl font-bold tracking-tight text-black"
+          >
+            Related guides
+          </h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((r) => (
+              <Link
+                key={r.slug}
+                href={articlePath(r.slug)}
+                className="glass-panel glass-lift group flex flex-col rounded-xl p-6"
+              >
+                <span className="mb-2 text-xs font-semibold tracking-wide text-[#6b1a1a] uppercase">
+                  {CATEGORY_BY_SLUG[r.category]?.name}
+                </span>
+                <span className="mb-2 text-base font-bold text-black group-hover:opacity-75">
+                  {r.title}
+                </span>
+                <span className="line-clamp-2 text-sm text-black/50">
+                  {r.description}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <CTASection
+        title="Ready to plan your home?"
+        subtitle="Get a free consultation, site measurement and 3D visualisation — then decide."
       />
-    </div>
+    </PageShell>
   );
 }

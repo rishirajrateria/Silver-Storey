@@ -12,4 +12,6 @@ export interface BlogPost {
 export interface BlogPostFull extends BlogPost {
   /** Markdown source. */
   body?: string;
+  /** ISO date of the last edit in the admin — the visible "Updated" stamp. */
+  updatedAt?: string;
 }

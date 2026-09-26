@@ -18,7 +18,7 @@ import {
   webPageSchema,
 } from '@/lib/seo/schema';
 
-export const revalidate = 60;
+export const revalidate = 3600;
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -46,6 +46,11 @@ export default async function CategoryPage({ params }: Props) {
     getBlogItemsByCategory(c.slug),
     getProjectPageLinks(),
   ]);
+  const crumbs = [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    { name: c.name, path: categoryPath(c.slug) },
+  ];
   const jsonLd = graph(
     webPageSchema({
       name: c.name,
@@ -53,11 +58,7 @@ export default async function CategoryPage({ params }: Props) {
       path: categoryPath(c.slug),
       type: 'CollectionPage',
     }),
-    breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Blog', path: '/blog' },
-      { name: c.name, path: categoryPath(c.slug) },
-    ]),
+    breadcrumbSchema(crumbs),
     itemListSchema({
       name: c.name,
       items: posts.map((p) => ({ name: p.title, path: articlePath(p.slug) })),
@@ -68,6 +69,7 @@ export default async function CategoryPage({ params }: Props) {
       <JsonLd data={jsonLd} />
       <BlogListPage
         posts={posts}
+        crumbs={crumbs}
         projectPages={projectPages}
         title={c.name}
         subtitle={c.description}

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { CategoryImageData } from '@/lib/db/content';
+import CmsImage from './CmsImage';
 
 /**
  * One gallery photograph, captioned the way the home page room cards are:
@@ -22,16 +23,16 @@ export default function GalleryPhotoCard({
 
   return (
     <figure className="group relative aspect-4/5 overflow-hidden rounded-2xl bg-zinc-800 shadow-xl">
-      <img
+      <CmsImage
         src={image.imageUrl}
         alt={
           image.title
             ? `${image.title} — ${categoryName} interior by Silver Storey`
             : `${categoryName} interior by Silver Storey`
         }
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        // Three across on desktop, two on tablet, the carousel's 20rem card at most.
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
       />
 
       {hasCaption && (
