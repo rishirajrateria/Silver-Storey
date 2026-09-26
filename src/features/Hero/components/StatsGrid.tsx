@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { StatItem } from '../types';
+import type { StatItem } from '../types';
 import { useCountOnVisible } from '../../../hooks/useCountOnVisible';
 
-function formatNumber(n: number) {
-  return new Intl.NumberFormat().format(n);
-}
+// A fixed locale keeps server and client markup identical; the browser's own
+// locale could otherwise turn "50,000" into "50.000" during hydration.
+const formatter = new Intl.NumberFormat('en-IN');
 
 function parseNumericPart(val: string) {
   const m = val.match(/([\d,\.]+)/);
@@ -25,7 +25,7 @@ export default function StatsGrid({ items }: { items: StatItem[] }) {
         const { num, prefix, suffix } = parseNumericPart(stat.val);
         return (
           <Stat
-            key={i}
+            key={stat.label}
             num={num}
             prefix={prefix}
             suffix={suffix}
@@ -51,10 +51,10 @@ function Stat({
   label: string;
   delay?: number;
 }) {
-  const { ref, value, visible } = useCountOnVisible(num, 700);
+  const { ref, value, visible } = useCountOnVisible<HTMLDivElement>(num, 700);
   return (
     <div
-      ref={ref as any}
+      ref={ref}
       className="flex flex-col items-center justify-center"
       style={{
         opacity: visible ? 1 : 0,
@@ -63,9 +63,7 @@ function Stat({
       }}
     >
       <div className="mb-3 text-5xl font-light sm:text-6xl">
-        {prefix}
-        {formatNumber(value)}
-        {suffix}
+        {`${prefix}${formatter.format(value)}${suffix}`}
       </div>
       <div className="text-sm font-medium text-black/60 sm:text-base">
         {label}

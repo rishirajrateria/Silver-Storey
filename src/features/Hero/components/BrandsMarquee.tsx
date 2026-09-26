@@ -37,6 +37,8 @@ export default function BrandsMarquee() {
                 key={brand.name}
                 src={brand.image}
                 alt={brand.name}
+                width={brand.width}
+                height={brand.height}
                 className="h-16 w-auto object-contain sm:h-20 md:h-24"
               />
             ))}
@@ -49,7 +51,9 @@ export default function BrandsMarquee() {
                 decoding="async"
                 key={`clone-${brand.name}`}
                 src={brand.image}
-                alt={brand.name}
+                alt=""
+                width={brand.width}
+                height={brand.height}
                 className="h-16 w-auto object-contain sm:h-20 md:h-24"
                 aria-hidden="true"
               />

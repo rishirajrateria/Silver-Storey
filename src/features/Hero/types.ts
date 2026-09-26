@@ -26,6 +26,9 @@ export interface ProcessStep {
 export interface Brand {
   name: string;
   image: string;
+  /** Intrinsic pixel size of the logo file, so space is reserved before it loads. */
+  width: number;
+  height: number;
 }
 
 export interface Founder {
@@ -33,6 +36,7 @@ export interface Founder {
   lastName: string;
   image: string;
   alt: string;
+  role: string;
 }
 
 export interface ProcessStepIconItem {
@@ -43,4 +47,6 @@ export interface ProcessStepIconItem {
 export interface Service {
   name: string;
   image: string;
+  /** The service page the tile leads to, or the catalogue when none maps cleanly. */
+  href: string;
 }

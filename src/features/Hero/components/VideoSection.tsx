@@ -53,12 +53,14 @@ function VideoCard({
           className="group relative h-full w-full cursor-pointer"
           aria-label={`Play ${title}`}
         >
-          {/* Thumbnail */}
+          {/* Thumbnail — YouTube's hqdefault is always 480×360 */}
           <img
             loading="lazy"
             decoding="async"
             src={thumbnailUrl}
             alt={title}
+            width={480}
+            height={360}
             className="h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-95"
           />
 
@@ -80,6 +82,8 @@ function VideoCard({
                   decoding="async"
                   src="/images/home_logo.avif"
                   alt="Silver Storey"
+                  width={78}
+                  height={78}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -126,11 +130,13 @@ function VideoCard({
   );
 }
 
-const STATIC_VIDEOS: VideoItem[] = [1, 2, 3, 4].map((i) => ({
-  id: `static-${i}`,
-  title: `Project Showcase ${i}`,
-  youtubeId: 'dQw4w9WgXcQ',
-}));
+/**
+ * A seamless marquee needs a second copy of the strip, so every film appears
+ * twice. With fewer films than this the strip would be shorter than the
+ * viewport and scroll past a gap, so the cards sit in a static row instead —
+ * and nothing is ever repeated to pad the strip out.
+ */
+const MIN_FOR_MARQUEE = 3;
 
 interface VideoSectionProps {
   videos?: CmsVideo[];
@@ -139,24 +145,32 @@ interface VideoSectionProps {
 export default function VideoSection({ videos = [] }: VideoSectionProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
 
-  const items: VideoItem[] =
-    videos.length > 0
-      ? videos.map((v) => ({
-          id: v.id,
-          title: v.title,
-          youtubeId: v.youtubeId,
-        }))
-      : STATIC_VIDEOS;
+  // No films published yet: the section says nothing rather than something
+  // made up.
+  if (videos.length === 0) return null;
+
+  const items: VideoItem[] = videos.map((v) => ({
+    id: v.id,
+    title: v.title,
+    youtubeId: v.youtubeId,
+  }));
 
   function handlePlay(instanceId: string) {
     setPlayingId((prev) => (prev === instanceId ? null : instanceId));
   }
 
-  // Repeat until at least 6 items so only one marquee copy is visible at a time
-  const filled =
-    items.length > 0
-      ? Array.from({ length: Math.ceil(6 / items.length) }, () => items).flat()
-      : items;
+  const renderStrip = (copy: string) =>
+    items.map((v) => {
+      const instanceId = `${copy}-${v.id}`;
+      return (
+        <VideoCard
+          key={instanceId}
+          {...v}
+          isPlaying={playingId === instanceId}
+          onPlay={() => handlePlay(instanceId)}
+        />
+      );
+    });
 
   return (
     <section className="overflow-hidden py-24 sm:py-32">
@@ -164,44 +178,30 @@ export default function VideoSection({ videos = [] }: VideoSectionProps) {
         Our Projects
       </h2>
 
-      <div className="overflow-hidden">
-        <div
-          className="flex"
-          style={{
-            animation: 'marquee 30s linear infinite',
-            animationPlayState: playingId ? 'paused' : 'running',
-          }}
-        >
-          {/* Copy 1 */}
-          <div className="flex shrink-0 gap-6 pr-6 pl-6">
-            {filled.map((v, i) => {
-              const instanceId = `orig-${v.id}-${i}`;
-              return (
-                <VideoCard
-                  key={instanceId}
-                  {...v}
-                  isPlaying={playingId === instanceId}
-                  onPlay={() => handlePlay(instanceId)}
-                />
-              );
-            })}
-          </div>
-          {/* Copy 2 — seamless loop */}
-          <div className="flex shrink-0 gap-6 pr-6">
-            {filled.map((v, i) => {
-              const instanceId = `clone-${v.id}-${i}`;
-              return (
-                <VideoCard
-                  key={instanceId}
-                  {...v}
-                  isPlaying={playingId === instanceId}
-                  onPlay={() => handlePlay(instanceId)}
-                />
-              );
-            })}
+      {items.length >= MIN_FOR_MARQUEE ? (
+        <div className="overflow-hidden">
+          <div
+            className="flex"
+            style={{
+              animation: 'marquee 30s linear infinite',
+              animationPlayState: playingId ? 'paused' : 'running',
+            }}
+          >
+            {/* Copy 1 */}
+            <div className="flex shrink-0 gap-6 pr-6 pl-6">
+              {renderStrip('orig')}
+            </div>
+            {/* Copy 2 — seamless loop */}
+            <div className="flex shrink-0 gap-6 pr-6">
+              {renderStrip('clone')}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-6 px-6">
+          {renderStrip('orig')}
+        </div>
+      )}
     </section>
   );
 }
