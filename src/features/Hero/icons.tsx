@@ -92,7 +92,7 @@ export const processStepIcons: ProcessStepIconItem[] = [
     ),
   },
   {
-    name: 'Delivery in 45 Days!**',
+    name: 'Delivery in 45 Days!',
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -110,11 +110,29 @@ export const processStepIcons: ProcessStepIconItem[] = [
   },
 ];
 
+// Each tile leads to the service page that actually sells that work; trades
+// without a page of their own (soft furnishing, decor) go to the catalogue.
 export const services: Service[] = [
-  { name: 'Civil Work', image: '/images/civil%20work.avif' },
-  { name: 'Modular', image: '/images/Modular.avif' },
-  { name: 'Carpentry', image: '/images/Carpentry.avif' },
-  { name: 'Furnishing', image: '/images/Furnishing.avif' },
-  { name: 'Lighting', image: '/images/Lighting.avif' },
-  { name: 'Decor', image: '/images/Decor.avif' },
+  {
+    name: 'Civil Work',
+    image: '/images/civil%20work.avif',
+    href: '/services/full-home-interiors',
+  },
+  {
+    name: 'Modular',
+    image: '/images/Modular.avif',
+    href: '/services/modular-kitchen',
+  },
+  {
+    name: 'Carpentry',
+    image: '/images/Carpentry.avif',
+    href: '/services/wardrobe-design',
+  },
+  { name: 'Furnishing', image: '/images/Furnishing.avif', href: '/services' },
+  {
+    name: 'Lighting',
+    image: '/images/Lighting.avif',
+    href: '/services/false-ceiling-design',
+  },
+  { name: 'Decor', image: '/images/Decor.avif', href: '/services' },
 ];

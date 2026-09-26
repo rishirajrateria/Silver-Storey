@@ -18,6 +18,8 @@ import {
 } from '@/lib/seo/schema';
 import { PROCESS_STEPS } from '@/lib/seo/process';
 import { getProjectPageLinks } from '@/lib/db/content';
+import { articlesForService } from '@/lib/related';
+import { articlePath } from '@/lib/blog';
 import {
   SERVICES,
   getService,
@@ -25,7 +27,7 @@ import {
   serviceCityPath,
 } from '@/lib/services';
 import { SERVICE_CITIES, TIER1_CITIES, cityPath } from '@/lib/locations';
-import { formatINR } from '@/lib/locations/content';
+import { formatINR, lowerName } from '@/lib/locations/content';
 
 export const revalidate = 3600;
 export const dynamicParams = false;
@@ -48,10 +50,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const s = getService(slug);
   if (!s) return {};
   return buildMetadata({
-    title: `${s.name} | Cost, Ideas & Packages – Silver Storey`,
+    title: `${s.name} | Silver Storey`,
     description: s.description,
     path: servicePath(s),
-    keywords: s.keywords,
   });
 }
 
@@ -71,6 +72,8 @@ export default async function ServicePage({ params }: Props) {
     ReturnType<typeof getService>
   >[];
   const price = priceLabel(s);
+  const guides = articlesForService(s);
+  const short = lowerName(s.shortName);
 
   const jsonLd = graph(
     webPageSchema({ name: s.name, description: s.description, path }),
@@ -84,7 +87,7 @@ export default async function ServicePage({ params }: Props) {
         s.category === 'commercial' ? undefined : s.startingPriceINR,
     }),
     howToSchema({
-      name: `How ${s.shortName.toLowerCase()} projects work at Silver Storey`,
+      name: `How ${short} projects work at Silver Storey`,
       description: 'Six steps from free consultation to handover.',
       steps: PROCESS_STEPS,
       totalTime: 'P45D',
@@ -156,7 +159,7 @@ export default async function ServicePage({ params }: Props) {
           id="process-title"
           className="mb-8 text-2xl font-bold tracking-tight text-black sm:text-3xl"
         >
-          How it works
+          How {short} projects work at Silver Storey
         </h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PROCESS_STEPS.map((st, i) => (
@@ -172,9 +175,20 @@ export default async function ServicePage({ params }: Props) {
       </section>
 
       <FAQSection faqs={s.faqs} title={`${s.name} — FAQs`} />
-      <CTASection
-        title={`Get a free 3D design for your ${s.shortName.toLowerCase()}`}
-      />
+      <CTASection title={`Get a free 3D design for your ${short}`} />
+
+      {guides.length > 0 && (
+        <LinkGrid
+          id="guides"
+          title="Guides & advice"
+          description="Reading from our blog before you brief a designer — costs, materials and how to compare quotes."
+          columns={3}
+          items={guides.map((a) => ({
+            name: a.title,
+            path: articlePath(a.slug),
+          }))}
+        />
+      )}
 
       {s.cityPages ? (
         <LinkGrid

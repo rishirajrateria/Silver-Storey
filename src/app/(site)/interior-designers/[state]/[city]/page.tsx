@@ -12,6 +12,7 @@ import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
   breadcrumbSchema,
+  cityArea,
   faqSchema,
   graph,
   howToSchema,
@@ -19,10 +20,14 @@ import {
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
+import { SITE } from '@/lib/seo/site';
 import { PROCESS_STEPS } from '@/lib/seo/process';
 import { getProjectPageLinks } from '@/lib/db/content';
+import { articlesForCity } from '@/lib/related';
+import { articlePath } from '@/lib/blog';
 import {
   CITIES,
+  getState,
   getCityInState,
   cityPath,
   statePath,
@@ -30,13 +35,18 @@ import {
   citiesInState,
 } from '@/lib/locations';
 import {
+  HQ_CITY_SLUG,
   cityFaqs,
   cityIntro,
   cityMetaDescription,
   cityMetaTitle,
   cityPricing,
+  cityPricingNote,
   cityTitle,
   cityWhySection,
+  openingHoursLabel,
+  serviceModelFor,
+  studioMapUrl,
 } from '@/lib/locations/content';
 import { SERVICES, servicePath, serviceCityPath } from '@/lib/services';
 
@@ -53,20 +63,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state: s, city: c } = await params;
   const match = getCityInState(s, c);
   if (!match) return {};
-  const { state, city } = match;
+  const { city } = match;
   return buildMetadata({
     title: cityMetaTitle(city),
-    description: cityMetaDescription(city, state),
+    description: cityMetaDescription(city),
     path: cityPath(city),
-    keywords: [
-      `interior designers in ${city.name}`,
-      `best interior designer in ${city.name}`,
-      `interior designer ${city.name}`,
-      `home interior design ${city.name}`,
-      `modular kitchen ${city.name}`,
-      `interior decorators in ${city.name}`,
-      ...(city.aka ?? []).map((a) => `interior designers in ${a}`),
-    ],
   });
 }
 
@@ -78,6 +79,7 @@ export default async function CityPage({ params }: Props) {
 
   const projectPages = await getProjectPageLinks();
   const path = cityPath(city);
+  const isHQ = city.slug === HQ_CITY_SLUG;
   const intro = cityIntro(city, state);
   const faqs = cityFaqs(city, state);
   const pricing = cityPricing(city);
@@ -88,6 +90,7 @@ export default async function CityPage({ params }: Props) {
       (x) => x.slug !== city.slug && !nearby.some((n) => n.slug === x.slug),
     )
     .slice(0, 8);
+  const guides = articlesForCity(city);
   const hasServiceCityPages = city.tier <= 2;
 
   const crumbs = [
@@ -100,28 +103,27 @@ export default async function CityPage({ params }: Props) {
   const jsonLd = graph(
     webPageSchema({
       name: cityTitle(city),
-      description: cityMetaDescription(city, state),
+      description: cityMetaDescription(city),
       path,
     }),
     breadcrumbSchema(crumbs),
-    localBusinessSchema({
-      id: `${path}#localbusiness`,
-      url: path,
-      name: `Silver Storey — Interior Designers in ${city.name}`,
-      description: cityMetaDescription(city, state),
-      areaServed: [
-        { type: 'City', name: city.name, region: state.name },
-        ...nearby
-          .slice(0, 3)
-          .map((n) => ({ type: 'City' as const, name: n.name })),
-      ],
-    }),
+    // The head office is a real place only on its own city's page.
+    isHQ &&
+      localBusinessSchema({
+        areaServed: [
+          cityArea(city, state),
+          ...nearby.map((n) => cityArea(n, getState(n.state))),
+          { type: 'State', name: state.name },
+        ],
+      }),
     serviceSchema({
       name: `Interior Design Services in ${city.name}`,
       description: intro[0],
       path,
-      areaServed: [{ type: 'City', name: city.name }],
-      startingPriceINR: pricing.find((r) => r.key === 'kitchen')?.from,
+      areaServed: [
+        cityArea(city, state),
+        ...nearby.slice(0, 3).map((n) => cityArea(n, getState(n.state))),
+      ],
     }),
     howToSchema({
       name: `How to get your ${city.name} home designed by Silver Storey`,
@@ -154,6 +156,138 @@ export default async function CityPage({ params }: Props) {
           <p>{intro[3]}</p>
         </Prose>
       </section>
+
+      {/* The quotable service-model sentence, in the same words on every page. */}
+      <section
+        id="how-we-work"
+        className="mx-auto max-w-4xl px-6 py-10"
+        aria-labelledby="how-we-work-title"
+      >
+        <div className="glass-panel rounded-xl p-6 sm:p-8">
+          <h2
+            id="how-we-work-title"
+            className="mb-3 text-2xl font-bold tracking-tight text-black sm:text-3xl"
+          >
+            How we work in {city.name}
+          </h2>
+          <p className="text-sm leading-relaxed text-black/70 sm:text-base">
+            {serviceModelFor(city.state)}
+          </p>
+        </div>
+      </section>
+
+      {isHQ && (
+        <section
+          id="studio"
+          className="mx-auto max-w-6xl px-6 py-10"
+          aria-labelledby="studio-title"
+        >
+          <h2
+            id="studio-title"
+            className="mb-3 text-2xl font-bold tracking-tight text-black sm:text-3xl"
+          >
+            Our Kolkata studio
+          </h2>
+          <p className="mb-8 max-w-2xl text-sm text-black/55 sm:text-base">
+            Head office, design studio and manufacturing workshop — visit by
+            appointment to see finishes, hardware and sample units in person.
+          </p>
+          <div className="glass-panel grid gap-8 rounded-xl p-6 sm:p-8 md:grid-cols-2">
+            <div>
+              <h3 className="mb-3 text-lg font-bold text-black">Address</h3>
+              <address className="text-sm leading-relaxed text-black/70 not-italic sm:text-base">
+                {SITE.name}
+                <br />
+                {SITE.address.street}
+                <br />
+                {SITE.address.city} {SITE.address.postalCode},{' '}
+                {SITE.address.region}
+              </address>
+              <p className="mt-3 text-sm text-black/70 sm:text-base">
+                Open {openingHoursLabel()}
+              </p>
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-black">
+                <li>
+                  <a
+                    href={studioMapUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-offset-2 hover:underline"
+                  >
+                    Open in Google Maps
+                  </a>
+                </li>
+                {SITE.googleBusinessProfile && (
+                  <li>
+                    <a
+                      href={SITE.googleBusinessProfile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline-offset-2 hover:underline"
+                    >
+                      Google reviews
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h3 className="mb-3 text-lg font-bold text-black">Contact</h3>
+              <ul className="space-y-2 text-sm text-black/70 sm:text-base">
+                <li>
+                  Call{' '}
+                  <a
+                    href={`tel:${SITE.phoneE164}`}
+                    className="font-medium text-black underline-offset-2 hover:underline"
+                  >
+                    {SITE.phoneDisplay}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={SITE.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-black underline-offset-2 hover:underline"
+                  >
+                    WhatsApp us
+                  </a>
+                </li>
+                <li>
+                  Email{' '}
+                  <a
+                    href={`mailto:${SITE.email}`}
+                    className="font-medium text-black underline-offset-2 hover:underline"
+                  >
+                    {SITE.email}
+                  </a>
+                </li>
+              </ul>
+              <h3 className="mt-6 mb-3 text-lg font-bold text-black">
+                See the work
+              </h3>
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-black">
+                <li>
+                  <Link
+                    href="/projects"
+                    className="underline-offset-2 hover:underline"
+                  >
+                    Completed projects
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/gallery"
+                    className="underline-offset-2 hover:underline"
+                  >
+                    Room gallery
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Services in this city */}
       <section
@@ -203,6 +337,7 @@ export default async function CityPage({ params }: Props) {
       <PricingTable
         title={`Interior design cost in ${city.name}`}
         rows={pricing}
+        note={cityPricingNote(city)}
       />
 
       {/* Climate + housing */}
@@ -256,8 +391,7 @@ export default async function CityPage({ params }: Props) {
           Areas we serve in {city.name}
         </h2>
         <p className="mb-6 max-w-2xl text-sm text-black/55 sm:text-base">
-          Our {city.name} projects are spread across these neighbourhoods and
-          beyond
+          We take up projects across these {city.name} neighbourhoods
           {city.landmarks?.length
             ? ` — from ${city.landmarks.slice(0, 2).join(' to ')} and everywhere in between`
             : ''}
@@ -284,7 +418,7 @@ export default async function CityPage({ params }: Props) {
           id="process-title"
           className="mb-8 text-2xl font-bold tracking-tight text-black sm:text-3xl"
         >
-          How it works in {city.name}
+          How to get your {city.name} home designed by Silver Storey
         </h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PROCESS_STEPS.map((st, i) => (
@@ -304,6 +438,19 @@ export default async function CityPage({ params }: Props) {
         title={`Interior designers in ${city.name} — FAQs`}
       />
       <CTASection title={`Ready to design your ${city.name} home?`} />
+
+      {guides.length > 0 && (
+        <LinkGrid
+          id="guides"
+          title={`Guides for ${city.name}`}
+          description="Reading from our blog that speaks to this city — costs, materials and how to choose a designer."
+          columns={3}
+          items={guides.map((a) => ({
+            name: a.title,
+            path: articlePath(a.slug),
+          }))}
+        />
+      )}
 
       <LinkGrid
         id="nearby"

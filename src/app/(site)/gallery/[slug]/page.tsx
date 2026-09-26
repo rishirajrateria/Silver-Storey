@@ -10,6 +10,7 @@ import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { breadcrumbSchema, graph, webPageSchema } from '@/lib/seo/schema';
 import { absoluteUrl } from '@/lib/seo/site';
+import { isGalleryCategoryIndexable } from '@/lib/seo/indexing';
 import CategoryStrip from '@/features/Gallery/CategoryStrip';
 import GalleryPhotoCard from '@/features/Gallery/GalleryPhotoCard';
 import {
@@ -31,12 +32,17 @@ export async function generateStaticParams() {
   return categories.map((category) => ({ slug: category.slug }));
 }
 
+/**
+ * A room with no photographs yet describes the service, not a gallery — it
+ * must not promise pictures it does not have.
+ */
 function describe(name: string, price: string, count: number): string {
-  const photos =
+  const lead =
     count > 0
-      ? `${count} ${count === 1 ? 'photograph' : 'photographs'} of finished ${name.toLowerCase()} interiors`
-      : `Finished ${name.toLowerCase()} interiors`;
-  return `${photos} by Silver Storey, from ${price} onwards. Turnkey design and execution across India, with 3D visualisation and a 10-year warranty.`;
+      ? `${count} ${count === 1 ? 'photograph' : 'photographs'} of finished ${name.toLowerCase()} interiors by Silver Storey`
+      : `${name} interior design by Silver Storey`;
+  const rupees = /^\s*₹/.test(price) ? price.trim() : `₹${price.trim()}`;
+  return `${lead}, from ${rupees} onwards. Turnkey design and execution across India, with 3D visualisation and a 10-year warranty.`;
 }
 
 export async function generateMetadata({
@@ -55,8 +61,14 @@ export async function generateMetadata({
     });
   }
 
+  // An empty room page is a stub until the owner uploads photographs: it
+  // stays crawlable for its links but is kept out of the index, and its
+  // title stops advertising photos it does not have.
+  const indexable = isGalleryCategoryIndexable(category.images.length);
   return buildMetadata({
-    title: `${category.name} Interior Design — Photos & Prices | Silver Storey`,
+    title: indexable
+      ? `${category.name} Interior Design — Photos & Prices | Silver Storey`
+      : `${category.name} Interior Design | Silver Storey`,
     description: describe(
       category.name,
       category.price,
@@ -65,11 +77,7 @@ export async function generateMetadata({
     path: `/gallery/${category.slug}`,
     image: category.imageUrl ?? category.images[0]?.imageUrl,
     imageAlt: `${category.name} interior design by Silver Storey`,
-    keywords: [
-      `${category.name.toLowerCase()} interior design`,
-      `${category.name.toLowerCase()} design ideas`,
-      `${category.name.toLowerCase()} interior cost`,
-    ],
+    noIndex: !indexable,
   });
 }
 

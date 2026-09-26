@@ -11,6 +11,7 @@ import {
 } from '@/lib/seo/schema';
 import { SITE } from '@/lib/seo/site';
 
+const PATH = '/contact';
 const TITLE =
   'Contact Silver Storey | Book a Free Interior Design Consultation';
 const DESCRIPTION = `Call ${SITE.phoneDisplay}, WhatsApp, email ${SITE.email} or book a free 30-minute consultation. Head office: ${SITE.address.street}, Kolkata ${SITE.address.postalCode}. Projects across India.`;
@@ -18,13 +19,13 @@ const DESCRIPTION = `Call ${SITE.phoneDisplay}, WhatsApp, email ${SITE.email} or
 export const metadata: Metadata = buildMetadata({
   title: TITLE,
   description: DESCRIPTION,
-  path: '/contact',
-  keywords: [
-    'contact interior designer',
-    'interior designer Kolkata contact',
-    'free interior design consultation',
-  ],
+  path: PATH,
 });
+
+const CRUMBS = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: PATH },
+];
 
 export default async function Page() {
   const projectPages = await getProjectPageLinks();
@@ -32,19 +33,16 @@ export default async function Page() {
     webPageSchema({
       name: TITLE,
       description: DESCRIPTION,
-      path: '/contact',
+      path: PATH,
       type: 'ContactPage',
     }),
-    breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Contact', path: '/contact' },
-    ]),
-    localBusinessSchema({ id: '/contact#localbusiness', url: '/contact' }),
+    breadcrumbSchema(CRUMBS),
+    localBusinessSchema(),
   );
   return (
     <>
       <JsonLd data={jsonLd} />
-      <ContactPage projectPages={projectPages} />
+      <ContactPage projectPages={projectPages} crumbs={CRUMBS} />
     </>
   );
 }

@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-import { FOOTER_VIDEO, FOOTER_VIDEO_POSTER } from '../media';
+import { FOOTER_VIDEO, FOOTER_VIDEO_POSTER, FOOTER_VIDEO_WEBM } from '../media';
 
 const VIDEO_MP4 = FOOTER_VIDEO;
-const VIDEO_WEBM: string | null = null;
+const VIDEO_WEBM = FOOTER_VIDEO_WEBM;
 const VIDEO_POSTER = FOOTER_VIDEO_POSTER;
 
 export default function Footer() {
@@ -51,7 +51,7 @@ export default function Footer() {
             poster={VIDEO_POSTER ?? undefined}
             aria-hidden="true"
           >
-            {VIDEO_WEBM && <source src={VIDEO_WEBM} type="video/webm" />}
+            <source src={VIDEO_WEBM} type="video/webm" />
             <source src={VIDEO_MP4} type="video/mp4" />
           </video>
         )}

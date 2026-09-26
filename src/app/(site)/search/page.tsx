@@ -85,50 +85,52 @@ export default async function SearchPage({
         </form>
       </section>
 
-      <section className="mx-auto max-w-4xl px-6 py-6">
-        {query && hits.length === 0 && (
-          <div className="glass-panel rounded-xl p-8 text-center">
-            <p className="mb-2 font-semibold text-black">
-              Nothing matched “{query}”.
-            </p>
-            <p className="text-sm text-black/55">
-              Try a city name, a room (kitchen, wardrobe, bedroom) or browse{' '}
-              <Link href="/services" className="underline">
-                all services
-              </Link>{' '}
-              and{' '}
-              <Link href="/interior-designers" className="underline">
-                all cities
-              </Link>
-              .
-            </p>
-          </div>
-        )}
-        {hits.length > 0 && (
-          <ol className="glass-panel divide-y divide-black/10 rounded-xl">
-            {hits.map((h) => (
-              <li key={`${h.type}-${h.path}`}>
-                <Link
-                  href={h.path}
-                  className="block px-6 py-4 transition-colors hover:bg-black/[0.02]"
-                >
-                  <span className="mb-1 block text-[11px] font-semibold tracking-[0.2em] text-[#6b1a1a] uppercase">
-                    {TYPE_LABELS[h.type]}
-                  </span>
-                  <span className="block text-base font-semibold text-black">
-                    {h.title}
-                  </span>
-                  {h.snippet && (
-                    <span className="mt-1 line-clamp-2 block text-sm text-black/55">
-                      {h.snippet}
-                    </span>
-                  )}
+      {query && (
+        <section className="mx-auto max-w-4xl px-6 py-6">
+          {hits.length === 0 && (
+            <div className="glass-panel rounded-xl p-8 text-center">
+              <p className="mb-2 font-semibold text-black">
+                Nothing matched “{query}”.
+              </p>
+              <p className="text-sm text-black/55">
+                Try a city name, a room (kitchen, wardrobe, bedroom) or browse{' '}
+                <Link href="/services" className="underline">
+                  all services
+                </Link>{' '}
+                and{' '}
+                <Link href="/interior-designers" className="underline">
+                  all cities
                 </Link>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
+                .
+              </p>
+            </div>
+          )}
+          {hits.length > 0 && (
+            <ol className="glass-panel divide-y divide-black/10 rounded-xl">
+              {hits.map((h) => (
+                <li key={`${h.type}-${h.path}`}>
+                  <Link
+                    href={h.path}
+                    className="block px-6 py-4 transition-colors hover:bg-black/[0.02]"
+                  >
+                    <span className="mb-1 block text-[11px] font-semibold tracking-[0.2em] text-[#6b1a1a] uppercase">
+                      {TYPE_LABELS[h.type]}
+                    </span>
+                    <span className="block text-base font-semibold text-black">
+                      {h.title}
+                    </span>
+                    {h.snippet && (
+                      <span className="mt-1 line-clamp-2 block text-sm text-black/55">
+                        {h.snippet}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+      )}
 
       <CTASection />
     </PageShell>

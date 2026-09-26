@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { reviews as defaultReviews, stats } from './constants';
+import { stats } from './constants';
 import HeroHeader from './components/HeroHeader';
 import HeroControls from './components/HeroControls';
 import CategoryCard from './components/CategoryCard';
@@ -21,7 +21,7 @@ import type { VideoItem } from '../../lib/db/content';
 interface HeroProps {
   /** Category cards — from the CMS; falls back to hardcoded constants */
   categories?: Category[];
-  /** YouTube videos — from the CMS; an empty array shows static placeholders */
+  /** YouTube videos — from the CMS; an empty array hides the section */
   videos?: VideoItem[];
   /** Project pages from the CMS — added to the nav menu automatically */
   projectPages?: { title: string; slug: string }[];
@@ -29,6 +29,14 @@ interface HeroProps {
   brochureUrl?: string;
   /** Published testimonials from the CMS; falls back to the built-in three */
   reviews?: Review[];
+  /**
+   * Server-rendered copy shown straight after the video header. Passed in
+   * from the page so it stays a Server Component rather than being pulled
+   * into this client bundle.
+   */
+  intro?: React.ReactNode;
+  /** Further server-rendered sections, placed at the end of the page. */
+  children?: React.ReactNode;
 }
 
 export default function Hero({
@@ -37,8 +45,11 @@ export default function Hero({
   projectPages = [],
   brochureUrl,
   reviews: cmsReviews,
+  intro,
+  children,
 }: HeroProps) {
-  const reviews = cmsReviews?.length ? cmsReviews : defaultReviews;
+  // Only testimonials entered in the admin panel — no built-in stand-ins.
+  const reviews = cmsReviews ?? [];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentSlide, nextSlide, prevSlide, setCurrentSlide } = useSlider(
     reviews.length,
@@ -59,72 +70,82 @@ export default function Hero({
         />
       </header>
 
-      {/* Main Content Section added below the Hero header */}
-      <div className="pt-16 text-black">
-        {/* 1. Category Price Cards — full-width marquee on all screens */}
-        <div className="overflow-hidden">
-          <div
-            className="flex hover:[animation-play-state:paused]"
-            style={{ animation: 'marquee 25s linear infinite' }}
-          >
-            {(['orig', 'clone'] as const).map((copy) => {
-              const filled =
-                categories.length > 0
-                  ? Array.from(
-                      { length: Math.ceil(6 / categories.length) },
-                      () => categories,
-                    ).flat()
-                  : [];
-              return (
-                <div
-                  key={copy}
-                  className={`flex shrink-0 gap-4 pr-4 ${
-                    copy === 'orig' ? 'pl-6' : ''
-                  }`}
-                >
-                  {filled.map((cat, i) => (
-                    <div key={`${copy}-${i}`} className="w-44 shrink-0 sm:w-56">
-                      <CategoryCard {...cat} />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+      <main className="text-black">
+        {intro}
+
+        <div className="pt-16">
+          {/* 1. Category Price Cards — full-width marquee on all screens */}
+          <div className="overflow-hidden">
+            <div
+              className="flex hover:[animation-play-state:paused]"
+              style={{ animation: 'marquee 25s linear infinite' }}
+            >
+              {(['orig', 'clone'] as const).map((copy) => {
+                const filled =
+                  categories.length > 0
+                    ? Array.from(
+                        { length: Math.ceil(6 / categories.length) },
+                        () => categories,
+                      ).flat()
+                    : [];
+                return (
+                  <div
+                    key={copy}
+                    className={`flex shrink-0 gap-4 pr-4 ${
+                      copy === 'orig' ? 'pl-6' : ''
+                    }`}
+                  >
+                    {filled.map((cat, i) => (
+                      <div
+                        key={`${copy}-${i}`}
+                        className="w-44 shrink-0 sm:w-56"
+                      >
+                        <CategoryCard {...cat} />
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
+          {/* 2. Stats Counters */}
+          <div className="mx-auto max-w-360 px-6 py-24 sm:py-32">
+            <StatsGrid items={stats} />
+          </div>
+
+          {/* 3 & 4. Process Steps + Warranty Features */}
+          <WarrantySection />
+
+          {/* 5. Youtube Videos Section */}
+          <VideoSection videos={videos} />
+
+          {/* 6, 7. All Under One Roof + Book Consultation */}
+          <div className="relative pt-16 pb-32 sm:pb-40">
+            <ServicesSection />
+            <BookConsultation />
+          </div>
+
+          {/* 9. Global Brands Section */}
+          <BrandsMarquee />
+
+          {/* 10. Testimonials Slideshow Section */}
+          {reviews.length > 0 && (
+            <Testimonials
+              reviews={reviews}
+              currentSlide={currentSlide}
+              nextSlide={nextSlide}
+              prevSlide={prevSlide}
+              setCurrentSlide={setCurrentSlide}
+            />
+          )}
+
+          {/* 11. Our Creative Founders Section */}
+          <FoundersSection brochureUrl={brochureUrl} />
         </div>
 
-        {/* 2. Stats Counters */}
-        <div className="mx-auto max-w-360 px-6 py-24 sm:py-32">
-          <StatsGrid items={stats} />
-        </div>
-
-        {/* 3 & 4. Process Steps + Warranty Features */}
-        <WarrantySection />
-
-        {/* 5. Youtube Videos Section */}
-        <VideoSection videos={videos} />
-
-        {/* 6, 7. All Under One Roof + Book Consultation */}
-        <div className="relative pt-16 pb-32 sm:pb-40">
-          <ServicesSection />
-          <BookConsultation />
-        </div>
-
-        {/* 9. Global Brands Section */}
-        <BrandsMarquee />
-
-        {/* 10. Testimonials Slideshow Section */}
-        <Testimonials
-          reviews={reviews}
-          currentSlide={currentSlide}
-          nextSlide={nextSlide}
-          prevSlide={prevSlide}
-          setCurrentSlide={setCurrentSlide}
-        />
-
-        {/* 11. Our Creative Founders Section */}
-        <FoundersSection brochureUrl={brochureUrl} />
-      </div>
+        {children}
+      </main>
     </div>
   );
 }

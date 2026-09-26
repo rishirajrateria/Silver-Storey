@@ -8,13 +8,14 @@ import { useCountUp } from '../hooks/useCountUp';
 // ── Individual animated stat ──────────────────────────────────────────────────
 function StatItem({ value, label }: Stat) {
   const numeric = parseInt(value.replace(/\D/g, ''), 10);
-  const suffix = value.replace(/[0-9]/g, '');
+  // "50,000+" keeps its "+" but not its comma: the counter re-adds grouping.
+  const suffix = value.replace(/[\d,]/g, '');
   const { value: count, ref } = useCountUp(numeric);
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-2 text-center">
       <span className="text-5xl font-extralight tracking-tight text-black sm:text-6xl lg:text-7xl">
-        {count.toLocaleString()}
+        {count.toLocaleString('en-IN')}
         {suffix}
       </span>
       <span className="text-xs font-medium tracking-widest text-black/50 uppercase sm:text-sm">

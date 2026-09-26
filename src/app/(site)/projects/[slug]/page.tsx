@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import ProjectPageTemplate from '@/features/ProjectPage/ProjectPageTemplate';
+import { projectDescription } from '@/features/ProjectPage/description';
 import {
   getAllProjectSlugs,
   getProjectPage,
@@ -15,7 +16,6 @@ import {
   imageGallerySchema,
   webPageSchema,
 } from '@/lib/seo/schema';
-import { markdownToPlainText } from '@/lib/markdown';
 
 export const revalidate = 60;
 
@@ -34,18 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await getProjectPage(slug);
   if (!page) return {};
   return buildMetadata({
-    title: `${page.heroTitle || page.title} | Silver Storey Projects`,
-    description:
-      page.heroSubtitle ||
-      (page.summary ? markdownToPlainText(page.summary).slice(0, 160) : '') ||
-      `${page.title} — an interior design project by Silver Storey. Explore the gallery, materials and spaces we designed and delivered.`,
+    title: `${page.title} — Interior Design Case Study | Silver Storey`,
+    description: projectDescription(page),
     path: `/projects/${slug}`,
     image: page.heroImageUrl,
-    keywords: [
-      page.title,
-      `${page.title} interior design`,
-      'interior design project',
-    ],
   });
 }
 
@@ -61,6 +53,14 @@ export default async function ProjectPage({ params }: Props) {
   ]);
 
   if (!page) notFound();
+
+  const path = `/projects/${slug}`;
+  const description = projectDescription(page);
+  const crumbs = [
+    { name: 'Home', path: '/' },
+    { name: 'Projects', path: '/projects' },
+    { name: page.title, path },
+  ];
 
   const gallerySections = page.sections.map((section) => ({
     key: section.id,
@@ -88,41 +88,35 @@ export default async function ProjectPage({ params }: Props) {
     beforeImageUrl: page.beforeImageUrl,
     afterImageUrl: page.afterImageUrl,
   };
-  const description =
-    page.heroSubtitle ||
-    (page.summary ? markdownToPlainText(page.summary).slice(0, 160) : '') ||
-    `${page.title} — interior design project by Silver Storey.`;
 
   const jsonLd = graph(
     webPageSchema({
-      name: page.heroTitle || page.title,
+      name: page.title,
       description,
-      path: `/projects/${slug}`,
-      type: 'CollectionPage',
+      path,
+      type: 'ItemPage',
       primaryImage: page.heroImageUrl,
       dateModified: page.updatedAt.toISOString(),
     }),
     imageGallerySchema({
-      name: `${page.heroTitle || page.title} — project gallery`,
-      path: `/projects/${slug}`,
+      name: `${page.title} — project gallery`,
+      path,
       images: page.sections.flatMap((s) =>
         s.images.map((i) => ({ url: i.imageUrl, caption: i.title })),
       ),
     }),
-    breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Gallery', path: '/gallery' },
-      { name: page.title, path: `/projects/${slug}` },
-    ]),
+    breadcrumbSchema(crumbs),
   );
 
   return (
     <>
       <JsonLd data={jsonLd} />
       <ProjectPageTemplate
+        title={page.title}
+        slug={slug}
         heroImageUrl={page.heroImageUrl}
-        heroTitle={page.heroTitle}
         heroSubtitle={page.heroSubtitle}
+        crumbs={crumbs}
         gallerySections={gallerySections}
         projectPages={projectPages}
         caseStudy={caseStudy}

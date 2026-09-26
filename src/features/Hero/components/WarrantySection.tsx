@@ -64,6 +64,8 @@ export default function WarrantySection() {
               decoding="async"
               src="/images/laptop.avif"
               alt="Interior preview screen"
+              width={755}
+              height={483}
               className="h-full w-full object-cover"
             />
           </div>
@@ -93,6 +95,20 @@ export default function WarrantySection() {
           </div>
         </div>
       </div>
+
+      {/* The ** above promise a footnote; this is it. */}
+      <p className="mx-auto mt-12 max-w-3xl px-6 text-center text-xs leading-relaxed text-black/55">
+        ** Delivery counted from final design approval and site readiness; the
+        quote is fixed once you approve the design and scope — changes you
+        request are quoted separately. See the{' '}
+        <Link
+          href="/terms-conditions"
+          className="underline underline-offset-2 hover:text-black"
+        >
+          Terms &amp; Conditions
+        </Link>
+        .
+      </p>
     </div>
   );
 }

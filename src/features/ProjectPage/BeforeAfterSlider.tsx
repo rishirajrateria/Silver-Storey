@@ -41,9 +41,13 @@ export default function BeforeAfterSlider({
       onPointerUp={() => (dragging.current = false)}
       onPointerCancel={() => (dragging.current = false)}
     >
+      {/* Both photographs are sized by the 16:10 frame, so the attributes only
+          declare that ratio and never cause a reflow when the bytes arrive. */}
       <img
         src={after}
         alt={`${alt} — after`}
+        width={1600}
+        height={1000}
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
         decoding="async"
@@ -55,6 +59,8 @@ export default function BeforeAfterSlider({
         <img
           src={before}
           alt={`${alt} — before`}
+          width={1600}
+          height={1000}
           className="absolute inset-0 h-full w-full max-w-none object-cover"
           style={{ width: ref.current?.clientWidth ?? '100%' }}
           loading="lazy"

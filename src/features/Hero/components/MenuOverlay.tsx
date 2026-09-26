@@ -28,6 +28,7 @@ const EXPLORE: NavLinkItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Services & Prices', href: '/services' },
   { label: 'Gallery', href: '/gallery' },
+  { label: 'Projects', href: '/projects' },
   { label: 'Cities We Serve', href: '/interior-designers' },
   { label: 'Blog', href: '/blog' },
 ];
@@ -39,12 +40,15 @@ const PLAN: NavLinkItem[] = [
   { label: 'How it Works', href: '/how-it-works' },
   { label: 'Pricing Structure', href: '/pricing-structure' },
   { label: '10-Year Warranty', href: '/warranty' },
+  { label: 'What is turnkey?', href: '/turnkey-interiors' },
+  { label: 'Compare us', href: '/compare' },
 ];
 
 const COMPANY: NavLinkItem[] = [
   { label: 'About Us', href: '/about-us' },
-  { label: 'Track Your Project', href: '/track' },
+  { label: 'Reviews', href: '/reviews' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms & Conditions', href: '/terms-conditions' },
 ];
 
@@ -68,6 +72,12 @@ export const MENU_CITIES: { label: string; href: string }[] = [
 const linkClass =
   'group flex items-baseline gap-2 py-2 text-[17px] leading-snug font-medium text-black/70 transition-colors duration-150 hover:text-black sm:text-lg';
 
+const pillClass =
+  'inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black/40';
+
+const groupTitleClass =
+  'mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase';
+
 function NavColumn({
   title,
   links,
@@ -81,9 +91,7 @@ function NavColumn({
 }) {
   return (
     <div className="menu-in" style={{ animationDelay: `${delay}ms` }}>
-      <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
-        {title}
-      </h2>
+      <h2 className={groupTitleClass}>{title}</h2>
       <ul className="-mx-2 list-none">
         {links.map((item) => (
           <li key={item.href}>
@@ -105,6 +113,99 @@ function NavColumn({
         ))}
       </ul>
     </div>
+  );
+}
+
+/**
+ * Every link the menu offers, with no state of its own. The open overlay
+ * shows it; the closed menu keeps it in the document (hidden) so the site's
+ * navigation exists in the HTML for crawlers that never run JavaScript.
+ */
+function MenuLinks({
+  explore,
+  rooms,
+  onClose,
+}: {
+  explore: NavLinkItem[];
+  rooms: NavLinkItem[];
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <div className="grid gap-x-10 gap-y-9 sm:grid-cols-2 xl:grid-cols-3">
+        <NavColumn
+          title="Explore"
+          links={explore}
+          onClose={onClose}
+          delay={100}
+        />
+        <NavColumn
+          title="Plan your project"
+          links={PLAN}
+          onClose={onClose}
+          delay={160}
+        />
+        <NavColumn
+          title="Company"
+          links={COMPANY}
+          onClose={onClose}
+          delay={220}
+        />
+      </div>
+
+      {rooms.length > 0 && (
+        <div
+          className="menu-in mt-10 border-t border-black/10 pt-6"
+          style={{ animationDelay: '250ms' }}
+        >
+          <h2 className={groupTitleClass}>Browse by room</h2>
+          <ul className="flex list-none flex-wrap gap-2">
+            {rooms.map((room) => (
+              <li key={room.href}>
+                <Link href={room.href} onClick={onClose} className={pillClass}>
+                  {room.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href="/gallery"
+                onClick={onClose}
+                className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
+              >
+                Full gallery →
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+
+      {/* Straight to the commonest journey: "designers in my city" */}
+      <div
+        className="menu-in mt-10 border-t border-black/10 pt-6"
+        style={{ animationDelay: '290ms' }}
+      >
+        <h2 className={groupTitleClass}>Popular cities</h2>
+        <ul className="flex list-none flex-wrap gap-2">
+          {MENU_CITIES.map((city) => (
+            <li key={city.href}>
+              <Link href={city.href} onClick={onClose} className={pillClass}>
+                {city.label}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link
+              href="/interior-designers"
+              onClick={onClose}
+              className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
+            >
+              All 150+ cities →
+            </Link>
+          </li>
+        </ul>
+      </div>
+    </>
   );
 }
 
@@ -140,8 +241,6 @@ export default function MenuOverlay({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   // CMS project pages sit with the rest of the work, before the wider listings.
   const explore: NavLinkItem[] = [
     ...EXPLORE.slice(0, 4),
@@ -159,6 +258,17 @@ export default function MenuOverlay({
       href: `/gallery/${slug}`,
     }),
   );
+
+  // Closed: the links stay in the document but out of the layout, the
+  // accessibility tree and the tab order, so nothing about keyboard use or
+  // focus changes while the real navigation is still there for crawlers.
+  if (!isOpen) {
+    return (
+      <nav aria-label="Primary" hidden>
+        <MenuLinks explore={explore} rooms={rooms} onClose={onClose} />
+      </nav>
+    );
+  }
 
   return (
     <div
@@ -192,6 +302,8 @@ export default function MenuOverlay({
               <img
                 src="/images/home_logo.avif"
                 alt=""
+                width={78}
+                height={78}
                 className="h-full w-full origin-center scale-[0.78] object-cover"
               />
             </span>
@@ -272,96 +384,9 @@ export default function MenuOverlay({
 
         {/* Body */}
         <div className="grid flex-1 gap-10 py-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-14">
-          <div>
-            <nav
-              aria-label="Main"
-              className="grid gap-x-10 gap-y-9 sm:grid-cols-2 xl:grid-cols-3"
-            >
-              <NavColumn
-                title="Explore"
-                links={explore}
-                onClose={onClose}
-                delay={100}
-              />
-              <NavColumn
-                title="Plan your project"
-                links={PLAN}
-                onClose={onClose}
-                delay={160}
-              />
-              <NavColumn
-                title="Company"
-                links={COMPANY}
-                onClose={onClose}
-                delay={220}
-              />
-            </nav>
-
-            {rooms.length > 0 && (
-              <div
-                className="menu-in mt-10 border-t border-black/10 pt-6"
-                style={{ animationDelay: '250ms' }}
-              >
-                <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
-                  Browse by room
-                </h2>
-                <ul className="flex list-none flex-wrap gap-2">
-                  {rooms.map((room) => (
-                    <li key={room.href}>
-                      <Link
-                        href={room.href}
-                        onClick={onClose}
-                        className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black/40"
-                      >
-                        {room.label}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/gallery"
-                      onClick={onClose}
-                      className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
-                    >
-                      Full gallery →
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            )}
-
-            {/* Straight to the commonest journey: "designers in my city" */}
-            <div
-              className="menu-in mt-10 border-t border-black/10 pt-6"
-              style={{ animationDelay: '290ms' }}
-            >
-              <h2 className="mb-3 text-xs font-semibold tracking-[0.25em] text-[#6b1a1a] uppercase">
-                Popular cities
-              </h2>
-              <ul className="flex list-none flex-wrap gap-2">
-                {MENU_CITIES.map((city) => (
-                  <li key={city.href}>
-                    <Link
-                      href={city.href}
-                      onClick={onClose}
-                      className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black/40"
-                    >
-                      {city.label}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link
-                    href="/interior-designers"
-                    onClick={onClose}
-                    className="inline-flex rounded-full px-4 py-2 text-sm font-semibold text-black underline underline-offset-2"
-                  >
-                    All 150+ cities →
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <nav aria-label="Primary">
+            <MenuLinks explore={explore} rooms={rooms} onClose={onClose} />
+          </nav>
 
           {/* Side panel: the two things people open a menu to do */}
           <aside

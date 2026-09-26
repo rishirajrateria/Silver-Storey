@@ -25,8 +25,7 @@ import {
 export const revalidate = 300;
 
 const PATH = '/3d-visualisation';
-const TITLE =
-  'Free 3D Interior Visualisation | See Your Home Before It’s Built';
+const TITLE = 'Free 3D Interior Visualisation | Silver Storey';
 const DESCRIPTION =
   'Every Silver Storey project includes complimentary photorealistic 3D visualisation — walk through your kitchen, bedrooms and living room, change finishes and approve the design before manufacturing starts.';
 

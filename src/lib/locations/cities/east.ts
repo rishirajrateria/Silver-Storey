@@ -26,7 +26,6 @@ export const EAST_CITIES: CityData[] = [
       'EM Bypass',
       'Lake Town',
       'Dum Dum',
-      'Howrah',
       'Southern Avenue',
     ],
     landmarks: [

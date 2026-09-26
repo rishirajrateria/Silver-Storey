@@ -4,8 +4,13 @@ import { Toaster } from 'sonner';
 import './globals.css';
 import JsonLd from '@/lib/seo/JsonLd';
 import SiteCanvas from '@/components/SiteCanvas';
-import { graph, organizationSchema, websiteSchema } from '@/lib/seo/schema';
-import { SITE, SITE_URL, PRIMARY_KEYWORDS } from '@/lib/seo/site';
+import {
+  founderPersonSchemas,
+  graph,
+  organizationSchema,
+  websiteSchema,
+} from '@/lib/seo/schema';
+import { SITE, SITE_URL } from '@/lib/seo/site';
 
 const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
@@ -22,14 +27,20 @@ export const metadata: Metadata = {
   },
   description: SITE.shortDescription,
   applicationName: SITE.name,
-  keywords: PRIMARY_KEYWORDS,
   authors: SITE.founders.map((f) => ({ name: f.name })),
   creator: SITE.name,
   publisher: SITE.name,
   category: 'Interior Design',
   alternates: {
-    canonical: '/',
     types: { 'application/rss+xml': `${SITE_URL}/blog/rss.xml` },
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
   openGraph: {
     type: 'website',
@@ -72,12 +83,6 @@ export const metadata: Metadata = {
       ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION }
       : undefined,
   },
-  other: {
-    'geo.region': 'IN-WB',
-    'geo.placename': 'Kolkata',
-    'geo.position': `${SITE.geo.latitude};${SITE.geo.longitude}`,
-    ICBM: `${SITE.geo.latitude}, ${SITE.geo.longitude}`,
-  },
 };
 
 export const viewport: Viewport = {
@@ -92,7 +97,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} h-full antialiased`}>
+    <html
+      lang="en-IN"
+      className={`${spaceGrotesk.variable} h-full antialiased`}
+    >
       <head>
         {/* Warm up connections to the CDNs used above the fold. */}
         <link rel="dns-prefetch" href="https://img.youtube.com" />
@@ -102,7 +110,11 @@ export default function RootLayout({
         <SiteCanvas />
         <JsonLd
           id="org-jsonld"
-          data={graph(organizationSchema(), websiteSchema())}
+          data={graph(
+            organizationSchema(),
+            websiteSchema(),
+            ...founderPersonSchemas(),
+          )}
         />
         {children}
         <Toaster position="top-center" richColors />

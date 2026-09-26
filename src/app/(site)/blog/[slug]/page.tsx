@@ -2,16 +2,23 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import BlogPostPage from '@/features/Blog/BlogPostPage';
 import ArticlePage from '@/features/Blog/ArticlePage';
-import { getBlogPost, getBlogPosts } from '@/lib/db/content';
-import { getProjectPageLinks } from '@/lib/db/content';
+import {
+  getBlogPost,
+  getBlogPosts,
+  getProjectPageLinks,
+} from '@/lib/db/content';
 import {
   ARTICLES,
   getArticle,
   articlePath,
   articleWordCount,
+  relatedArticles,
   CATEGORY_BY_SLUG,
   categoryPath,
 } from '@/lib/blog';
+import type { BlogCategory } from '@/lib/blog/categories';
+import { cmsPostAsArticle } from '@/lib/blog/cms-article';
+import { citiesForArticle, servicesForArticle } from '@/lib/related';
 import { markdownToPlainText, markdownWordCount } from '@/lib/markdown';
 import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -20,9 +27,10 @@ import {
   breadcrumbSchema,
   faqSchema,
   graph,
+  webPageSchema,
 } from '@/lib/seo/schema';
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const cms = await getBlogPosts();
@@ -38,13 +46,25 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ slug: string }> };
 
+/** One trail for both the visible breadcrumbs and the BreadcrumbList schema. */
+function crumbsFor(title: string, slug: string, category?: BlogCategory) {
+  return [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    ...(category
+      ? [{ name: category.name, path: categoryPath(category.slug) }]
+      : []),
+    { name: title, path: articlePath(slug) },
+  ];
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const post = await getBlogPost(slug);
   if (post) {
     return buildMetadata({
-      title: post.title,
+      title: `${post.title} | Silver Storey`,
       description:
         post.description ||
         markdownToPlainText(post.body).slice(0, 155) ||
@@ -64,11 +84,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(slug);
   if (!article) return {};
   return buildMetadata({
-    title: article.title,
+    title: `${article.title} | Silver Storey`,
     description: article.description,
     path: articlePath(slug),
     type: 'article',
-    keywords: article.tags,
     publishedTime: article.publishedAt,
     modifiedTime: article.updatedAt,
     authors: [article.author],
@@ -88,7 +107,17 @@ export default async function BlogPostRoute({ params }: Props) {
     const category = post.category
       ? CATEGORY_BY_SLUG[post.category]
       : undefined;
+    const crumbs = crumbsFor(post.title, slug, category);
+    const asArticle = cmsPostAsArticle(post);
     const jsonLd = graph(
+      webPageSchema({
+        name: post.title,
+        description:
+          post.description || markdownToPlainText(post.body).slice(0, 155),
+        path: articlePath(slug),
+        datePublished: post.publishedAt,
+        dateModified: post.updatedAt,
+      }),
       articleSchema({
         title: post.title,
         description:
@@ -101,14 +130,7 @@ export default async function BlogPostRoute({ params }: Props) {
         wordCount: markdownWordCount(post.body) || undefined,
         section: category?.name,
       }),
-      breadcrumbSchema([
-        { name: 'Home', path: '/' },
-        { name: 'Blog', path: '/blog' },
-        ...(category
-          ? [{ name: category.name, path: categoryPath(category.slug) }]
-          : []),
-        { name: post.title, path: articlePath(slug) },
-      ]),
+      breadcrumbSchema(crumbs),
     );
     return (
       <>
@@ -120,10 +142,16 @@ export default async function BlogPostRoute({ params }: Props) {
             slug: post.slug,
             description: post.description,
             author: post.author,
+            category: post.category,
             publishedAt: post.publishedAt,
+            updatedAt: post.updatedAt,
             mainImageUrl: post.mainImageUrl,
             body: post.body,
           }}
+          crumbs={crumbs}
+          services={servicesForArticle(asArticle)}
+          cities={citiesForArticle(asArticle)}
+          related={relatedArticles(asArticle, 3)}
           projectPages={projectPages}
         />
       </>
@@ -133,7 +161,15 @@ export default async function BlogPostRoute({ params }: Props) {
   const article = getArticle(slug);
   if (!article) notFound();
   const category = CATEGORY_BY_SLUG[article.category];
+  const crumbs = crumbsFor(article.title, slug, category);
   const jsonLd = graph(
+    webPageSchema({
+      name: article.title,
+      description: article.description,
+      path: articlePath(slug),
+      datePublished: article.publishedAt,
+      dateModified: article.updatedAt,
+    }),
     articleSchema({
       title: article.title,
       description: article.description,
@@ -146,20 +182,17 @@ export default async function BlogPostRoute({ params }: Props) {
       keywords: article.tags,
       section: category?.name,
     }),
-    breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Blog', path: '/blog' },
-      ...(category
-        ? [{ name: category.name, path: categoryPath(category.slug) }]
-        : []),
-      { name: article.title, path: articlePath(slug) },
-    ]),
+    breadcrumbSchema(crumbs),
     article.faqs?.length ? faqSchema(article.faqs) : null,
   );
   return (
     <>
       <JsonLd data={jsonLd} />
-      <ArticlePage article={article} projectPages={projectPages} />
+      <ArticlePage
+        article={article}
+        crumbs={crumbs}
+        projectPages={projectPages}
+      />
     </>
   );
 }

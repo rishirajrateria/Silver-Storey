@@ -67,10 +67,34 @@ const STATIC_PAGES: {
     keywords: '3d render visualisation visualization design',
   },
   {
-    title: 'Track your project',
-    path: '/track',
-    snippet: 'Client project progress tracker.',
-    keywords: 'track status progress login',
+    title: 'Projects & case studies',
+    path: '/projects',
+    snippet: 'Real homes we designed and delivered.',
+    keywords: 'projects case studies portfolio work photos',
+  },
+  {
+    title: 'Reviews',
+    path: '/reviews',
+    snippet: 'What clients say about working with us.',
+    keywords: 'reviews testimonials ratings feedback',
+  },
+  {
+    title: 'What is a turnkey interior project?',
+    path: '/turnkey-interiors',
+    snippet: 'Definition, what is included, cost and timeline.',
+    keywords: 'turnkey meaning definition included contractor',
+  },
+  {
+    title: 'How we compare',
+    path: '/compare',
+    snippet: 'Silver Storey vs online interior brands — what to check.',
+    keywords: 'compare livspace homelane designcafe vs versus',
+  },
+  {
+    title: 'Privacy policy',
+    path: '/privacy-policy',
+    snippet: 'What we collect and how we use it.',
+    keywords: 'privacy data policy cookies',
   },
   {
     title: 'About us',
