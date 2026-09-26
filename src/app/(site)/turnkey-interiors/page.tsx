@@ -128,7 +128,7 @@ export default async function TurnkeyPage() {
 
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <JsonLd data={jsonLd} />
         <PageHero
           eyebrow="Definition"
@@ -387,7 +387,7 @@ export default async function TurnkeyPage() {
           title="Start your turnkey project"
           subtitle="Free consultation, site measurement, itemised estimate and 3D visualisation — before you commit to anything."
         />
-      </main>
+      </div>
     </PageShell>
   );
 }

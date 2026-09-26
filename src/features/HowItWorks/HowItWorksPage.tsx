@@ -25,7 +25,7 @@ export default function HowItWorksPage({
 }) {
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <HowItWorksHero crumbs={crumbs} />
         <HowItWorksSteps />
         <ProcessDetail />
@@ -60,7 +60,7 @@ export default function HowItWorksPage({
 
         <FAQSection faqs={HOW_IT_WORKS_FAQS} />
         <CTASection />
-      </main>
+      </div>
     </PageShell>
   );
 }

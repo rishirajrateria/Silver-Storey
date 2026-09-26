@@ -28,6 +28,7 @@ const EXPLORE: NavLinkItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Services & Prices', href: '/services' },
   { label: 'Gallery', href: '/gallery' },
+  { label: 'Projects', href: '/projects' },
   { label: 'Cities We Serve', href: '/interior-designers' },
   { label: 'Blog', href: '/blog' },
 ];
@@ -39,12 +40,15 @@ const PLAN: NavLinkItem[] = [
   { label: 'How it Works', href: '/how-it-works' },
   { label: 'Pricing Structure', href: '/pricing-structure' },
   { label: '10-Year Warranty', href: '/warranty' },
+  { label: 'What is turnkey?', href: '/turnkey-interiors' },
+  { label: 'Compare us', href: '/compare' },
 ];
 
 const COMPANY: NavLinkItem[] = [
   { label: 'About Us', href: '/about-us' },
-  { label: 'Track Your Project', href: '/track' },
+  { label: 'Reviews', href: '/reviews' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms & Conditions', href: '/terms-conditions' },
 ];
 

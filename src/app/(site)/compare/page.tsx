@@ -133,7 +133,7 @@ export default async function ComparePage() {
 
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <JsonLd data={jsonLd} />
         <PageHero
           eyebrow="Choosing an interior company"
@@ -233,7 +233,7 @@ export default async function ComparePage() {
           title="Put the questions to us first"
           subtitle="Book a free consultation and ask every question on this page — the estimate and 3D design cost nothing."
         />
-      </main>
+      </div>
     </PageShell>
   );
 }

@@ -17,7 +17,7 @@ export default function TermsConditionsPage({
 }) {
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         {/* ── Hero ── */}
         <section
           className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center sm:pt-32 sm:pb-20"
@@ -604,7 +604,7 @@ export default function TermsConditionsPage({
             </address>
           </section>
         </div>
-      </main>
+      </div>
     </PageShell>
   );
 }

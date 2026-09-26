@@ -60,7 +60,7 @@ export default function ReviewsPage({
   const avg = averageRating(rows);
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <PageHero
           eyebrow="Client reviews"
           title="Silver Storey Reviews"
@@ -160,7 +160,7 @@ export default function ReviewsPage({
           title="Talk to us about your home"
           subtitle="Free consultation, site measurement, itemised estimate and 3D visualisation before you commit to anything."
         />
-      </main>
+      </div>
     </PageShell>
   );
 }

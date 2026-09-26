@@ -114,6 +114,9 @@ export function buildLlmsTxt(now = new Date()): string {
   lines.push(
     `- [What is a turnkey interior project](${absoluteUrl('/turnkey-interiors')}): definition, what is included, cost and timeline`,
   );
+  lines.push(
+    `- [How Silver Storey compares with online interior brands](${absoluteUrl('/compare')}): what to compare, our answers, and the question to ask any other brand`,
+  );
   lines.push('');
   lines.push('## Company pages');
   lines.push(

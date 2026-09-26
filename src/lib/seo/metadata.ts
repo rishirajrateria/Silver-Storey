@@ -72,7 +72,19 @@ export function fitTitle(title: string): string {
   while (segments.length > 1 && segments.join(' | ').length > room) {
     segments.pop();
   }
-  const shortened = cutAtWord(segments.join(' | '), room);
+  const lead2 = segments.join(' | ');
+  // Prefer ending before a joining word ("in", "and", "for", "of") so a place
+  // name is never split; fall back to any word boundary.
+  const phrase = lead2.slice(0, room + 1);
+  const joiner = Math.max(
+    ...[' in ', ' and ', ' for ', ' of ', ', ', ' & '].map((j) =>
+      phrase.lastIndexOf(j),
+    ),
+  );
+  const shortened =
+    joiner > room * 0.5
+      ? phrase.slice(0, joiner).trimEnd()
+      : cutAtWord(lead2, room);
   return `${shortened}${suffix}`;
 }
 
@@ -85,12 +97,11 @@ export function fitDescription(description: string): string {
   if (clean.length <= MAX_DESC) return clean;
 
   const window = clean.slice(0, MAX_DESC);
-  const sentenceEnd = Math.max(
-    window.lastIndexOf('. '),
-    window.lastIndexOf('.'),
-    window.lastIndexOf('! '),
-    window.lastIndexOf('? '),
-  );
+  // A full stop only ends a sentence when followed by a space or the end —
+  // "₹1.4 lakh" and "2.5 L" must not be cut to "₹1." and "2.".
+  let sentenceEnd = -1;
+  for (const m of window.matchAll(/[.!?](?=\s|$)/g))
+    sentenceEnd = m.index ?? -1;
   // Keep the sentence cut only when it leaves most of the budget in use.
   if (sentenceEnd >= MAX_DESC * 0.6) {
     return clean.slice(0, sentenceEnd + 1).trim();

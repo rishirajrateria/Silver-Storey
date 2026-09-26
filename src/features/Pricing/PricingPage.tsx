@@ -42,7 +42,7 @@ export default function PricingPage({
 }) {
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         {/* ── Hero ── */}
         <section
           className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center sm:pt-32 sm:pb-20"
@@ -431,7 +431,7 @@ export default function PricingPage({
           title="Get an itemised quote for your home"
           subtitle="Free consultation, site measurement, estimate and 3D visualisation — you pay only after you approve the design."
         />
-      </main>
+      </div>
     </PageShell>
   );
 }

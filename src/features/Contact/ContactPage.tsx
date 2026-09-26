@@ -20,7 +20,7 @@ export default function ContactPage({
 }) {
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <Footer />
         <div className="mx-auto max-w-4xl px-6 pt-10">
           <Breadcrumbs items={crumbs} />
@@ -28,7 +28,7 @@ export default function ContactPage({
         <ContactForm />
         <ContactDetails />
         <MapSection />
-      </main>
+      </div>
     </PageShell>
   );
 }

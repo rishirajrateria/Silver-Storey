@@ -43,7 +43,7 @@ export default async function PrivacyPolicyPage() {
 
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <JsonLd data={jsonLd} />
         <PageHero
           eyebrow="Plain English, no legalese"
@@ -193,7 +193,7 @@ export default async function PrivacyPolicyPage() {
             </p>
           </Prose>
         </section>
-      </main>
+      </div>
     </PageShell>
   );
 }

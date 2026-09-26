@@ -122,6 +122,11 @@ export default async function sitemap(props: {
         priority: 0.7,
       },
       {
+        url: absoluteUrl('/compare'),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      },
+      {
         url: absoluteUrl('/warranty'),
         changeFrequency: 'yearly',
         priority: 0.6,

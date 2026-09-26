@@ -205,7 +205,7 @@ export function keyFacts(): { label: string; value: string }[] {
     },
     {
       label: 'Warranty',
-      value: `${SITE.warranty.termYears} years on ${SITE.warranty.covers}`,
+      value: `${SITE.warranty.termYears} years on modular components and workmanship`,
     },
     { label: 'Design fee', value: 'None — 3D visualisation is complimentary' },
     { label: 'Phone / WhatsApp', value: SITE.phoneDisplay },

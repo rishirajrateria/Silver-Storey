@@ -115,7 +115,7 @@ export default async function WarrantyPage() {
 
   return (
     <PageShell projectPages={projectPages}>
-      <main>
+      <div>
         <JsonLd data={jsonLd} />
         <PageHero
           eyebrow="Peace of mind, in writing"
@@ -245,7 +245,7 @@ export default async function WarrantyPage() {
           title="Design once, enjoy for decades"
           subtitle="Free consultation, 3D design and an itemised quote — with the warranty written into it."
         />
-      </main>
+      </div>
     </PageShell>
   );
 }
