@@ -39,7 +39,7 @@ export default async function Page() {
       { name: 'Home', path: '/' },
       { name: 'Contact', path: '/contact' },
     ]),
-    localBusinessSchema({ id: '/contact#localbusiness', url: '/contact' }),
+    localBusinessSchema(),
   );
   return (
     <>

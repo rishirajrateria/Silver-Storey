@@ -30,6 +30,8 @@ export interface VideoItem {
   title: string;
   youtubeId: string;
   description?: string;
+  /** ISO date the video was added — VideoObject.uploadDate in schema. */
+  createdAt: string;
 }
 
 export interface ProjectPageLink {
@@ -223,6 +225,7 @@ export const getVideos = cache(
           title: v.title,
           youtubeId: v.youtubeId,
           description: v.description ?? undefined,
+          createdAt: v.createdAt.toISOString(),
         }));
       },
       [],

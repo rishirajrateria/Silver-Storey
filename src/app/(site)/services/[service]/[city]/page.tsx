@@ -11,9 +11,9 @@ import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
   breadcrumbSchema,
+  cityArea,
   faqSchema,
   graph,
-  localBusinessSchema,
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
@@ -131,17 +131,12 @@ export default async function ServiceCityPage({ params }: Props) {
       path,
     }),
     breadcrumbSchema(crumbs),
-    localBusinessSchema({
-      id: `${path}#localbusiness`,
-      url: path,
-      areaServed: [{ type: 'City', name: city.name, region: state.name }],
-    }),
     serviceSchema({
       name: `${service.name} in ${city.name}`,
       description: intro[0],
       path,
       serviceType: service.name,
-      areaServed: [{ type: 'City', name: city.name }],
+      areaServed: [cityArea(city, state)],
       startingPriceINR:
         service.category === 'commercial'
           ? undefined

@@ -1,10 +1,16 @@
-import { SITE, absoluteUrl } from './site';
+import { SITE, absoluteUrl, brandStatement } from './site';
+import { SERVICES, servicePath } from '@/lib/services';
+import type { CityData, StateData } from '@/lib/locations/types';
 
 type Schema = Record<string, unknown>;
 
 export const ORG_ID = `${SITE.url}/#organization`;
 export const WEBSITE_ID = `${SITE.url}/#website`;
 export const LOCAL_BUSINESS_ID = `${SITE.url}/#localbusiness`;
+
+export function founderId(founder: { slug: string }): string {
+  return `${SITE.url}/about-us#${founder.slug}`;
+}
 
 function postalAddress(): Schema {
   return {
@@ -26,7 +32,77 @@ function openingHoursSpecification(): Schema[] {
   }));
 }
 
+function sameAs(): string[] {
+  return [
+    ...SITE.socials.map((s) => s.href),
+    ...(SITE.googleBusinessProfile ? [SITE.googleBusinessProfile] : []),
+  ];
+}
+
+function identifiers(): Schema[] {
+  const ids: Schema[] = [];
+  if (SITE.registrations.gstin)
+    ids.push({
+      '@type': 'PropertyValue',
+      propertyID: 'GSTIN',
+      value: SITE.registrations.gstin,
+    });
+  if (SITE.registrations.cin)
+    ids.push({
+      '@type': 'PropertyValue',
+      propertyID: 'CIN',
+      value: SITE.registrations.cin,
+    });
+  if (SITE.registrations.udyam)
+    ids.push({
+      '@type': 'PropertyValue',
+      propertyID: 'Udyam',
+      value: SITE.registrations.udyam,
+    });
+  return ids;
+}
+
+/**
+ * One Person node per founder, with a stable @id that every page's
+ * Organization.founder and the About page's author markup point at — instead
+ * of three unlinked, id-less Person fragments per page.
+ */
+export function founderPersonSchemas(): Schema[] {
+  return SITE.founders.map((f) => ({
+    '@type': 'Person',
+    '@id': founderId(f),
+    name: f.name,
+    jobTitle: f.role,
+    image: absoluteUrl(f.image),
+    url: absoluteUrl('/about-us'),
+    worksFor: { '@id': ORG_ID },
+    ...(f.credentials ? { description: f.credentials } : {}),
+  }));
+}
+
+/** Services the studio sells, as Offers — built from the service catalogue. */
+function makesOffer(): Schema[] {
+  return SERVICES.map((s) => ({
+    '@type': 'Offer',
+    itemOffered: {
+      '@type': 'Service',
+      name: s.name,
+      url: absoluteUrl(servicePath(s)),
+    },
+    ...(s.startingPriceINR && s.category !== 'commercial'
+      ? {
+          priceSpecification: {
+            '@type': 'PriceSpecification',
+            priceCurrency: 'INR',
+            minPrice: s.startingPriceINR,
+          },
+        }
+      : {}),
+  }));
+}
+
 export function organizationSchema(): Schema {
+  const ids = identifiers();
   return {
     '@type': 'Organization',
     '@id': ORG_ID,
@@ -38,15 +114,18 @@ export function organizationSchema(): Schema {
       url: absoluteUrl(SITE.logo),
     },
     image: absoluteUrl(SITE.ogImage),
-    description: SITE.description,
+    description: brandStatement(),
     slogan: SITE.tagline,
     foundingDate: String(SITE.foundingYear),
-    founder: SITE.founders.map((f) => ({
-      '@type': 'Person',
-      name: f.name,
-      jobTitle: f.role,
-      image: absoluteUrl(f.image),
-    })),
+    foundingLocation: {
+      '@type': 'Place',
+      name: `${SITE.address.city}, ${SITE.address.region}, India`,
+    },
+    founder: SITE.founders.map((f) => ({ '@id': founderId(f) })),
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      minValue: parseInt(SITE.stats.teamMembers, 10) || undefined,
+    },
     email: SITE.email,
     telephone: SITE.phoneE164,
     address: postalAddress(),
@@ -71,7 +150,8 @@ export function organizationSchema(): Schema {
         availableLanguage: ['English', 'Hindi', 'Bengali'],
       },
     ],
-    ...(SITE.socials.length ? { sameAs: SITE.socials.map((s) => s.href) } : {}),
+    ...(ids.length ? { identifier: ids } : {}),
+    ...(sameAs().length ? { sameAs: sameAs() } : {}),
   };
 }
 
@@ -88,7 +168,7 @@ export function websiteSchema(): Schema {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${SITE.url}/blog?q={search_term_string}`,
+        urlTemplate: `${SITE.url}/search?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -96,42 +176,83 @@ export function websiteSchema(): Schema {
 }
 
 export type AreaServed =
-  | { type: 'City'; name: string; region?: string }
+  | {
+      type: 'City';
+      name: string;
+      region?: string;
+      geo?: { lat: number; lng: number };
+    }
   | { type: 'State'; name: string }
   | { type: 'Country'; name: string };
 
+/** A City/State/Country node for areaServed, with geo when the dataset has it. */
+export function placeNode(a: AreaServed): Schema {
+  if (a.type === 'City') {
+    return {
+      '@type': 'City',
+      name: a.name,
+      ...(a.region
+        ? {
+            containedInPlace: {
+              '@type': 'State',
+              name: a.region,
+              containedInPlace: { '@type': 'Country', name: 'India' },
+            },
+          }
+        : {}),
+      ...(a.geo
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: a.geo.lat,
+              longitude: a.geo.lng,
+            },
+          }
+        : {}),
+    };
+  }
+  if (a.type === 'State') {
+    return {
+      '@type': 'State',
+      name: a.name,
+      containedInPlace: { '@type': 'Country', name: 'India' },
+    };
+  }
+  return { '@type': 'Country', name: a.name };
+}
+
+/** Convenience: the dataset's city record as an AreaServed entry. */
+export function cityArea(city: CityData, state?: StateData): AreaServed {
+  return {
+    type: 'City',
+    name: city.name,
+    region: state?.name,
+    geo: city.geo,
+  };
+}
+
+/**
+ * The studio's ONE physical location — the Kolkata head office. Emitted on the
+ * home, contact and services pages only. City pages must not use this: a
+ * LocalBusiness "in Jaipur" carrying a Kolkata street address is exactly the
+ * pattern Google's local-spam policy names. Cities are `areaServed` on a
+ * Service instead (see `serviceSchema`).
+ */
 export function localBusinessSchema(opts?: {
-  id?: string;
   areaServed?: AreaServed[];
-  url?: string;
-  name?: string;
   description?: string;
 }): Schema {
-  const areaServed = (
-    opts?.areaServed ?? [{ type: 'Country', name: 'India' }]
-  ).map((a) =>
-    a.type === 'City'
-      ? {
-          '@type': 'City',
-          name: a.name,
-          ...(a.region
-            ? { containedInPlace: { '@type': 'State', name: a.region } }
-            : {}),
-        }
-      : { '@type': a.type, name: a.name },
-  );
-
   return {
     '@type': [
       'HomeAndConstructionBusiness',
       'LocalBusiness',
       'ProfessionalService',
     ],
-    '@id': opts?.id ?? LOCAL_BUSINESS_ID,
-    name: opts?.name ?? SITE.name,
+    '@id': LOCAL_BUSINESS_ID,
+    name: SITE.name,
     alternateName: 'Silver Storey Interiors',
-    description: opts?.description ?? SITE.description,
-    url: opts?.url ?? SITE.url,
+    description: opts?.description ?? brandStatement(),
+    url: SITE.url,
     image: absoluteUrl(SITE.ogImage),
     logo: absoluteUrl(SITE.logo),
     telephone: SITE.phoneE164,
@@ -149,80 +270,25 @@ export function localBusinessSchema(opts?: {
       `Silver Storey ${SITE.address.street} ${SITE.address.city} ${SITE.address.postalCode}`,
     )}`,
     openingHoursSpecification: openingHoursSpecification(),
-    areaServed,
+    areaServed: (opts?.areaServed ?? [{ type: 'Country', name: 'India' }]).map(
+      placeNode,
+    ),
     parentOrganization: { '@id': ORG_ID },
-    founder: SITE.founders.map((f) => ({ '@type': 'Person', name: f.name })),
+    founder: SITE.founders.map((f) => ({ '@id': founderId(f) })),
+    foundingDate: String(SITE.foundingYear),
     slogan: SITE.tagline,
-    makesOffer: SERVICE_OFFERS.map((s) => ({
-      '@type': 'Offer',
-      itemOffered: {
-        '@type': 'Service',
-        name: s.name,
-        url: absoluteUrl(s.path),
-      },
-      ...(s.startingPriceINR
-        ? {
-            priceSpecification: {
-              '@type': 'PriceSpecification',
-              price: s.startingPriceINR,
-              priceCurrency: 'INR',
-              minPrice: s.startingPriceINR,
-            },
-          }
-        : {}),
-    })),
-    ...(SITE.socials.length ? { sameAs: SITE.socials.map((s) => s.href) } : {}),
+    makesOffer: makesOffer(),
+    ...(sameAs().length ? { sameAs: sameAs() } : {}),
   };
 }
-
-/** Compact service list reused in LocalBusiness.makesOffer and llms.txt. */
-export const SERVICE_OFFERS: {
-  name: string;
-  path: string;
-  startingPriceINR?: number;
-}[] = [
-  { name: 'Full Home Interior Design', path: '/services/full-home-interiors' },
-  {
-    name: 'Modular Kitchen Design',
-    path: '/services/modular-kitchen',
-    startingPriceINR: 140000,
-  },
-  {
-    name: 'Living Room Interior Design',
-    path: '/services/living-room-interiors',
-    startingPriceINR: 240000,
-  },
-  {
-    name: 'Bedroom Interior Design',
-    path: '/services/bedroom-interiors',
-    startingPriceINR: 210000,
-  },
-  {
-    name: 'Bathroom Interior Design',
-    path: '/services/bathroom-interiors',
-    startingPriceINR: 180000,
-  },
-  {
-    name: 'Dining Room Interior Design',
-    path: '/services/dining-room-interiors',
-    startingPriceINR: 100000,
-  },
-  {
-    name: 'Home Office Interior Design',
-    path: '/services/home-office-interiors',
-    startingPriceINR: 200000,
-  },
-  {
-    name: 'Commercial & Office Interior Design',
-    path: '/services/commercial-office-interiors',
-  },
-];
 
 export function breadcrumbSchema(
   items: { name: string; path: string }[],
 ): Schema {
+  const last = items[items.length - 1];
   return {
     '@type': 'BreadcrumbList',
+    ...(last ? { '@id': `${absoluteUrl(last.path)}#breadcrumb` } : {}),
     itemListElement: items.map((item, i) => ({
       '@type': 'ListItem',
       position: i + 1,
@@ -245,6 +311,12 @@ export function faqSchema(faqs: FAQ[]): Schema {
   };
 }
 
+/**
+ * A Service the studio delivers somewhere. `provider` points at the
+ * Organization node the root layout puts on every page, so the reference
+ * always resolves; the catalogue of every other service lives on the
+ * LocalBusiness node rather than being repeated on a thousand pages.
+ */
 export function serviceSchema(opts: {
   name: string;
   description: string;
@@ -261,43 +333,27 @@ export function serviceSchema(opts: {
     serviceType: opts.serviceType ?? 'Interior Design',
     description: opts.description,
     url: absoluteUrl(opts.path),
-    provider: { '@id': LOCAL_BUSINESS_ID },
+    provider: { '@id': ORG_ID },
     brand: { '@id': ORG_ID },
     ...(opts.image ? { image: absoluteUrl(opts.image) } : {}),
     areaServed: (opts.areaServed ?? [{ type: 'Country', name: 'India' }]).map(
-      (a) => ({
-        '@type': a.type,
-        name: a.name,
-      }),
+      placeNode,
     ),
     ...(opts.startingPriceINR
       ? {
           offers: {
             '@type': 'Offer',
+            url: absoluteUrl(opts.path),
             priceCurrency: 'INR',
-            price: opts.startingPriceINR,
             priceSpecification: {
               '@type': 'PriceSpecification',
               priceCurrency: 'INR',
               minPrice: opts.startingPriceINR,
+              description: 'Indicative starting price; every quote is itemised',
             },
-            availability: 'https://schema.org/InStock',
-            url: absoluteUrl(opts.path),
           },
         }
       : {}),
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Interior design services',
-      itemListElement: SERVICE_OFFERS.map((s) => ({
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: s.name,
-          url: absoluteUrl(s.path),
-        },
-      })),
-    },
   };
 }
 
@@ -313,6 +369,12 @@ export function articleSchema(opts: {
   keywords?: string[];
   section?: string;
 }): Schema {
+  // A house byline ("Silver Storey", "Editorial Team") is the organisation,
+  // not a person; only a real name becomes a Person.
+  const isHouse =
+    !opts.authorName ||
+    /silver storey|editorial|team/i.test(opts.authorName ?? '');
+  const founder = SITE.founders.find((f) => f.name === opts.authorName);
   return {
     '@type': 'BlogPosting',
     '@id': `${absoluteUrl(opts.path)}#article`,
@@ -323,11 +385,11 @@ export function articleSchema(opts: {
     image: opts.image ? absoluteUrl(opts.image) : absoluteUrl(SITE.ogImage),
     datePublished: opts.datePublished,
     dateModified: opts.dateModified ?? opts.datePublished,
-    author: {
-      '@type': opts.authorName ? 'Person' : 'Organization',
-      name: opts.authorName ?? SITE.name,
-      ...(opts.authorName ? {} : { '@id': ORG_ID }),
-    },
+    author: isHouse
+      ? { '@id': ORG_ID }
+      : founder
+        ? { '@id': founderId(founder) }
+        : { '@type': 'Person', name: opts.authorName },
     publisher: { '@id': ORG_ID },
     inLanguage: SITE.language,
     isAccessibleForFree: true,
@@ -351,6 +413,8 @@ export function webPageSchema(opts: {
   primaryImage?: string;
   datePublished?: string;
   dateModified?: string;
+  /** Set when the page also emits breadcrumbSchema for the same path. */
+  hasBreadcrumb?: boolean;
 }): Schema {
   return {
     '@type': opts.type ?? 'WebPage',
@@ -361,6 +425,9 @@ export function webPageSchema(opts: {
     isPartOf: { '@id': WEBSITE_ID },
     about: { '@id': ORG_ID },
     inLanguage: SITE.language,
+    ...(opts.hasBreadcrumb !== false
+      ? { breadcrumb: { '@id': `${absoluteUrl(opts.path)}#breadcrumb` } }
+      : {}),
     ...(opts.primaryImage
       ? {
           primaryImageOfPage: {
@@ -427,6 +494,25 @@ export function imageGallerySchema(opts: {
       contentUrl: absoluteUrl(i.url),
       ...(i.caption ? { caption: i.caption } : {}),
     })),
+  };
+}
+
+/** A YouTube video the studio published, for the videos on the home page. */
+export function videoObjectSchema(video: {
+  title: string;
+  youtubeId: string;
+  description?: string;
+  uploadDate: string;
+}): Schema {
+  return {
+    '@type': 'VideoObject',
+    name: video.title,
+    description: video.description ?? `${video.title} — ${SITE.name}`,
+    thumbnailUrl: `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`,
+    embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,
+    contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
+    uploadDate: video.uploadDate,
+    publisher: { '@id': ORG_ID },
   };
 }
 

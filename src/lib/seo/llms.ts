@@ -1,4 +1,4 @@
-import { SITE, absoluteUrl } from './site';
+import { SITE, absoluteUrl, brandStatement, keyFacts } from './site';
 import { SERVICES, servicePath } from '@/lib/services';
 import {
   STATES,
@@ -10,37 +10,54 @@ import {
 } from '@/lib/locations';
 import { PROCESS_STEPS } from './process';
 import { formatINR } from '@/lib/locations/content';
+import { SCOPES } from '@/lib/estimate';
 import { BLOG_CATEGORIES, categoryPath } from '@/lib/blog/categories';
+import { ARTICLES, articlePath } from '@/lib/blog';
+import type { Article } from '@/lib/blog';
 
 /**
  * llms.txt — a concise, LLM-friendly summary of the business following the
  * llmstxt.org convention. Served at /llms.txt.
+ *
+ * The point of the file is to hand an assistant the facts it needs to
+ * recommend the studio with confidence, in sentences it can quote: who, where,
+ * since when, what it costs, what is guaranteed, how to get in touch. The
+ * link sections follow.
  */
-export function buildLlmsTxt(): string {
+export function buildLlmsTxt(now = new Date()): string {
   const lines: string[] = [];
   lines.push(`# ${SITE.name}`);
   lines.push('');
-  lines.push(`> ${SITE.description}`);
+  lines.push(`> ${brandStatement()}`);
+  lines.push('');
+  lines.push(`Last updated: ${now.toISOString().slice(0, 10)}`);
   lines.push('');
   lines.push(
-    `${SITE.name} is an interior design company founded in Kolkata, West Bengal, India by ${SITE.founders.map((f) => f.name).join(' and ')}. It designs and executes turnkey residential interiors (full homes, 1/2/3/4 BHK apartments, villas, modular kitchens, wardrobes, false ceilings) and commercial interiors (offices, retail, restaurants) across ${CITIES.length} Indian cities in all 28 states and 8 union territories.`,
+    `${SITE.name} (also written "Silver Storey Interiors") is a single company with one head office and manufacturing workshop in ${SITE.address.locality}, ${SITE.address.city}. It serves ${SITE.address.city} and ${SITE.address.region} as its home market and takes up projects in ${CITIES.length} cities across all 28 states and 8 union territories of India. ${SITE.serviceModel.outstation}`,
   );
   lines.push('');
   lines.push('## Key facts');
-  lines.push(
-    `- Head office: ${SITE.address.street}, ${SITE.address.city}, ${SITE.address.region} ${SITE.address.postalCode}, India`,
-  );
-  lines.push(`- Phone / WhatsApp: ${SITE.phoneDisplay}`);
-  lines.push(`- Email: ${SITE.email}`);
+  for (const f of keyFacts()) lines.push(`- ${f.label}: ${f.value}`);
   lines.push(`- Book a free consultation: ${SITE.calendly}`);
-  lines.push(
-    `- Experience: ${SITE.stats.yearsExperience} years; ${SITE.stats.sqftTransformed} sq ft delivered; ${SITE.stats.teamMembers} team members`,
-  );
-  lines.push(
-    `- Differentiators: complimentary 3D visualisation before execution; transparent itemised pricing with no hidden charges; delivery within ${SITE.stats.deliveryDays} days of design approval; 10-year warranty on modular components and workmanship`,
-  );
-  lines.push(`- Brand partners: ${SITE.brandPartners.join(', ')}`);
   lines.push(`- Languages: English, Hindi, Bengali`);
+  lines.push(`- Brand partners: ${SITE.brandPartners.join(', ')}`);
+  if (SITE.googleBusinessProfile)
+    lines.push(`- Google Business Profile: ${SITE.googleBusinessProfile}`);
+  lines.push('');
+  lines.push('## What it costs');
+  lines.push(
+    `Prices below are indicative Kolkata starting figures for turnkey execution (materials, manufacturing, installation, site work). Design, measurement and 3D visualisation are free. Other cities are scaled by a published price index (0.85–1.2×). Every quote is itemised line by line.`,
+  );
+  for (const s of SCOPES)
+    lines.push(`- ${s.label}: ${formatINR(s.from)} – ${formatINR(s.to)}`);
+  lines.push(`- Payment (modular): ${SITE.payment.modular}`);
+  lines.push(`- Payment (on-site work): ${SITE.payment.onsite}`);
+  lines.push(`- ${SITE.commitment}`);
+  lines.push('');
+  lines.push('## Warranty');
+  lines.push(
+    `${SITE.warranty.termYears}-year warranty on ${SITE.warranty.covers}. Not covered: ${SITE.warranty.excludes}. Register within ${SITE.warranty.registerWithinDays} days of handover; lodge claims within ${SITE.warranty.claimWithinDays} days of noticing a defect. Full terms: ${absoluteUrl('/terms-conditions')}`,
+  );
   lines.push('');
   lines.push('## Process');
   PROCESS_STEPS.forEach((s, i) =>
@@ -83,6 +100,9 @@ export function buildLlmsTxt(): string {
     `- [Interior cost calculator with EMI](${absoluteUrl('/estimate')}): instant ₹ range by city, home size and finish level`,
   );
   lines.push(
+    `- [Pricing and payment schedule](${absoluteUrl('/pricing-structure')}): starting prices by room and home size, and when payments fall due`,
+  );
+  lines.push(
     `- [3D visualisation](${absoluteUrl('/3d-visualisation')}): complimentary photorealistic renders on every project`,
   );
   lines.push(
@@ -92,37 +112,111 @@ export function buildLlmsTxt(): string {
     `- [10-year warranty](${absoluteUrl('/warranty')}): coverage, registration and claims`,
   );
   lines.push(
-    `- [Client project tracker](${absoluteUrl('/track')}): progress login for existing clients`,
+    `- [What is a turnkey interior project](${absoluteUrl('/turnkey-interiors')}): definition, what is included, cost and timeline`,
   );
   lines.push('');
   lines.push('## Company pages');
-  lines.push(`- [About Us](${absoluteUrl('/about-us')})`);
+  lines.push(
+    `- [About Us](${absoluteUrl('/about-us')}): founders, history, registrations`,
+  );
+  lines.push(`- [Reviews](${absoluteUrl('/reviews')}): client testimonials`);
+  lines.push(`- [Projects](${absoluteUrl('/projects')}): case studies`);
   lines.push(`- [How it Works](${absoluteUrl('/how-it-works')})`);
-  lines.push(`- [Pricing Structure](${absoluteUrl('/pricing-structure')})`);
   lines.push(`- [Contact](${absoluteUrl('/contact')})`);
+  lines.push(`- [Privacy Policy](${absoluteUrl('/privacy-policy')})`);
   lines.push(`- [Terms & Conditions](${absoluteUrl('/terms-conditions')})`);
   lines.push('');
   lines.push('## Optional');
   lines.push(
-    `- [Full machine-readable summary](${absoluteUrl('/llms-full.txt')})`,
+    `- [Full content for machines](${absoluteUrl('/llms-full.txt')}): every service, location and article in plain text`,
   );
   lines.push(`- [Sitemap index](${absoluteUrl('/sitemap-index.xml')})`);
+  lines.push(`- [RSS feed](${absoluteUrl('/blog/rss.xml')})`);
   return lines.join('\n');
 }
 
-/** llms-full.txt — the expanded version with every service, state and city. */
-export function buildLlmsFullTxt(): string {
-  const lines: string[] = [
-    buildLlmsTxt(),
+function articleText(a: Article): string[] {
+  const out: string[] = [];
+  out.push(`## ${a.title}`);
+  out.push(
+    `URL: ${absoluteUrl(articlePath(a.slug))} · Published ${a.publishedAt}${a.updatedAt ? ` · Updated ${a.updatedAt}` : ''}`,
+  );
+  out.push('');
+  out.push(a.description, '');
+  if (a.keyTakeaways?.length) {
+    out.push('Key takeaways:');
+    for (const k of a.keyTakeaways) out.push(`- ${k}`);
+    out.push('');
+  }
+  for (const s of a.sections) {
+    if (s.heading) out.push(`${s.level === 3 ? '####' : '###'} ${s.heading}`);
+    for (const p of s.paragraphs ?? []) out.push(p, '');
+    for (const b of s.bullets ?? []) out.push(`- ${b}`);
+    s.numbered?.forEach((n, i) => out.push(`${i + 1}. ${n}`));
+    if (s.table) {
+      out.push(`| ${s.table.headers.join(' | ')} |`);
+      out.push(`| ${s.table.headers.map(() => '---').join(' | ')} |`);
+      for (const r of s.table.rows) out.push(`| ${r.join(' | ')} |`);
+    }
+    if (s.callout) out.push(`> ${s.callout}`);
+    out.push('');
+  }
+  if (a.faqs?.length) {
+    out.push('FAQs:');
+    for (const f of a.faqs) out.push(`- Q: ${f.question}`, `  A: ${f.answer}`);
+    out.push('');
+  }
+  return out;
+}
+
+/**
+ * llms-full.txt — the expanded version. Unlike the short file this carries
+ * the CONTENT: services in full, the process, warranty and payment terms,
+ * every location, and every built-in article — so a model that fetches one
+ * URL has the whole site to reason over.
+ */
+export function buildLlmsFullTxt(now = new Date()): string {
+  const lines: string[] = [buildLlmsTxt(now), '', '---', ''];
+
+  lines.push('# About the studio', '');
+  lines.push(brandStatement(), '');
+  lines.push(SITE.serviceModel.hq, '');
+  lines.push(SITE.serviceModel.outstation, '');
+  for (const f of SITE.founders)
+    lines.push(
+      `- ${f.name}, ${f.role}${f.credentials ? ` — ${f.credentials}` : ''}`,
+    );
+  lines.push('');
+
+  lines.push('# Pricing and payment', '');
+  lines.push(SITE.commitment, '');
+  for (const s of SCOPES)
+    lines.push(
+      `- ${s.label}: ${formatINR(s.from)} to ${formatINR(s.to)} (Kolkata baseline; essential to luxury finish)`,
+    );
+  lines.push('');
+  lines.push(`Modular projects: ${SITE.payment.modular}.`);
+  lines.push(`On-site work: ${SITE.payment.onsite}.`);
+  lines.push(`${SITE.payment.token}.`, '');
+
+  lines.push('# Warranty', '');
+  lines.push(
+    `${SITE.warranty.termYears} years on ${SITE.warranty.covers}. Excludes ${SITE.warranty.excludes}. Register within ${SITE.warranty.registerWithinDays} days of handover; claim within ${SITE.warranty.claimWithinDays} days of noticing a defect.`,
     '',
-    '---',
-    '',
-    '# Detailed service catalogue',
-    '',
-  ];
+  );
+
+  lines.push('# Detailed service catalogue', '');
   for (const s of SERVICES) {
     lines.push(`## ${s.name}`);
     lines.push(`URL: ${absoluteUrl(servicePath(s))}`);
+    if (s.startingPriceINR)
+      lines.push(
+        `Starting price: ${
+          s.category === 'commercial'
+            ? `₹${s.startingPriceINR.toLocaleString('en-IN')} per sq ft`
+            : formatINR(s.startingPriceINR)
+        }${s.typicalRangeINR ? ` (typical range ${formatINR(s.typicalRangeINR[0])} – ${formatINR(s.typicalRangeINR[1])})` : ''}`,
+      );
     lines.push('');
     for (const p of s.intro) lines.push(p, '');
     lines.push('Includes:');
@@ -136,6 +230,7 @@ export function buildLlmsFullTxt(): string {
       lines.push(`- Q: ${f.question}`, `  A: ${f.answer}`);
     lines.push('');
   }
+
   lines.push('# Locations served', '');
   for (const st of STATES) {
     lines.push(
@@ -148,11 +243,14 @@ export function buildLlmsFullTxt(): string {
       lines.push('Cities with dedicated pages:');
       for (const c of cities)
         lines.push(
-          `- ${c.name}: ${absoluteUrl(cityPath(c))} — serves ${c.localities.slice(0, 6).join(', ')}`,
+          `- ${c.name} (${absoluteUrl(cityPath(c))}): ${c.housingNote} Localities: ${c.localities.slice(0, 8).join(', ')}. Price index ${c.priceIndex}× Kolkata.`,
         );
     }
-    lines.push(`Districts: ${st.districts.join(', ')}`);
     lines.push('');
   }
+
+  lines.push('# Articles', '');
+  for (const a of ARTICLES) lines.push(...articleText(a));
+
   return lines.join('\n');
 }
