@@ -51,7 +51,14 @@ const nextConfig: NextConfig = {
         headers: [{ key: 'Cache-Control', value: ONE_YEAR }],
       },
       {
-        source: '/:file(favicon.ico|home_logo.avif)',
+        source:
+          '/:file(favicon.ico|home_logo.avif|icon-192.png|icon-512.png|apple-touch-icon.png)',
+        headers: [{ key: 'Cache-Control', value: ONE_YEAR }],
+      },
+      // Local uploads carry a content hash in the filename (name-1a2b3c4d.webp),
+      // so a changed image is a new URL and the old one can be cached forever.
+      {
+        source: '/uploads/:path*',
         headers: [{ key: 'Cache-Control', value: ONE_YEAR }],
       },
       // Sitemaps, robots and llms.txt: cache at the edge for an hour.

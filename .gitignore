@@ -45,3 +45,6 @@ next-env.d.ts
 
 # local dev uploads (production uses Vercel Blob)
 /public/uploads
+
+# Agent worktrees (git worktree checkouts created during sessions)
+.claude/worktrees/

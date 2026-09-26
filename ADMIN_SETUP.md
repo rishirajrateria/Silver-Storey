@@ -196,19 +196,47 @@ that is how you override a built-in article.
 
 ## Environment variables reference
 
-| Variable                            | Required    | Purpose                                                                                                             |
-| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                      | yes         | Postgres connection string                                                                                          |
-| `DIRECT_DATABASE_URL`               | no          | Non-pooled connection, used by migrations                                                                           |
-| `ADMIN_EMAIL`                       | yes         | The login email                                                                                                     |
-| `ADMIN_PASSWORD_HASH`               | yes         | bcrypt hash from `scripts/hash-password.mjs`                                                                        |
-| `ADMIN_SESSION_SECRET`              | yes         | Random string, 32+ characters, signs session cookies                                                                |
-| `BLOB_READ_WRITE_TOKEN`             | on Vercel   | Vercel Blob storage for uploads                                                                                     |
-| `NEXT_PUBLIC_SITE_URL`              | recommended | Canonical URLs, sitemaps, OG tags                                                                                   |
-| `REVALIDATE_SECRET`                 | no          | Lets scripts call `/api/revalidate?secret=…`                                                                        |
-| `SMTP_USER` / `SMTP_PASS`           | existing    | Contact form and estimate emails                                                                                    |
-| `CONTACT_TO_EMAIL`                  | recommended | Where enquiry emails go (defaults to care@silverstorey.com)                                                         |
-| `NEXT_PUBLIC_SOCIAL_INSTAGRAM` etc. | recommended | Social profile URLs (`_FACEBOOK`, `_LINKEDIN`, `_YOUTUBE`, `_PINTEREST`). Icons only render for networks with a URL |
+| Variable                                  | Required    | Purpose                                                                                                             |
+| ----------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                            | yes         | Postgres connection string                                                                                          |
+| `DIRECT_DATABASE_URL`                     | no          | Non-pooled connection, used by migrations                                                                           |
+| `ADMIN_EMAIL`                             | yes         | The login email                                                                                                     |
+| `ADMIN_PASSWORD_HASH`                     | yes         | bcrypt hash from `scripts/hash-password.mjs`                                                                        |
+| `ADMIN_SESSION_SECRET`                    | yes         | Random string, 32+ characters, signs session cookies                                                                |
+| `BLOB_READ_WRITE_TOKEN`                   | on Vercel   | Vercel Blob storage for uploads                                                                                     |
+| `NEXT_PUBLIC_SITE_URL`                    | recommended | Canonical URLs, sitemaps, OG tags                                                                                   |
+| `REVALIDATE_SECRET`                       | no          | Lets scripts call `/api/revalidate?secret=…`                                                                        |
+| `SMTP_USER` / `SMTP_PASS`                 | existing    | Contact form and estimate emails                                                                                    |
+| `CONTACT_TO_EMAIL`                        | recommended | Where enquiry emails go (defaults to care@silverstorey.com)                                                         |
+| `NEXT_PUBLIC_SOCIAL_INSTAGRAM` etc.       | recommended | Social profile URLs (`_FACEBOOK`, `_LINKEDIN`, `_YOUTUBE`, `_PINTEREST`). Icons only render for networks with a URL |
+| `NEXT_PUBLIC_GOOGLE_BUSINESS_URL`         | recommended | Your Google Business Profile link. Shown on the contact, reviews and Kolkata pages and emitted as `sameAs`          |
+| `NEXT_PUBLIC_GSTIN` / `_CIN` / `_UDYAM`   | no          | Statutory identifiers. Shown on the About page and in Organization schema only when set                             |
+| `NEXT_PUBLIC_INDEXED_SERVICE_CITY_STATES` | no          | Comma-separated state slugs whose service × city pages are indexable (default `west-bengal`); see below             |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`    | recommended | Search Console verification token (also `_BING_VERIFICATION`, `_YANDEX_VERIFICATION`)                               |
+
+## Search indexing policy
+
+The site generates a page for every service in every tier-1/2 city — about
+950 of them — that share most of their text. Google treats that scale of
+near-duplicate, location-swapped content as "doorway pages" and the penalty
+lands on the whole domain. So those pages stay live and useful, but only the
+ones in states where the studio has real presence are submitted for indexing;
+the rest are `noindex, follow`. The 159 city pages and 36 state hubs stay
+indexed (except state hubs with no city beneath them, and room galleries with
+no photographs yet).
+
+To index more states as projects are delivered there, set
+`NEXT_PUBLIC_INDEXED_SERVICE_CITY_STATES=west-bengal,maharashtra,karnataka`
+and redeploy — the pages, sitemaps and robots directives follow it.
+
+## Facts every page relies on
+
+`src/lib/seo/site.ts` is the single source of truth for the business facts
+that crawlers and AI assistants extract: founding year, founders, address,
+phone, stats, warranty terms, payment schedule, the commitment sentence and
+how outstation cities are served. Change a fact there and it changes on the
+home page, About page, every city page, the schema, `llms.txt` and the
+footer at once. Never hardcode a phone number, address or price elsewhere.
 
 ## Security notes
 
