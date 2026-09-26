@@ -12,7 +12,6 @@ import AboutHero from './components/AboutHero';
 import EstimatePopup from '@/components/EstimatePopup';
 import AboutMission from './components/AboutMission';
 import AboutProcess from './components/AboutProcess';
-import { reviews as defaultReviews } from '../Hero/constants';
 import type { Review } from '../Hero/types';
 import { useSlider } from '../../hooks/useSlider';
 
@@ -23,7 +22,8 @@ export default function AboutUsPage({
   projectPages?: { title: string; slug: string }[];
   reviews?: Review[];
 }) {
-  const reviews = cmsReviews?.length ? cmsReviews : defaultReviews;
+  // Only testimonials entered in the admin panel — no built-in stand-ins.
+  const reviews = cmsReviews ?? [];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentSlide, nextSlide, prevSlide, setCurrentSlide } = useSlider(
     reviews.length,
@@ -61,13 +61,15 @@ export default function AboutUsPage({
       <BrandsMarquee />
 
       {/* ── Testimonials ── */}
-      <Testimonials
-        reviews={reviews}
-        currentSlide={currentSlide}
-        nextSlide={nextSlide}
-        prevSlide={prevSlide}
-        setCurrentSlide={setCurrentSlide}
-      />
+      {reviews.length > 0 && (
+        <Testimonials
+          reviews={reviews}
+          currentSlide={currentSlide}
+          nextSlide={nextSlide}
+          prevSlide={prevSlide}
+          setCurrentSlide={setCurrentSlide}
+        />
+      )}
 
       {/* ── Founders ── */}
       <AboutFoundersSection />

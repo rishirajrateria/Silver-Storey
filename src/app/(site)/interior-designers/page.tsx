@@ -13,7 +13,6 @@ import {
   faqSchema,
   graph,
   itemListSchema,
-  localBusinessSchema,
   webPageSchema,
   type FAQ,
 } from '@/lib/seo/schema';
@@ -89,7 +88,6 @@ export default async function InteriorDesignersIndiaPage() {
       type: 'CollectionPage',
     }),
     breadcrumbSchema(crumbs),
-    localBusinessSchema({ areaServed: [{ type: 'Country', name: 'India' }] }),
     itemListSchema({
       name: 'Interior designers by city',
       items: TIER1_CITIES.map((c) => ({

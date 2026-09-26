@@ -27,6 +27,7 @@ import {
   breadcrumbSchema,
   faqSchema,
   graph,
+  webPageSchema,
 } from '@/lib/seo/schema';
 
 export const revalidate = 3600;
@@ -63,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getBlogPost(slug);
   if (post) {
     return buildMetadata({
-      title: post.title,
+      title: `${post.title} | Silver Storey`,
       description:
         post.description ||
         markdownToPlainText(post.body).slice(0, 155) ||
@@ -83,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(slug);
   if (!article) return {};
   return buildMetadata({
-    title: article.title,
+    title: `${article.title} | Silver Storey`,
     description: article.description,
     path: articlePath(slug),
     type: 'article',
@@ -109,6 +110,14 @@ export default async function BlogPostRoute({ params }: Props) {
     const crumbs = crumbsFor(post.title, slug, category);
     const asArticle = cmsPostAsArticle(post);
     const jsonLd = graph(
+      webPageSchema({
+        name: post.title,
+        description:
+          post.description || markdownToPlainText(post.body).slice(0, 155),
+        path: articlePath(slug),
+        datePublished: post.publishedAt,
+        dateModified: post.updatedAt,
+      }),
       articleSchema({
         title: post.title,
         description:
@@ -154,6 +163,13 @@ export default async function BlogPostRoute({ params }: Props) {
   const category = CATEGORY_BY_SLUG[article.category];
   const crumbs = crumbsFor(article.title, slug, category);
   const jsonLd = graph(
+    webPageSchema({
+      name: article.title,
+      description: article.description,
+      path: articlePath(slug),
+      datePublished: article.publishedAt,
+      dateModified: article.updatedAt,
+    }),
     articleSchema({
       title: article.title,
       description: article.description,

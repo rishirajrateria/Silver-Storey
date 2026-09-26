@@ -41,7 +41,8 @@ function describe(name: string, price: string, count: number): string {
     count > 0
       ? `${count} ${count === 1 ? 'photograph' : 'photographs'} of finished ${name.toLowerCase()} interiors by Silver Storey`
       : `${name} interior design by Silver Storey`;
-  return `${lead}, from ${price} onwards. Turnkey design and execution across India, with 3D visualisation and a 10-year warranty.`;
+  const rupees = /^\s*₹/.test(price) ? price.trim() : `₹${price.trim()}`;
+  return `${lead}, from ${rupees} onwards. Turnkey design and execution across India, with 3D visualisation and a 10-year warranty.`;
 }
 
 export async function generateMetadata({

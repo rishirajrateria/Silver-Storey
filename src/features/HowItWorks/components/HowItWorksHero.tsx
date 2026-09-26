@@ -11,7 +11,7 @@ export default function HowItWorksHero({ crumbs }: { crumbs: Crumb[] }) {
           {/* Left — text */}
           <div className="flex flex-col items-start lg:w-[42%]">
             <h1 className="mb-6 text-5xl leading-tight font-bold tracking-tight text-black sm:text-6xl lg:text-7xl">
-              How it Works&nbsp;!
+              How It Works: Our 6-Step Process
             </h1>
             <p className="mb-10 max-w-md text-sm leading-relaxed font-medium text-black/60 sm:text-base">
               Six steps from a free consultation to handover within{' '}

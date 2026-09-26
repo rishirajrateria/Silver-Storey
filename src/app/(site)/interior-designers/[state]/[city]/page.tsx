@@ -27,6 +27,7 @@ import { articlesForCity } from '@/lib/related';
 import { articlePath } from '@/lib/blog';
 import {
   CITIES,
+  getState,
   getCityInState,
   cityPath,
   statePath,
@@ -111,7 +112,7 @@ export default async function CityPage({ params }: Props) {
       localBusinessSchema({
         areaServed: [
           cityArea(city, state),
-          ...nearby.map((n) => cityArea(n)),
+          ...nearby.map((n) => cityArea(n, getState(n.state))),
           { type: 'State', name: state.name },
         ],
       }),
@@ -121,7 +122,7 @@ export default async function CityPage({ params }: Props) {
       path,
       areaServed: [
         cityArea(city, state),
-        ...nearby.slice(0, 3).map((n) => cityArea(n)),
+        ...nearby.slice(0, 3).map((n) => cityArea(n, getState(n.state))),
       ],
     }),
     howToSchema({

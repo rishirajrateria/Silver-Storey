@@ -44,6 +44,8 @@ export const metadata: Metadata = buildMetadata({
   description: HOME_DESCRIPTION,
   path: '/',
   image: '/opengraph-image',
+  imageWidth: 1200,
+  imageHeight: 630,
 });
 
 /** Indicative Kolkata starting price for a service, as the catalogue lists it. */

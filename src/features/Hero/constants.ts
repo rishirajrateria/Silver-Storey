@@ -1,21 +1,6 @@
 import { SITE } from '@/lib/seo/site';
 import type { Brand, Founder, StatItem } from './types';
 
-export const reviews = [
-  {
-    text: 'From start to finish, my experience was fantastic. The complimentary 3D visualization gave me confidence in the design, and the entire process was smooth and transparent. I highly recommend their services to anyone looking for reliable interior design',
-    author: 'Priya Mehta',
-  },
-  {
-    text: 'The sheer professionalism and attention to detail from the Silver Storey team was spectacular. They understood my vision perfectly and executed it within the promised 45 days. My home feels absolutely magical now.',
-    author: 'Rahul Sharma',
-  },
-  {
-    text: 'I loved the transparency in pricing. What they quoted was exactly what I paid, no hidden charges. The quality of materials used for the modular kitchen and carpentry is definitely top-notch.',
-    author: 'Sneha Reddy',
-  },
-];
-
 export const categories = [
   { name: 'Bedroom', price: '2.1 L' },
   { name: 'Dining', price: '1 L' },

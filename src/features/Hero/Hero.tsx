@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { reviews as defaultReviews, stats } from './constants';
+import { stats } from './constants';
 import HeroHeader from './components/HeroHeader';
 import HeroControls from './components/HeroControls';
 import CategoryCard from './components/CategoryCard';
@@ -48,7 +48,8 @@ export default function Hero({
   intro,
   children,
 }: HeroProps) {
-  const reviews = cmsReviews?.length ? cmsReviews : defaultReviews;
+  // Only testimonials entered in the admin panel — no built-in stand-ins.
+  const reviews = cmsReviews ?? [];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentSlide, nextSlide, prevSlide, setCurrentSlide } = useSlider(
     reviews.length,
@@ -129,13 +130,15 @@ export default function Hero({
           <BrandsMarquee />
 
           {/* 10. Testimonials Slideshow Section */}
-          <Testimonials
-            reviews={reviews}
-            currentSlide={currentSlide}
-            nextSlide={nextSlide}
-            prevSlide={prevSlide}
-            setCurrentSlide={setCurrentSlide}
-          />
+          {reviews.length > 0 && (
+            <Testimonials
+              reviews={reviews}
+              currentSlide={currentSlide}
+              nextSlide={nextSlide}
+              prevSlide={prevSlide}
+              setCurrentSlide={setCurrentSlide}
+            />
+          )}
 
           {/* 11. Our Creative Founders Section */}
           <FoundersSection brochureUrl={brochureUrl} />
