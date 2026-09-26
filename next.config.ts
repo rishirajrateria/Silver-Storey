@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      // Crawlers and people try /sitemap.xml first; the split sitemaps live
+      // behind an index, so send them there rather than to a 404.
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemap-index.xml',
+        permanent: true,
+      },
       {
         source: '/residential-projects',
         destination: '/gallery',

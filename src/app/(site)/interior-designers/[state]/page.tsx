@@ -14,7 +14,6 @@ import {
   faqSchema,
   graph,
   itemListSchema,
-  localBusinessSchema,
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
@@ -87,11 +86,6 @@ export default async function StatePage({ params }: Props) {
       type: 'CollectionPage',
     }),
     breadcrumbSchema(crumbs),
-    localBusinessSchema({
-      id: `${path}#localbusiness`,
-      url: path,
-      areaServed: [{ type: 'State', name: state.name }],
-    }),
     serviceSchema({
       name: `Interior Design Services in ${state.name}`,
       description: stateMetaDescription(state),

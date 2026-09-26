@@ -12,10 +12,10 @@ import JsonLd from '@/lib/seo/JsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 import {
   breadcrumbSchema,
+  cityArea,
   faqSchema,
   graph,
   howToSchema,
-  localBusinessSchema,
   serviceSchema,
   webPageSchema,
 } from '@/lib/seo/schema';
@@ -104,24 +104,14 @@ export default async function CityPage({ params }: Props) {
       path,
     }),
     breadcrumbSchema(crumbs),
-    localBusinessSchema({
-      id: `${path}#localbusiness`,
-      url: path,
-      name: `Silver Storey — Interior Designers in ${city.name}`,
-      description: cityMetaDescription(city, state),
-      areaServed: [
-        { type: 'City', name: city.name, region: state.name },
-        ...nearby
-          .slice(0, 3)
-          .map((n) => ({ type: 'City' as const, name: n.name })),
-      ],
-    }),
     serviceSchema({
       name: `Interior Design Services in ${city.name}`,
       description: intro[0],
       path,
-      areaServed: [{ type: 'City', name: city.name }],
-      startingPriceINR: pricing.find((r) => r.key === 'kitchen')?.from,
+      areaServed: [
+        cityArea(city, state),
+        ...nearby.slice(0, 3).map((n) => cityArea(n)),
+      ],
     }),
     howToSchema({
       name: `How to get your ${city.name} home designed by Silver Storey`,
